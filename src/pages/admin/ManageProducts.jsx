@@ -34,21 +34,13 @@ const ManageProducts = () => {
   const [editingProduct, setEditingProduct] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
 
-  // Form State
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    price: '',
-    category: 'bags',
-    image: '',
-    variants: [{ name: 'Default', stock: 10 }]
-  });
+  const [imageFile, setImageFile] = useState(null);
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const { data } = await api.get('/products');
-      setProducts(data.products || []);
+      setProducts(data.data || []); // Adjusted for backend response structure
     } catch (error) {
       toast.error('Failed to fetch products');
     } finally {
@@ -69,6 +61,7 @@ const ManageProducts = () => {
       image: '',
       variants: [{ name: 'Default', stock: 10 }]
     });
+    setImageFile(null);
     setEditingProduct(null);
   };
 
@@ -82,6 +75,7 @@ const ManageProducts = () => {
       image: product.image,
       variants: product.variants.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }]
     });
+    setImageFile(null); // Reset file on edit
     setIsDialogOpen(true);
   };
 
@@ -111,16 +105,28 @@ const ManageProducts = () => {
 
     setFormLoading(true);
     try {
-      const payload = {
-        ...formData,
-        price: parseFloat(formData.price)
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('price', formData.price);
+      data.append('category', formData.category);
+      data.append('variants', JSON.stringify(formData.variants));
+      
+      if (imageFile) {
+        data.append('image', imageFile);
+      } else if (formData.image) {
+        data.append('image', formData.image); // Send string if no new file
+      }
+
+      const config = {
+        headers: { 'Content-Type': 'multipart/form-data' }
       };
 
       if (editingProduct) {
-        await api.put(`/admin/products/${editingProduct._id}`, payload);
+        await api.put(`/admin/products/${editingProduct._id}`, data, config);
         toast.success('Product updated');
       } else {
-        await api.post('/admin/products', payload);
+        await api.post('/admin/products', data, config);
         toast.success('Product created');
       }
       setIsDialogOpen(false);
@@ -197,8 +203,31 @@ const ManageProducts = () => {
                     <Input type="number" placeholder="5000" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-12 rounded-xl" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Image URL</label>
-                    <Input placeholder="https://..." value={formData.image} onChange={(e) => setFormData({ ...formData, image: e.target.value })} className="h-12 rounded-xl" />
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Product Image</label>
+                    <div className="flex items-center gap-4">
+                      { (imageFile || formData.image) && (
+                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-border/10 flex-shrink-0">
+                          <img 
+                            src={imageFile ? URL.createObjectURL(imageFile) : formData.image} 
+                            className="w-full h-full object-cover" 
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <label className="flex flex-col items-center justify-center w-full h-12 border-2 border-dashed border-border/20 rounded-xl cursor-pointer hover:bg-surface transition-all">
+                          <div className="flex items-center gap-2">
+                            <ImageIcon size={18} className="text-muted-foreground" />
+                            <span className="text-xs font-bold text-muted-foreground uppercase">{imageFile ? 'Change File' : 'Select File'}</span>
+                          </div>
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*"
+                            onChange={(e) => setImageFile(e.target.files[0])}
+                          />
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

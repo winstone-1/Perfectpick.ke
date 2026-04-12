@@ -2,19 +2,22 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Loader2, ArrowRight } from 'lucide-react';
+import { FaGoogle } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardHeader, CardContent, CardFooter } from '../components/ui/card';
+import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -28,13 +31,30 @@ const Login = () => {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      login(data.user);
+      login(data.data); // Backend response contains user in 'data' field
       toast.success('Welcome back to Perfect Pick!');
       navigate(from, { replace: true });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    setGoogleLoading(true);
+    try {
+      const result = await loginWithGoogle();
+      if (result.success) {
+        toast.success('Signed in with Google!');
+        navigate(from, { replace: true });
+      } else {
+        toast.error(result.error || 'Google sign-in failed');
+      }
+    } catch (error) {
+      toast.error('An unexpected error occurred');
+    } finally {
+      setGoogleLoading(false);
     }
   };
 
@@ -52,7 +72,7 @@ const Login = () => {
             <p className="text-muted-foreground text-sm">Sign in to access your picks</p>
           </CardHeader>
           
-          <CardContent className="p-8">
+          <CardContent className="p-8 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Email Address</label>
@@ -88,7 +108,7 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full btn-primary h-12 rounded-xl text-md"
-                disabled={loading}
+                disabled={loading || googleLoading}
               >
                 {loading ? (
                   <Loader2 className="animate-spin mr-2" size={20} />
@@ -97,6 +117,25 @@ const Login = () => {
                 )}
               </Button>
             </form>
+
+            <div className="relative py-4">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">or</span>
+            </div>
+
+            <Button 
+              type="button" 
+              variant="outline"
+              className="w-full h-12 rounded-xl text-md border-border/20 hover:bg-surface transition-all gap-3"
+              onClick={handleGoogleLogin}
+              disabled={loading || googleLoading}
+            >
+              {googleLoading ? (
+                <Loader2 className="animate-spin" size={20} />
+              ) : (
+                <><FaGoogle className="text-red-500" /> Continue with Google</>
+              )}
+            </Button>
           </CardContent>
 
           <CardFooter className="bg-bg/50 p-6 text-center border-t border-border/10">
