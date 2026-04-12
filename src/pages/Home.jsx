@@ -17,7 +17,8 @@ const Home = () => {
     const fetchFeatured = async () => {
       try {
         const { data } = await api.get('/products?featured=true');
-        setFeaturedProducts(data.products.slice(0, 4));
+        // The backend returns { success: true, data: [...] }
+        setFeaturedProducts(data.data?.slice(0, 4) || []);
       } catch (error) {
         console.error('Failed to fetch featured products:', error);
       } finally {

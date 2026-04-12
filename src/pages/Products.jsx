@@ -38,7 +38,7 @@ const Products = () => {
       if (sort) params.append('sort', sort);
 
       const { data } = await api.get(`/products?${params.toString()}`);
-      setProducts(data.products || []);
+      setProducts(data.data || []);
     } catch (error) {
       console.error('Failed to fetch products:', error);
     } finally {
