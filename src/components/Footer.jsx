@@ -43,7 +43,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="text-primary" size={18} />
-                <span>+254 712 345 678</span>
+                <span>+254 787 251 690</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="text-primary" size={18} />
@@ -51,7 +51,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="text-primary mt-1" size={18} />
-                <span>Mon - Sat: 9:00 AM - 7:00 PM<br />Sun: 10:00 AM - 4:00 PM</span>
+                <span>Mon - Sat: 8:30 AM - 7:30 PM<br />Sun & Holidays: 10:30 AM - 6:00 PM</span>
               </li>
             </ul>
           </div>

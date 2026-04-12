@@ -7,7 +7,7 @@ import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
-import { FaShoppingBag, FaShoePrints, FaGem, FaGift, FaUserTie, FaShirt } from 'react-icons/fa6';
+import { FaBagShopping, FaShoePrints, FaGem, FaGift, FaUserTie, FaShirt } from 'react-icons/fa6';
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -28,7 +28,7 @@ const Home = () => {
   }, []);
 
   const categories = [
-    { name: 'Bags', icon: <FaShoppingBag />, desc: 'Luxury leather & designer pieces', href: '/products?category=bags' },
+    { name: 'Bags', icon: <FaBagShopping />, desc: 'Luxury leather & designer pieces', href: '/products?category=bags' },
     { name: 'Shoes', icon: <FaShoePrints />, desc: 'Elegance in every step', href: '/products?category=shoes' },
     { name: 'Jewelry', icon: <FaGem />, desc: 'Timeless sparkle for every occasion', href: '/products?category=jewelry' },
     { name: 'Gifts', icon: <FaGift />, desc: 'Perfectly wrapped thoughts', href: '/products?category=gifts' },
@@ -97,7 +97,7 @@ const Home = () => {
              transition={{ duration: 0.8, delay: 0.2 }}
              className="grid grid-cols-2 gap-4"
           >
-            {[ <FaShoppingBag />, <FaShoePrints />, <FaGem />, <FaShirt /> ].map((icon, i) => (
+            {[ <FaBagShopping />, <FaShoePrints />, <FaGem />, <FaShirt /> ].map((icon, i) => (
               <motion.div 
                 key={i}
                 whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 2 : -2 }}

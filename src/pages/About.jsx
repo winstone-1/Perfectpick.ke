@@ -17,9 +17,9 @@ const About = () => {
 
   const contactInfos = [
     { icon: <MapPin />, title: 'Visit Us', detail: 'Nairobi Commercial Center, Floor 2, Nairobi, Kenya' },
-    { icon: <Phone />, title: 'Call Us', detail: '+254 712 345 678' },
+    { icon: <Phone />, title: 'Call Us', detail: '+254 787 251 690' },
     { icon: <Mail />, title: 'Email Us', detail: 'hello@perfectpick.co.ke' },
-    { icon: <Clock />, title: 'Working Hours', detail: 'Mon - Sat: 9:00 AM - 7:00 PM' }
+    { icon: <Clock />, title: 'Working Hours', detail: 'Mon - Sat: 8:30 AM - 7:30 PM | Sun & Holidays: 10:30 AM - 6:00 PM' }
   ];
 
   return (

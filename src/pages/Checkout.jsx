@@ -190,8 +190,17 @@ const Checkout = () => {
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="space-y-6"
                   >
+                    <div className="bg-surface p-6 rounded-2xl space-y-4 border border-border/10">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">M-Pesa Till No.</span>
+                        <span className="text-lg font-mono font-black text-primary">3175088</span>
+                      </div>
+                      <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-black">
+                        The Perfect Pick Selection
+                      </p>
+                    </div>
                     <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100 text-sm text-emerald-800 leading-relaxed">
-                      Enter your M-Pesa phone number above. Upon clicking "Pay Now", you will receive a prompt on your phone to enter your M-Pesa PIN.
+                      Enter your M-Pesa phone number above. Click "Pay with M-Pesa" and you will receive a prompt to enter your PIN.
                     </div>
                     <Button 
                       className="w-full bg-[#39b54a] hover:bg-[#329e41] text-white h-14 rounded-2xl text-lg font-black"
