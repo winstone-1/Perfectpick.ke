@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart, Sparkles } from 'lucide-react';
+import { FaCrown } from 'react-icons/fa6';
 import { Card, CardContent } from '../components/ui/card';
 
 const About = () => {
@@ -98,7 +99,7 @@ const About = () => {
             className="relative"
           >
             <div className="aspect-[4/5] bg-surface rounded-[3rem] overflow-hidden flex items-center justify-center shadow-2xl skew-y-1">
-              <div className="text-8xl">👑</div>
+              <div className="text-8xl text-primary"><FaCrown /></div>
             </div>
             {/* Quote Card */}
             <Card className="absolute -bottom-8 -left-8 md:-left-12 border-none shadow-2xl bg-white rounded-3xl p-8 max-w-xs rotate-[-2deg]">

@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { Badge } from '../components/ui/badge';
+import { FaShoppingBag, FaShoePrints, FaGem, FaGift, FaUserTie, FaShirt } from 'react-icons/fa6';
 
 const Home = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -27,12 +28,12 @@ const Home = () => {
   }, []);
 
   const categories = [
-    { name: 'Bags', emoji: '👜', desc: 'Luxury leather & designer pieces', href: '/products?category=bags' },
-    { name: 'Shoes', emoji: '👠', desc: 'Elegance in every step', href: '/products?category=shoes' },
-    { name: 'Jewelry', emoji: '✨', desc: 'Timeless sparkle for every occasion', href: '/products?category=jewelry' },
-    { name: 'Gifts', emoji: '🎁', desc: 'Perfectly wrapped thoughts', href: '/products?category=gifts' },
-    { name: 'Accessories', emoji: '🧣', desc: 'The finishing touch', href: '/products?category=accessories' },
-    { name: 'Clothes', emoji: '👗', desc: 'Curated fashion boutique', href: '/products?category=clothes' },
+    { name: 'Bags', icon: <FaShoppingBag />, desc: 'Luxury leather & designer pieces', href: '/products?category=bags' },
+    { name: 'Shoes', icon: <FaShoePrints />, desc: 'Elegance in every step', href: '/products?category=shoes' },
+    { name: 'Jewelry', icon: <FaGem />, desc: 'Timeless sparkle for every occasion', href: '/products?category=jewelry' },
+    { name: 'Gifts', icon: <FaGift />, desc: 'Perfectly wrapped thoughts', href: '/products?category=gifts' },
+    { name: 'Accessories', icon: <FaUserTie />, desc: 'The finishing touch', href: '/products?category=accessories' },
+    { name: 'Clothes', icon: <FaShirt />, desc: 'Curated fashion boutique', href: '/products?category=clothes' },
   ];
 
   const stats = [
@@ -96,13 +97,13 @@ const Home = () => {
              transition={{ duration: 0.8, delay: 0.2 }}
              className="grid grid-cols-2 gap-4"
           >
-            {[ '👜', '👠', '✨', '👗' ].map((emoji, i) => (
+            {[ <FaShoppingBag />, <FaShoePrints />, <FaGem />, <FaShirt /> ].map((icon, i) => (
               <motion.div 
                 key={i}
                 whileHover={{ scale: 1.05, rotate: i % 2 === 0 ? 2 : -2 }}
-                className="aspect-square glass rounded-3xl flex items-center justify-center text-7xl md:text-8xl shadow-xl"
+                className="aspect-square glass rounded-3xl flex items-center justify-center text-7xl md:text-8xl shadow-xl text-primary"
               >
-                {emoji}
+                {icon}
               </motion.div>
             ))}
           </motion.div>
@@ -142,7 +143,7 @@ const Home = () => {
             <motion.div key={i} variants={itemVariants}>
               <Link to={cat.href} className="group block h-full">
                 <div className="h-full bg-white rounded-2xl p-6 text-center border border-transparent hover:border-primary/20 hover:shadow-xl transition-all duration-300 flex flex-col items-center gap-4">
-                  <div className="text-4xl group-hover:scale-125 transition-transform duration-300">{cat.emoji}</div>
+                  <div className="text-4xl group-hover:scale-125 transition-transform duration-300 text-primary">{cat.icon}</div>
                   <div>
                     <h3 className="font-serif font-bold text-lg">{cat.name}</h3>
                     <p className="text-xs text-muted-foreground mt-1 leading-tight">{cat.desc}</p>

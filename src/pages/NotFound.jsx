@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingBag, ArrowLeft, Search } from 'lucide-react';
+import { FaBagShopping } from 'react-icons/fa6';
 import { Button } from '../components/ui/button';
 
 const NotFound = () => {
@@ -20,9 +21,9 @@ const NotFound = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, type: 'spring' }}
-          className="absolute inset-0 flex items-center justify-center text-9xl group-hover:scale-110 transition-transform duration-500"
+          className="absolute inset-0 flex items-center justify-center text-9xl text-primary group-hover:scale-110 transition-transform duration-500"
         >
-          👜
+          <FaBagShopping />
         </motion.div>
       </div>
 
