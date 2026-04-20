@@ -33,7 +33,7 @@ const ManageOrders = () => {
     setLoading(true);
     try {
       const { data } = await api.get('/admin/orders');
-      setOrders(data.orders || []);
+      setOrders(data.data || []);
     } catch (error) {
       toast.error('Failed to fetch orders');
     } finally {
