@@ -46,6 +46,10 @@ const Checkout = () => {
 
     setLoading(true);
     try {
+      // Get user email from local storage or context (assuming user is logged in)
+      const user = JSON.parse(localStorage.getItem('user'));
+      const email = user?.email || 'customer@example.com'; 
+
       // 1. Create Order
       const { data: orderData } = await api.post('/orders', {
         items: cart.map(item => ({
@@ -65,16 +69,17 @@ const Checkout = () => {
 
       setOrderId(orderData.order._id);
 
-      // 2. Initiate M-Pesa STK Push
-      const { data: mpesaData } = await api.post('/mpesa/stkpush', {
-        phone: formData.phone.replace(/^0/, '254'), // Kenyan format
+      // 2. Initiate Paystack M-Pesa STK Push
+      const { data: paystackResponse } = await api.post('/api/payments/mpesa', {
+        phone: formData.phone, 
         amount: cartTotal,
+        email: email,
         orderId: orderData.order._id
       });
 
-      setCheckoutRequestId(mpesaData.CheckoutRequestID);
+      setCheckoutRequestId(paystackResponse.reference); // Using same state variable for the Paystack reference
       setPaymentStatus('waiting');
-      toast.success('M-Pesa prompt sent to your phone');
+      toast.success(paystackResponse.message || 'M-Pesa prompt sent to your phone');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to initiate payment');
       setPaymentStatus('failed');
@@ -86,17 +91,14 @@ const Checkout = () => {
   const handleConfirmPayment = async () => {
     setLoading(true);
     try {
-      const { data } = await api.post('/mpesa/query', {
-        checkoutRequestId
-      });
+      const { data } = await api.get(`/api/payments/verify/${checkoutRequestId}`);
 
-      if (data.ResultCode === '0') {
+      if (data.status === 'success') {
         setPaymentStatus('success');
         clearCart();
         toast.success('Payment confirmed! Your order is being processed.');
       } else {
-        setPaymentStatus('failed');
-        toast.error('Payment was not successful');
+        toast.error(`Payment status: ${data.status}. Please wait or try again.`);
       }
     } catch (error) {
       toast.error('Could not confirm payment. Please try again or contact support.');

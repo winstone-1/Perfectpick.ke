@@ -48,9 +48,9 @@ const About = () => {
             transition={{ delay: 0.4 }}
             className="text-lg text-medium max-w-2xl mx-auto leading-relaxed"
           >
-            Perfect Pick was born from a simple belief: every woman deserves a piece of luxury 
-            that makes her feel extraordinary. Since 2018, we've curated the finest 
-            accessories for the modern Kenyan woman.
+            Perfect Pick was born from a simple belief: everyone deserves a piece of luxury 
+            that makes them feel extraordinary. Since 2018, we've curated the finest 
+            accessories for the modern Kenyan style enthusiast.
           </motion.p>
         </div>
         <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
