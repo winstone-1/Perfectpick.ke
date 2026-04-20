@@ -33,14 +33,23 @@ const ManageProducts = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
-
   const [imageFile, setImageFile] = useState(null);
+
+  // ✅ Missing formData state - this was causing the crash
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: '',
+    category: 'bags',
+    image: '',
+    variants: [{ name: 'Default', stock: 10 }]
+  });
 
   const fetchProducts = async () => {
     setLoading(true);
     try {
       const { data } = await api.get('/products');
-      setProducts(data.data || []); // Adjusted for backend response structure
+      setProducts(data.data || []);
     } catch (error) {
       toast.error('Failed to fetch products');
     } finally {
@@ -75,7 +84,7 @@ const ManageProducts = () => {
       image: product.image,
       variants: product.variants.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }]
     });
-    setImageFile(null); // Reset file on edit
+    setImageFile(null);
     setIsDialogOpen(true);
   };
 
@@ -115,7 +124,7 @@ const ManageProducts = () => {
       if (imageFile) {
         data.append('image', imageFile);
       } else if (formData.image) {
-        data.append('image', formData.image); // Send string if no new file
+        data.append('image', formData.image);
       }
 
       const config = {
@@ -275,7 +284,7 @@ const ManageProducts = () => {
         </Dialog>
       </div>
 
-      {/* Product List Table-ish */}
+      {/* Product List */}
       <div className="space-y-4">
         {loading ? (
           Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)
