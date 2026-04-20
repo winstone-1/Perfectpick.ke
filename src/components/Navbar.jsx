@@ -38,7 +38,7 @@ const Navbar = () => {
     setIsOpen(false);
   }, [location]);
 
-  const isAdmin = user?.role === 'admin' || user?.role === 'manager';
+const isAdmin = user?.isAdmin === true;
 
   const navLinks = [
     { name: 'Home', href: '/' },
