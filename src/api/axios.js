@@ -1,13 +1,9 @@
 import axios from 'axios';
 
-// Make sure this is reading the correct URL
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
 const api = axios.create({
-  baseURL: API_URL,  // Should be https://antigravity-api-eight.vercel.app/api
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  baseURL: API_URL,
 });
 
 api.interceptors.request.use((config) => {
