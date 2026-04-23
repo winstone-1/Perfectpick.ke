@@ -33,25 +33,25 @@ const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
-
   const [mainImage, setMainImage] = useState(null);
 
   const fetchProduct = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get(`/products/${id}`);
-      setProduct(data.product);
-      setMainImage(data.product.images?.[0] || data.product.image);
-      
-      if (data.product.variants?.length > 0) {
-        // Find first variant that is in stock, otherwise first variant
-        const firstInStock = data.product.variants.find(v => v.stock > 0);
-        setSelectedVariant(firstInStock || data.product.variants[0]);
+      const product = data.data;                                        // ✅ fixed
+      setProduct(product);
+      setMainImage(product.images?.[0] || product.image || null);
+
+      if (product.variants?.length > 0) {
+        const firstInStock = product.variants.find(v => v.stock > 0);
+        setSelectedVariant(firstInStock || product.variants[0]);
       }
-      
-      // Fetch related products
-      const relatedRsp = await api.get(`/products?category=${data.product.category}&limit=5`);
-      setRelatedProducts(relatedRsp.data.products.filter(p => p._id !== id).slice(0, 4));
+
+      const relatedRsp = await api.get(`/products?category=${product.category}&limit=5`);
+      setRelatedProducts(
+        (relatedRsp.data.data || []).filter(p => p._id !== id).slice(0, 4)  // ✅ fixed
+      );
     } catch (error) {
       console.error('Failed to fetch product:', error);
     } finally {
