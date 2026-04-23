@@ -33,7 +33,7 @@ const ManageProducts = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
-  const [imageFile, setImageFile] = useState(null);
+  const [imageFile, setImageFile] = useState([]);
 
   // ✅ Missing formData state - this was causing the crash
   const [formData, setFormData] = useState({
@@ -82,7 +82,7 @@ const ManageProducts = () => {
       price: product.price,
       category: product.category,
       images: product.images || (product.image ? [product.image] : []),
-      variants: product.variants.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }]
+      variants: product.variants?.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }]
     });
     setImageFile([]);
     setIsDialogOpen(true);
@@ -376,9 +376,9 @@ const ManageProducts = () => {
                       <td className="py-6">
                         <span className={cn(
                           "font-bold text-sm px-3 py-1 rounded-lg",
-                          product.variants.reduce((a, b) => a + b.stock, 0) < 5 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
+                          (product.variants || []).reduce((a, b) => a + b.stock, 0) < 5 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
                         )}>
-                          {product.variants.reduce((a, b) => a + b.stock, 0)} Units
+                          {(product.variants || []).reduce((a, b) => a + b.stock, 0)} Units
                         </span>
                       </td>
                       <td className="py-6 pr-4 text-right">
