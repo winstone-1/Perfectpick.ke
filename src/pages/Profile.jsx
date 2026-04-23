@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -24,6 +24,7 @@ import { cn } from '../lib/utils';
 
 const Profile = () => {
   const { user, login } = useAuth();
+  const avatarInputRef = useRef(null);
   
   const [personalInfo, setPersonalInfo] = useState({
     name: user?.name || '',
@@ -38,6 +39,36 @@ const Profile = () => {
 
   const [updatingInfo, setUpdatingInfo] = useState(false);
   const [updatingPassword, setUpdatingPassword] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Preview immediately
+    const reader = new FileReader();
+    reader.onload = (e) => setAvatarPreview(e.target.result);
+    reader.readAsDataURL(file);
+
+    // Upload to backend
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('avatar', file);
+      const { data } = await api.put('/auth/profile/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      login({ ...user, avatar: data.data.avatar });
+      setAvatarPreview(data.data.avatar);
+      toast.success('Profile picture updated');
+    } catch (error) {
+      toast.error('Failed to upload image');
+      setAvatarPreview(user?.avatar || null);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleInfoUpdate = async (e) => {
     e.preventDefault();
@@ -80,12 +111,38 @@ const Profile = () => {
         <div className="w-full lg:w-80 space-y-6">
           <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
             <CardContent className="p-8 text-center space-y-6">
+              {/* Avatar */}
               <div className="relative inline-block">
-                <div className="w-32 h-32 bg-surface rounded-full flex items-center justify-center text-primary mx-auto border-4 border-white shadow-lg">
-                  <User size={64} />
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg mx-auto bg-surface flex items-center justify-center">
+                  {avatarPreview ? (
+                    <img 
+                      src={avatarPreview} 
+                      alt={user.name} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User size={64} className="text-primary" />
+                  )}
                 </div>
-                <button className="absolute bottom-0 right-0 p-2 bg-dark text-white rounded-full border-2 border-white hover:bg-primary transition-colors">
-                  <Camera size={16} />
+
+                {/* Hidden file input */}
+                <input
+                  ref={avatarInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+
+                <button 
+                  onClick={() => avatarInputRef.current.click()}
+                  disabled={uploadingAvatar}
+                  className="absolute bottom-0 right-0 p-2 bg-dark text-white rounded-full border-2 border-white hover:bg-primary transition-colors disabled:opacity-50"
+                >
+                  {uploadingAvatar 
+                    ? <Loader2 size={16} className="animate-spin" /> 
+                    : <Camera size={16} />
+                  }
                 </button>
               </div>
               
