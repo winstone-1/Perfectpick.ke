@@ -1,24 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  ShoppingBag,
-  Truck,
-  ShieldCheck,
-  RotateCcw,
-  ArrowRight,
-  Sparkles,
-} from 'lucide-react';
+import { ShoppingBag, Truck, ShieldCheck, RotateCcw, ArrowRight, Sparkles } from 'lucide-react';
 import { GiHandBag, GiHeels, GiNecklace, GiPresent } from 'react-icons/gi';
+import { FaUserTie, FaShirt } from 'react-icons/fa6';
 import api from '../api/axios';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 
 const CATEGORIES = [
-  { label: 'Bags',    Icon: GiHandBag,  value: 'bags'    },
-  { label: 'Shoes',   Icon: GiHeels,    value: 'shoes'   },
-  { label: 'Jewelry', Icon: GiNecklace, value: 'jewelry' },
-  { label: 'Gifts',   Icon: GiPresent,  value: 'gifts'   },
+  { label: 'Bags',        Icon: GiHandBag,  value: 'bags'        },
+  { label: 'Shoes',       Icon: GiHeels,    value: 'shoes'       },
+  { label: 'Jewelry',     Icon: GiNecklace, value: 'jewelry'     },
+  { label: 'Gifts',       Icon: GiPresent,  value: 'gifts'       },
+  { label: 'Accessories', Icon: FaUserTie,  value: 'accessories' },
+  { label: 'Clothes',     Icon: FaShirt,    value: 'clothes'     },
 ];
 
 const TRUST = [
@@ -34,7 +30,6 @@ const LandingPage = () => {
   const [heroIndex, setHeroIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const intervalRef               = useRef(null);
-  const stripRef                  = useRef(null);
 
   useEffect(() => {
     const load = async () => {
@@ -76,9 +71,8 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-bg">
 
-      {/* ── HERO ───────────────────────────────────────────────── */}
+      {/* ── HERO ─────────────────────────────────────────────── */}
       <section className="relative h-[92vh] overflow-hidden bg-surface">
-        {/* Background image carousel */}
         <AnimatePresence custom={direction} initial={false}>
           {loading ? (
             <div key="skeleton" className="absolute inset-0 bg-surface animate-pulse" />
@@ -98,7 +92,7 @@ const LandingPage = () => {
                 alt={heroProduct.name}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
             </motion.div>
           ) : (
             <div key="empty" className="absolute inset-0 bg-surface" />
@@ -133,11 +127,11 @@ const LandingPage = () => {
 
               <div className="flex items-center gap-4 pt-2">
                 <Button
-                  onClick={() => navigate('/products')}
+                  onClick={() => navigate('/home')}
                   className="btn-primary h-14 px-8 text-base rounded-2xl"
                 >
                   <ShoppingBag size={18} className="mr-2" />
-                  Shop Now
+                  Enter Store
                 </Button>
                 <Button
                   variant="ghost"
@@ -187,7 +181,7 @@ const LandingPage = () => {
         )}
       </section>
 
-      {/* ── CATEGORIES ─────────────────────────────────────────── */}
+      {/* ── CATEGORIES ───────────────────────────────────────── */}
       <section className="py-20 container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -199,132 +193,72 @@ const LandingPage = () => {
           <h2 className="text-4xl font-serif font-black text-dark">Categories</h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {CATEGORIES.map(({ label, Icon, value }, i) => (
             <motion.div
               key={value}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.08 }}
             >
               <Link
                 to={`/products?category=${value}`}
-                className="group flex flex-col items-center justify-center gap-4 p-8 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300"
+                className="group flex flex-col items-center justify-center gap-4 p-6 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="w-16 h-16 rounded-2xl bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <Icon size={32} />
+                <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 text-2xl">
+                  <Icon size={28} />
                 </div>
-                <span className="font-serif font-black text-dark text-lg">{label}</span>
+                <span className="font-serif font-black text-dark">{label}</span>
               </Link>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ── FEATURED PRODUCTS STRIP ─────────────────────────────── */}
+      {/* ── TRUST PILLARS ────────────────────────────────────── */}
       <section className="py-20 bg-surface">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex items-end justify-between mb-12"
+            className="text-center mb-12 space-y-2"
           >
-            <div className="space-y-2">
-              <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Just In</p>
-              <h2 className="text-4xl font-serif font-black text-dark">New Arrivals</h2>
-            </div>
-            <Link
-              to="/products?sort=newest"
-              className="flex items-center gap-2 text-sm font-bold text-primary hover:gap-3 transition-all"
-            >
-              View All <ArrowRight size={16} />
-            </Link>
+            <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Why us</p>
+            <h2 className="text-4xl font-serif font-black text-dark">Shop with Confidence</h2>
           </motion.div>
 
-          {loading ? (
-            <div className="flex gap-6 overflow-hidden">
-              {[...Array(4)].map((_, i) => (
-                <div key={i} className="flex-shrink-0 w-64 space-y-3">
-                  <Skeleton className="h-72 w-full rounded-3xl" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {TRUST.map(({ Icon, title, desc }, i) => (
+              <motion.div
+                key={title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="flex items-start gap-5 p-8 rounded-3xl bg-white shadow-sm border border-border/10"
+              >
+                <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0">
+                  <Icon size={24} />
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div
-              ref={stripRef}
-              className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
-            >
-              {featured.map((product, i) => (
-                <motion.div
-                  key={product._id}
-                  initial={{ opacity: 0, x: 30 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="flex-shrink-0 w-64 snap-start"
-                >
-                  <Link to={`/products/${product._id}`} className="group block">
-                    <div className="h-72 rounded-3xl overflow-hidden bg-white shadow-sm relative">
-                      {product.images?.[0] ? (
-                        <img
-                          src={product.images[0]}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <ShoppingBag size={48} className="text-muted-foreground/30" />
-                        </div>
-                      )}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-3xl" />
-                    </div>
-                    <div className="mt-4 px-1 space-y-1">
-                      <p className="font-serif font-black text-dark truncate">{product.name}</p>
-                      <p className="text-primary font-bold text-sm">
-                        {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(product.price)}
-                      </p>
-                    </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
-          )}
+                <div className="space-y-1">
+                  <h3 className="font-serif font-black text-dark text-lg">{title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ── TRUST PILLARS ──────────────────────────────────────── */}
-      <section className="py-20 container mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {TRUST.map(({ Icon, title, desc }, i) => (
-            <motion.div
-              key={title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="flex items-start gap-5 p-8 rounded-3xl bg-white shadow-sm border border-border/10"
-            >
-              <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0">
-                <Icon size={24} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-serif font-black text-dark text-lg">{title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── FOOTER CTA ─────────────────────────────────────────── */}
-      <section className="mx-6 mb-20 rounded-[2.5rem] overflow-hidden bg-dark relative">
-        <div className="absolute inset-0 opacity-5"
+      {/* ── FOOTER CTA ───────────────────────────────────────── */}
+      <section className="mx-6 my-20 rounded-[2.5rem] overflow-hidden bg-dark relative">
+        <div
+          className="absolute inset-0 opacity-5"
           style={{
-            backgroundImage: 'radial-gradient(circle at 20% 50%, #c08050 0%, transparent 50%), radial-gradient(circle at 80% 50%, #c08050 0%, transparent 50%)'
+            backgroundImage:
+              'radial-gradient(circle at 20% 50%, #c08050 0%, transparent 50%), radial-gradient(circle at 80% 50%, #c08050 0%, transparent 50%)',
           }}
         />
         <div className="relative z-10 py-20 px-8 text-center space-y-6">
@@ -345,11 +279,11 @@ const LandingPage = () => {
             </p>
           </motion.div>
           <Button
-            onClick={() => navigate('/products')}
+            onClick={() => navigate('/home')}
             className="btn-primary h-14 px-10 text-base rounded-2xl"
           >
             <ShoppingBag size={18} className="mr-2" />
-            Shop the Collection
+            Enter the Store
           </Button>
         </div>
       </section>
