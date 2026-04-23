@@ -42,7 +42,8 @@ const ManageProducts = () => {
     price: '',
     category: 'bags',
     images: [],
-    variants: [{ name: 'Default', stock: 10 }]
+    variants: [{ name: 'Default', stock: 10 }],
+    featured: false
   });
 
   const fetchProducts = async () => {
@@ -68,7 +69,8 @@ const ManageProducts = () => {
       price: '',
       category: 'bags',
       images: [],
-      variants: [{ name: 'Default', stock: 10 }]
+      variants: [{ name: 'Default', stock: 10 }],
+      featured: false
     });
     setImageFile([]);
     setEditingProduct(null);
@@ -82,7 +84,8 @@ const ManageProducts = () => {
       price: product.price,
       category: product.category,
       images: product.images || (product.image ? [product.image] : []),
-      variants: product.variants?.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }]
+      variants: product.variants?.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }],
+      featured: product.featured || false
     });
     setImageFile([]);
     setIsDialogOpen(true);
@@ -136,6 +139,7 @@ const ManageProducts = () => {
       data.append('price', formData.price);
       data.append('category', formData.category);
       data.append('variants', JSON.stringify(formData.variants));
+      data.append('featured', formData.featured);
       
       // Append existing images that weren't removed
       data.append('images', JSON.stringify(formData.images));
@@ -284,18 +288,32 @@ const ManageProducts = () => {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Description</label>
-                    <textarea 
-                      className="w-full h-72 rounded-xl border border-border/20 p-4 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                      placeholder="Tell the story of this piece..."
-                      value={formData.description}
-                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    />
+                  <div className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-primary">Description</label>
+                      <textarea 
+                        className="w-full h-56 rounded-xl border border-border/20 p-4 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                        placeholder="Tell the story of this piece..."
+                        value={formData.description}
+                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-3 p-4 bg-surface rounded-2xl border border-border/5">
+                      <input 
+                        type="checkbox" 
+                        id="featured"
+                        checked={formData.featured}
+                        onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
+                        className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                      />
+                      <label htmlFor="featured" className="text-sm font-bold text-dark cursor-pointer select-none">
+                        Feature on homepage
+                        <span className="block text-[10px] text-muted-foreground font-normal uppercase tracking-tight">Display in hero carousel and new arrivals strip</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
-              </div>
 
               {/* Variants Section */}
               <div className="space-y-4">
