@@ -41,7 +41,7 @@ const ManageProducts = () => {
     description: '',
     price: '',
     category: 'bags',
-    image: '',
+    images: [],
     variants: [{ name: 'Default', stock: 10 }]
   });
 
@@ -67,10 +67,10 @@ const ManageProducts = () => {
       description: '',
       price: '',
       category: 'bags',
-      image: '',
+      images: [],
       variants: [{ name: 'Default', stock: 10 }]
     });
-    setImageFile(null);
+    setImageFile([]);
     setEditingProduct(null);
   };
 
@@ -81,10 +81,10 @@ const ManageProducts = () => {
       description: product.description,
       price: product.price,
       category: product.category,
-      image: product.image,
+      images: product.images || (product.image ? [product.image] : []),
       variants: product.variants.length > 0 ? product.variants : [{ name: 'Default', stock: 10 }]
     });
-    setImageFile(null);
+    setImageFile([]);
     setIsDialogOpen(true);
   };
 
@@ -106,6 +106,22 @@ const ManageProducts = () => {
     setFormData({ ...formData, variants: newVariants });
   };
 
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImageFile(prev => [...prev, ...files]);
+  };
+
+  const removeSelectedFile = (index) => {
+    setImageFile(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const removeExistingImage = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.price || !formData.category) {
@@ -121,11 +137,13 @@ const ManageProducts = () => {
       data.append('category', formData.category);
       data.append('variants', JSON.stringify(formData.variants));
       
-      if (imageFile) {
-        data.append('image', imageFile);
-      } else if (formData.image) {
-        data.append('image', formData.image);
-      }
+      // Append existing images that weren't removed
+      data.append('images', JSON.stringify(formData.images));
+      
+      // Append new files
+      imageFile.forEach(file => {
+        data.append('images', file);
+      });
 
       const config = {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -180,7 +198,7 @@ const ManageProducts = () => {
               <Plus className="mr-2" /> Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-3xl overflow-y-auto max-h-[90vh] rounded-[2.5rem] border-none shadow-2xl p-0">
+          <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] rounded-[2.5rem] border-none shadow-2xl p-0">
             <div className="sticky top-0 z-10 bg-surface px-10 py-6 border-b border-border/10 flex justify-between items-center">
               <DialogTitle className="font-serif font-black text-2xl text-dark">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
@@ -211,32 +229,58 @@ const ManageProducts = () => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-primary">Base Price (KES) *</label>
                     <Input type="number" placeholder="5000" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-12 rounded-xl" />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Product Image</label>
-                    <div className="flex items-center gap-4">
-                      { (imageFile || formData.image) && (
-                        <div className="w-16 h-16 rounded-xl overflow-hidden border border-border/10 flex-shrink-0">
-                          <img 
-                            src={imageFile ? URL.createObjectURL(imageFile) : formData.image} 
-                            className="w-full h-full object-cover" 
-                          />
+                  
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Product Images</label>
+                    
+                    <div className="grid grid-cols-4 gap-4">
+                      {/* Existing Images */}
+                      {formData.images.map((url, i) => (
+                        <div key={`existing-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-border/10 group">
+                          <img src={url} className="w-full h-full object-cover" />
+                          <button 
+                            type="button" 
+                            onClick={() => removeExistingImage(i)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X size={12} />
+                          </button>
                         </div>
-                      )}
-                      <div className="flex-1">
-                        <label className="flex flex-col items-center justify-center w-full h-12 border-2 border-dashed border-border/20 rounded-xl cursor-pointer hover:bg-surface transition-all">
-                          <div className="flex items-center gap-2">
-                            <ImageIcon size={18} className="text-muted-foreground" />
-                            <span className="text-xs font-bold text-muted-foreground uppercase">{imageFile ? 'Change File' : 'Select File'}</span>
+                      ))}
+                      
+                      {/* Selected Files */}
+                      {imageFile.map((file, i) => (
+                        <div key={`new-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-border/10 group bg-surface">
+                          <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
+                          <button 
+                            type="button" 
+                            onClick={() => removeSelectedFile(i)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X size={12} />
+                          </button>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-[8px] text-white p-1 text-center truncate">
+                            New
                           </div>
+                        </div>
+                      ))}
+
+                      {/* Add Button */}
+                      {(formData.images.length + imageFile.length) < 5 && (
+                        <label className="aspect-square border-2 border-dashed border-border/20 rounded-xl cursor-pointer hover:bg-surface transition-all flex flex-col items-center justify-center gap-1">
+                          <Plus size={20} className="text-muted-foreground" />
+                          <span className="text-[8px] font-bold text-muted-foreground uppercase">Add</span>
                           <input 
                             type="file" 
                             className="hidden" 
+                            multiple
                             accept="image/*"
-                            onChange={(e) => setImageFile(e.target.files[0])}
+                            onChange={handleFileChange}
                           />
                         </label>
-                      </div>
+                      )}
                     </div>
+                    <p className="text-[9px] text-muted-foreground italic">Up to 5 images. The first one will be used as primary.</p>
                   </div>
                 </div>
 
@@ -244,7 +288,7 @@ const ManageProducts = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-primary">Description</label>
                     <textarea 
-                      className="w-full h-44 rounded-xl border border-border/20 p-4 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                      className="w-full h-72 rounded-xl border border-border/20 p-4 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                       placeholder="Tell the story of this piece..."
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -301,47 +345,55 @@ const ManageProducts = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/10">
-                {products.map((product) => (
-                  <motion.tr 
-                    key={product._id}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="group hover:bg-white/50 transition-colors"
-                  >
-                    <td className="py-6 pl-4">
-                      <div className="flex items-center gap-4">
-                        <div className="h-14 w-14 bg-surface rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-                          {product.image ? <img src={product.image} className="h-full w-full object-cover" /> : <ImageIcon size={20} className="text-medium opacity-20" />}
+                {products.map((product) => {
+                  const firstImage = product.images?.[0] || product.image;
+                  return (
+                    <motion.tr 
+                      key={product._id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="group hover:bg-white/50 transition-colors"
+                    >
+                      <td className="py-6 pl-4">
+                        <div className="flex items-center gap-4">
+                          <div className="h-14 w-14 bg-surface rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            {firstImage ? <img src={firstImage} className="h-full w-full object-cover" /> : <ImageIcon size={20} className="text-medium opacity-20" />}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="font-serif font-bold text-dark">{product.name}</span>
+                            {product.images?.length > 1 && (
+                              <span className="text-[9px] text-muted-foreground font-bold">+{product.images.length - 1} more images</span>
+                            )}
+                          </div>
                         </div>
-                        <span className="font-serif font-bold text-dark">{product.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-6">
-                      <Badge variant="outline" className="rounded-full bg-white border-border/10 uppercase tracking-widest text-[9px] font-bold">
-                        {product.category}
-                      </Badge>
-                    </td>
-                    <td className="py-6 font-bold text-dark">{PriceDisplay(product.price)}</td>
-                    <td className="py-6">
-                      <span className={cn(
-                        "font-bold text-sm px-3 py-1 rounded-lg",
-                        product.variants.reduce((a, b) => a + b.stock, 0) < 5 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
-                      )}>
-                        {product.variants.reduce((a, b) => a + b.stock, 0)} Units
-                      </span>
-                    </td>
-                    <td className="py-6 pr-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="hover:bg-white rounded-xl" onClick={() => handleEdit(product)}>
-                          <Pencil size={18} />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50 rounded-xl" onClick={() => handleDelete(product._id)}>
-                          <Trash2 size={18} />
-                        </Button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                ))}
+                      </td>
+                      <td className="py-6">
+                        <Badge variant="outline" className="rounded-full bg-white border-border/10 uppercase tracking-widest text-[9px] font-bold">
+                          {product.category}
+                        </Badge>
+                      </td>
+                      <td className="py-6 font-bold text-dark">{PriceDisplay(product.price)}</td>
+                      <td className="py-6">
+                        <span className={cn(
+                          "font-bold text-sm px-3 py-1 rounded-lg",
+                          product.variants.reduce((a, b) => a + b.stock, 0) < 5 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
+                        )}>
+                          {product.variants.reduce((a, b) => a + b.stock, 0)} Units
+                        </span>
+                      </td>
+                      <td className="py-6 pr-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="icon" className="hover:bg-white rounded-xl" onClick={() => handleEdit(product)}>
+                            <Pencil size={18} />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50 rounded-xl" onClick={() => handleDelete(product._id)}>
+                            <Trash2 size={18} />
+                          </Button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

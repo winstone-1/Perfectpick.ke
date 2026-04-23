@@ -34,11 +34,15 @@ const ProductDetail = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
+  const [mainImage, setMainImage] = useState(null);
+
   const fetchProduct = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get(`/products/${id}`);
       setProduct(data.product);
+      setMainImage(data.product.images?.[0] || data.product.image);
+      
       if (data.product.variants?.length > 0) {
         // Find first variant that is in stock, otherwise first variant
         const firstInStock = data.product.variants.find(v => v.stock > 0);
@@ -50,7 +54,6 @@ const ProductDetail = () => {
       setRelatedProducts(relatedRsp.data.products.filter(p => p._id !== id).slice(0, 4));
     } catch (error) {
       console.error('Failed to fetch product:', error);
-      // Maybe navigate to 404
     } finally {
       setLoading(false);
     }
@@ -103,6 +106,8 @@ const ProductDetail = () => {
 
   if (!product) return null;
 
+  const images = product.images?.length > 0 ? product.images : (product.image ? [product.image] : []);
+
   const formattedPrice = new Intl.NumberFormat('en-KE', {
     style: 'currency',
     currency: 'KES',
@@ -124,12 +129,12 @@ const ProductDetail = () => {
         <motion.div 
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="space-y-4"
+          className="space-y-6"
         >
-          <div className="aspect-square bg-surface rounded-3xl overflow-hidden flex items-center justify-center relative">
-            {product.image ? (
+          <div className="aspect-square bg-surface rounded-3xl overflow-hidden flex items-center justify-center relative shadow-sm border border-border/5">
+            {mainImage ? (
               <img 
-                src={product.image} 
+                src={mainImage} 
                 alt={product.name} 
                 className="w-full h-full object-cover"
               />
@@ -149,6 +154,23 @@ const ProductDetail = () => {
               <Heart size={24} className={wishlisted ? "fill-red-500" : ""} />
             </Button>
           </div>
+
+          {images.length > 1 && (
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {images.map((img, i) => (
+                <button
+                  key={i}
+                  onClick={() => setMainImage(img)}
+                  className={cn(
+                    "h-20 w-20 rounded-2xl overflow-hidden flex-shrink-0 border-2 transition-all",
+                    mainImage === img ? "border-primary scale-105 shadow-md" : "border-transparent opacity-70 hover:opacity-100"
+                  )}
+                >
+                  <img src={img} className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         {/* Info */}

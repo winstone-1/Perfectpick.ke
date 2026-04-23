@@ -47,9 +47,9 @@ const ProductCard = ({ product }) => {
       <Link to={`/products/${product._id}`} className="block relative">
         {/* Image Container */}
         <div className="aspect-square w-full overflow-hidden rounded-xl bg-surface relative flex items-center justify-center">
-          {product.image ? (
+          { (product.images?.[0] || product.image) ? (
             <motion.img
-              src={product.image}
+              src={product.images?.[0] || product.image}
               alt={product.name}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
             />
