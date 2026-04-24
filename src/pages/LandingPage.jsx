@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Truck, ShieldCheck, RotateCcw, ArrowRight, Sparkles, Tag } from 'lucide-react';
+import { ShoppingBag, Truck, ShieldCheck, RotateCcw, ArrowRight, Sparkles, Tag, UserPlus } from 'lucide-react';
 import { GiHandBag, GiHeels, GiNecklace, GiPresent } from 'react-icons/gi';
 import { FaUserTie, FaShirt } from 'react-icons/fa6';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
-import { Skeleton } from '../components/ui/skeleton';
 
 const CATEGORIES = [
   { label: 'Bags',        Icon: GiHandBag,  value: 'bags'        },
@@ -24,26 +24,27 @@ const TRUST = [
 ];
 
 const LandingPage = () => {
-  const navigate = useNavigate();
+  const navigate   = useNavigate();
+  const { user }   = useAuth();
 
-  const [featured, setFeatured]     = useState([]);
-  const [loading, setLoading]       = useState(true);
+  const [featured, setFeatured]         = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [videos, setVideos]             = useState([]);
+  const [videoIndex, setVideoIndex]     = useState(0);
+  const [heroIndex, setHeroIndex]       = useState(0);
+  const [direction, setDirection]       = useState(1);
+  const [banners, setBanners]           = useState([]);
+  const [bannerIndex, setBannerIndex]   = useState(0);
 
-  // Hero video state
-  const [videos, setVideos]         = useState([]);
-  const [videoIndex, setVideoIndex] = useState(0);
-  const videoRef                    = useRef(null);
-  const videoInterval               = useRef(null);
+  const videoRef       = useRef(null);
+  const videoInterval  = useRef(null);
+  const imageInterval  = useRef(null);
+  const bannerInterval = useRef(null);
 
-  // Hero image fallback state
-  const [heroIndex, setHeroIndex]   = useState(0);
-  const [direction, setDirection]   = useState(1);
-  const imageInterval               = useRef(null);
-
-  // Sale banners — featured products with discount > 0
-  const [banners, setBanners]       = useState([]);
-  const [bannerIndex, setBannerIndex] = useState(0);
-  const bannerInterval              = useRef(null);
+  // If user is already logged in, go straight to /home
+  useEffect(() => {
+    if (user) navigate('/home', { replace: true });
+  }, [user, navigate]);
 
   useEffect(() => {
     const load = async () => {
@@ -51,14 +52,8 @@ const LandingPage = () => {
         const { data } = await api.get('/products/featured');
         const products = data.data || [];
         setFeatured(products);
-
-        // Collect all videos from featured products
-        const allVideos = products.flatMap(p => p.videos || []);
-        setVideos(allVideos);
-
-        // Collect products with discount banners
-        const saleProducts = products.filter(p => p.discount > 0 && p.discountBanner);
-        setBanners(saleProducts.slice(0, 3));
+        setVideos(products.flatMap(p => p.videos || []));
+        setBanners(products.filter(p => p.discount > 0 && p.discountBanner).slice(0, 3));
       } catch {
         setFeatured([]);
       } finally {
@@ -68,16 +63,12 @@ const LandingPage = () => {
     load();
   }, []);
 
-  // Auto-advance videos
   useEffect(() => {
     if (videos.length < 2) return;
-    videoInterval.current = setInterval(() => {
-      setVideoIndex(i => (i + 1) % videos.length);
-    }, 8000);
+    videoInterval.current = setInterval(() => setVideoIndex(i => (i + 1) % videos.length), 8000);
     return () => clearInterval(videoInterval.current);
   }, [videos]);
 
-  // When videoIndex changes, reload the video element
   useEffect(() => {
     if (videoRef.current && videos.length > 0) {
       videoRef.current.load();
@@ -85,7 +76,6 @@ const LandingPage = () => {
     }
   }, [videoIndex, videos]);
 
-  // Auto-advance hero images (fallback when no videos)
   useEffect(() => {
     if (videos.length > 0 || featured.length < 2) return;
     imageInterval.current = setInterval(() => {
@@ -95,19 +85,13 @@ const LandingPage = () => {
     return () => clearInterval(imageInterval.current);
   }, [featured, videos]);
 
-  // Auto-advance banners
   useEffect(() => {
     if (banners.length < 2) return;
-    bannerInterval.current = setInterval(() => {
-      setBannerIndex(i => (i + 1) % banners.length);
-    }, 5000);
+    bannerInterval.current = setInterval(() => setBannerIndex(i => (i + 1) % banners.length), 5000);
     return () => clearInterval(bannerInterval.current);
   }, [banners]);
 
-  const goToBanner = (idx) => {
-    setBannerIndex(idx);
-    clearInterval(bannerInterval.current);
-  };
+  const goToBanner = (idx) => { setBannerIndex(idx); clearInterval(bannerInterval.current); };
 
   const heroProduct = featured[heroIndex];
 
@@ -121,31 +105,27 @@ const LandingPage = () => {
     style: 'currency', currency: 'KES', minimumFractionDigits: 0
   }).format(price);
 
+  // Don't render if logged in (redirect is firing)
+  if (user) return null;
+
   return (
     <div className="min-h-screen bg-bg">
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative h-[92vh] overflow-hidden bg-surface">
-
-        {/* Video background */}
         {videos.length > 0 && (
           <video
             ref={videoRef}
             key={videoIndex}
             className="absolute inset-0 w-full h-full object-cover"
-            autoPlay
-            muted
-            playsInline
+            autoPlay muted playsInline
             loop={videos.length === 1}
-            onEnded={() => {
-              if (videos.length > 1) setVideoIndex(i => (i + 1) % videos.length);
-            }}
+            onEnded={() => { if (videos.length > 1) setVideoIndex(i => (i + 1) % videos.length); }}
           >
             <source src={videos[videoIndex]} />
           </video>
         )}
 
-        {/* Image fallback carousel (when no videos) */}
         {videos.length === 0 && (
           <AnimatePresence custom={direction} initial={false}>
             {loading ? (
@@ -155,17 +135,11 @@ const LandingPage = () => {
                 key={heroIndex}
                 custom={direction}
                 variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
+                initial="enter" animate="center" exit="exit"
                 transition={{ duration: 0.7, ease: [0.32, 0.72, 0, 1] }}
                 className="absolute inset-0"
               >
-                <img
-                  src={heroProduct.images?.[0]}
-                  alt={heroProduct.name}
-                  className="w-full h-full object-cover"
-                />
+                <img src={heroProduct.images?.[0]} alt={heroProduct.name} className="w-full h-full object-cover" />
               </motion.div>
             ) : (
               <div key="empty" className="absolute inset-0 bg-surface" />
@@ -173,10 +147,8 @@ const LandingPage = () => {
           </AnimatePresence>
         )}
 
-        {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/30 to-transparent" />
 
-        {/* Hero text */}
         <div className="relative z-10 h-full flex items-center">
           <div className="container mx-auto px-6 md:px-12">
             <motion.div
@@ -187,9 +159,7 @@ const LandingPage = () => {
             >
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-primary" />
-                <span className="text-primary text-xs font-bold uppercase tracking-[0.3em]">
-                  Nairobi's Boutique
-                </span>
+                <span className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Nairobi's Boutique</span>
               </div>
 
               <h1 className="text-5xl md:text-7xl font-serif font-black text-white leading-[1.05]">
@@ -204,26 +174,32 @@ const LandingPage = () => {
 
               <div className="flex items-center gap-4 pt-2">
                 <Button
-                  onClick={() => navigate('/home')}
+                  onClick={() => navigate('/register')}
                   className="btn-primary h-14 px-8 text-base rounded-2xl"
                 >
-                  <ShoppingBag size={18} className="mr-2" />
-                  Enter Store
+                  <UserPlus size={18} className="mr-2" />
+                  Get Started
                 </Button>
                 <Button
                   variant="ghost"
-                  onClick={() => navigate('/products?sort=newest')}
+                  onClick={() => navigate('/login')}
                   className="h-14 px-6 text-white hover:text-primary hover:bg-white/10 rounded-2xl font-bold"
                 >
-                  New Arrivals
+                  Sign In
                   <ArrowRight size={16} className="ml-2" />
                 </Button>
               </div>
+
+              <p className="text-white/40 text-xs">
+                Already have an account?{' '}
+                <button onClick={() => navigate('/login')} className="text-primary underline font-bold">
+                  Log in here
+                </button>
+              </p>
             </motion.div>
           </div>
         </div>
 
-        {/* Floating product tag (image mode only) */}
         {videos.length === 0 && heroProduct && (
           <motion.div
             key={`tag-${heroIndex}`}
@@ -238,16 +214,11 @@ const LandingPage = () => {
           </motion.div>
         )}
 
-        {/* Video indicator dots */}
         {videos.length > 1 && (
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2">
             {videos.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setVideoIndex(i)}
-                className={`transition-all duration-300 rounded-full ${
-                  i === videoIndex ? 'w-8 h-2 bg-primary' : 'w-2 h-2 bg-white/50 hover:bg-white/80'
-                }`}
+              <button key={i} onClick={() => setVideoIndex(i)}
+                className={`transition-all duration-300 rounded-full ${i === videoIndex ? 'w-8 h-2 bg-primary' : 'w-2 h-2 bg-white/50 hover:bg-white/80'}`}
               />
             ))}
           </div>
@@ -257,15 +228,10 @@ const LandingPage = () => {
       {/* ── SALE BANNERS ─────────────────────────────────────────── */}
       {banners.length > 0 && (
         <section className="py-16 bg-dark relative overflow-hidden">
-          <div
-            className="absolute inset-0 opacity-5"
-            style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, #c08050 0%, transparent 60%)' }}
-          />
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, #c08050 0%, transparent 60%)' }} />
           <div className="container mx-auto px-6">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="text-center mb-10 space-y-2"
             >
               <div className="flex items-center justify-center gap-2 text-primary">
@@ -275,27 +241,20 @@ const LandingPage = () => {
               <h2 className="text-4xl font-serif font-black text-white">Current Sales</h2>
             </motion.div>
 
-            {/* Banner carousel */}
             <div className="relative">
               <AnimatePresence mode="wait">
                 {banners[bannerIndex] && (
                   <motion.div
                     key={bannerIndex}
-                    initial={{ opacity: 0, scale: 0.98 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
+                    initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.5 }}
                     className="relative rounded-3xl overflow-hidden cursor-pointer group"
-                    onClick={() => navigate(`/products/${banners[bannerIndex]._id}`)}
+                    onClick={() => navigate('/register')}
                   >
-                    <img
-                      src={banners[bannerIndex].discountBanner}
-                      alt={banners[bannerIndex].discountLabel || 'Sale'}
+                    <img src={banners[bannerIndex].discountBanner} alt={banners[bannerIndex].discountLabel || 'Sale'}
                       className="w-full h-64 md:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-
-                    {/* Banner content */}
                     <div className="absolute inset-0 flex items-center px-8 md:px-16">
                       <div className="space-y-3">
                         {banners[bannerIndex].discountLabel && (
@@ -306,19 +265,15 @@ const LandingPage = () => {
                         <h3 className="text-3xl md:text-5xl font-serif font-black text-white leading-tight">
                           {banners[bannerIndex].discount}% Off
                         </h3>
-                        <p className="text-white/80 font-bold text-lg">
-                          {banners[bannerIndex].name}
-                        </p>
+                        <p className="text-white/80 font-bold text-lg">{banners[bannerIndex].name}</p>
                         <div className="flex items-center gap-4 pt-2">
-                          <span className="text-white/50 line-through text-sm">
-                            {formatKES(banners[bannerIndex].price)}
-                          </span>
+                          <span className="text-white/50 line-through text-sm">{formatKES(banners[bannerIndex].price)}</span>
                           <span className="text-primary font-black text-xl">
                             {formatKES(banners[bannerIndex].price * (1 - banners[bannerIndex].discount / 100))}
                           </span>
                         </div>
-                        <Button className="btn-primary h-11 px-6 rounded-xl text-sm mt-2">
-                          Shop This Deal <ArrowRight size={14} className="ml-2" />
+                        <Button className="btn-primary h-11 px-6 rounded-xl text-sm mt-2" onClick={(e) => { e.stopPropagation(); navigate('/register'); }}>
+                          Sign Up to Shop <ArrowRight size={14} className="ml-2" />
                         </Button>
                       </div>
                     </div>
@@ -326,16 +281,11 @@ const LandingPage = () => {
                 )}
               </AnimatePresence>
 
-              {/* Banner dots */}
               {banners.length > 1 && (
                 <div className="flex justify-center gap-2 mt-6">
                   {banners.map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => goToBanner(i)}
-                      className={`transition-all duration-300 rounded-full ${
-                        i === bannerIndex ? 'w-8 h-2 bg-primary' : 'w-2 h-2 bg-white/30 hover:bg-white/60'
-                      }`}
+                    <button key={i} onClick={() => goToBanner(i)}
+                      className={`transition-all duration-300 rounded-full ${i === bannerIndex ? 'w-8 h-2 bg-primary' : 'w-2 h-2 bg-white/30 hover:bg-white/60'}`}
                     />
                   ))}
                 </div>
@@ -348,9 +298,7 @@ const LandingPage = () => {
       {/* ── CATEGORIES ───────────────────────────────────────────── */}
       <section className="py-20 container mx-auto px-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-12 space-y-2"
         >
           <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Browse by</p>
@@ -359,22 +307,16 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {CATEGORIES.map(({ label, Icon, value }, i) => (
-            <motion.div
-              key={value}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <Link
-                to={`/products?category=${value}`}
-                className="group flex flex-col items-center justify-center gap-4 p-6 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300"
+            <motion.div key={value} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+              <button
+                onClick={() => navigate('/register')}
+                className="w-full group flex flex-col items-center justify-center gap-4 p-6 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                   <Icon size={28} />
                 </div>
                 <span className="font-serif font-black text-dark">{label}</span>
-              </Link>
+              </button>
             </motion.div>
           ))}
         </div>
@@ -384,28 +326,18 @@ const LandingPage = () => {
       <section className="py-20 bg-surface">
         <div className="container mx-auto px-6">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center mb-12 space-y-2"
           >
             <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Why us</p>
             <h2 className="text-4xl font-serif font-black text-dark">Shop with Confidence</h2>
           </motion.div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {TRUST.map(({ Icon, title, desc }, i) => (
-              <motion.div
-                key={title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+              <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
                 className="flex items-start gap-5 p-8 rounded-3xl bg-white shadow-sm border border-border/10"
               >
-                <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0">
-                  <Icon size={24} />
-                </div>
+                <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0"><Icon size={24} /></div>
                 <div className="space-y-1">
                   <h3 className="font-serif font-black text-dark text-lg">{title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
@@ -418,40 +350,32 @@ const LandingPage = () => {
 
       {/* ── FOOTER CTA ───────────────────────────────────────────── */}
       <section className="mx-6 my-20 rounded-[2.5rem] overflow-hidden bg-dark relative">
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 20% 50%, #c08050 0%, transparent 50%), radial-gradient(circle at 80% 50%, #c08050 0%, transparent 50%)',
-          }}
+        <div className="absolute inset-0 opacity-5"
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #c08050 0%, transparent 50%), radial-gradient(circle at 80% 50%, #c08050 0%, transparent 50%)' }}
         />
         <div className="relative z-10 py-20 px-8 text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="space-y-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-4">
             <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Perfect Pick Nairobi</p>
             <h2 className="text-4xl md:text-5xl font-serif font-black text-white leading-tight">
-              Discover your next
-              <br />
+              Discover your next<br />
               <span className="text-primary italic">favourite piece</span>
             </h2>
             <p className="text-white/50 max-w-md mx-auto text-sm leading-relaxed">
-              Bags, shoes, jewelry, and gifts — curated with love for you.
+              Join thousands of Nairobi women finding their perfect style.
             </p>
           </motion.div>
-          <Button
-            onClick={() => navigate('/home')}
-            className="btn-primary h-14 px-10 text-base rounded-2xl"
-          >
-            <ShoppingBag size={18} className="mr-2" />
-            Enter the Store
-          </Button>
+          <div className="flex items-center justify-center gap-4">
+            <Button onClick={() => navigate('/register')} className="btn-primary h-14 px-10 text-base rounded-2xl">
+              <UserPlus size={18} className="mr-2" /> Create Account
+            </Button>
+            <Button variant="ghost" onClick={() => navigate('/login')}
+              className="h-14 px-6 text-white hover:text-primary hover:bg-white/10 rounded-2xl font-bold"
+            >
+              Sign In <ArrowRight size={16} className="ml-2" />
+            </Button>
+          </div>
         </div>
       </section>
-
     </div>
   );
 };
