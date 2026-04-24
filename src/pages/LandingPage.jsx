@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Truck, ShieldCheck, RotateCcw, ArrowRight, Sparkles, Tag, UserPlus } from 'lucide-react';
-import { GiHandBag, GiHeels, GiNecklace, GiPresent } from 'react-icons/gi';
+import { GiHandBag, GiHighHeel, GiNecklace, GiPresent } from 'react-icons/gi';
 import { FaUserTie, FaShirt } from 'react-icons/fa6';
 import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
@@ -10,7 +10,7 @@ import { Button } from '../components/ui/button';
 
 const CATEGORIES = [
   { label: 'Bags',        Icon: GiHandBag,  value: 'bags'        },
-  { label: 'Shoes',       Icon: GiHeels,    value: 'shoes'       },
+  { label: 'Shoes',       Icon: GiHighHeel,    value: 'shoes'       },
   { label: 'Jewelry',     Icon: GiNecklace, value: 'jewelry'     },
   { label: 'Gifts',       Icon: GiPresent,  value: 'gifts'       },
   { label: 'Accessories', Icon: FaUserTie,  value: 'accessories' },
