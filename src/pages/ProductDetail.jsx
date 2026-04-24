@@ -20,6 +20,7 @@ import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { cn } from '../lib/utils';
+import { toast } from 'sonner';
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -34,26 +35,28 @@ const ProductDetail = () => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [mainImage, setMainImage] = useState(null);
+  const [addingToCart, setAddingToCart] = useState(false);
 
   const fetchProduct = useCallback(async () => {
     setLoading(true);
     try {
       const { data } = await api.get(`/products/${id}`);
-      const product = data.data;                                        // ✅ fixed
-      setProduct(product);
-      setMainImage(product.images?.[0] || product.image || null);
+      const productData = data.data;
+      setProduct(productData);
+      setMainImage(productData.images?.[0] || productData.image || null);
 
-      if (product.variants?.length > 0) {
-        const firstInStock = product.variants.find(v => v.stock > 0);
-        setSelectedVariant(firstInStock || product.variants[0]);
+      if (productData.variants?.length > 0) {
+        const firstInStock = productData.variants.find(v => v.stock > 0);
+        setSelectedVariant(firstInStock || productData.variants[0]);
       }
 
-      const relatedRsp = await api.get(`/products?category=${product.category}&limit=5`);
+      const relatedRsp = await api.get(`/products?category=${productData.category}&limit=5`);
       setRelatedProducts(
-        (relatedRsp.data.data || []).filter(p => p._id !== id).slice(0, 4)  // ✅ fixed
+        (relatedRsp.data.data || []).filter(p => p._id !== id).slice(0, 4)
       );
     } catch (error) {
       console.error('Failed to fetch product:', error);
+      toast.error('Failed to load product details');
     } finally {
       setLoading(false);
     }
@@ -67,18 +70,50 @@ const ProductDetail = () => {
   const wishlisted = product ? isWishlisted(product._id) : false;
 
   const handleWishlist = () => {
-    if (!user) return navigate('/login');
+    if (!user) {
+      toast.error('Please login to add to wishlist');
+      return navigate('/login');
+    }
     if (wishlisted) {
       removeFromWishlist(product._id);
+      toast.success('Removed from wishlist');
     } else {
       addToWishlist(product);
+      toast.success('Added to wishlist');
     }
   };
 
-  const handleAddToCart = () => {
-    if (!user) return navigate('/login');
-    if (!selectedVariant) return;
-    addToCart(product._id, selectedVariant.name, quantity);
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast.error('Please login to add items to cart');
+      return navigate('/login');
+    }
+    
+    if (!selectedVariant) {
+      toast.error('Please select a variant');
+      return;
+    }
+    
+    if (selectedVariant.stock === 0) {
+      toast.error('This variant is out of stock');
+      return;
+    }
+    
+    if (quantity > selectedVariant.stock) {
+      toast.error(`Only ${selectedVariant.stock} items available`);
+      return;
+    }
+    
+    setAddingToCart(true);
+    try {
+      await addToCart(product._id, selectedVariant.name, quantity);
+      // Success toast is handled in CartContext
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      toast.error(error.response?.data?.message || 'Failed to add to cart');
+    } finally {
+      setAddingToCart(false);
+    }
   };
 
   if (loading) {
@@ -104,7 +139,16 @@ const ProductDetail = () => {
     );
   }
 
-  if (!product) return null;
+  if (!product) {
+    return (
+      <div className="container mx-auto px-4 py-32 text-center">
+        <h1 className="text-2xl font-serif font-black">Product not found</h1>
+        <Link to="/products" className="text-primary mt-4 inline-block">
+          Back to products
+        </Link>
+      </div>
+    );
+  }
 
   const images = product.images?.length > 0 ? product.images : (product.image ? [product.image] : []);
 
@@ -137,6 +181,10 @@ const ProductDetail = () => {
                 src={mainImage} 
                 alt={product.name} 
                 className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = '';
+                  e.target.style.display = 'none';
+                }}
               />
             ) : (
               <ShoppingBag size={120} className="text-medium opacity-20" />
@@ -166,7 +214,7 @@ const ProductDetail = () => {
                     mainImage === img ? "border-primary scale-105 shadow-md" : "border-transparent opacity-70 hover:opacity-100"
                   )}
                 >
-                  <img src={img} className="w-full h-full object-cover" />
+                  <img src={img} className="w-full h-full object-cover" alt={`${product.name} view ${i + 1}`} />
                 </button>
               ))}
             </div>
@@ -181,7 +229,7 @@ const ProductDetail = () => {
         >
           <div className="space-y-4">
             <Badge className="bg-primary/10 text-primary border-none uppercase tracking-widest font-bold px-3 py-1">
-              {product.category}
+              {product.category || 'Uncategorized'}
             </Badge>
             <h1 className="text-4xl md:text-5xl font-serif font-black text-dark">{product.name}</h1>
             <p className="text-3xl font-bold text-primary">{formattedPrice}</p>
@@ -189,21 +237,24 @@ const ProductDetail = () => {
 
           <div className="space-y-2">
             <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">Description</h3>
-            <p className="text-medium leading-relaxed">{product.description}</p>
+            <p className="text-medium leading-relaxed">{product.description || 'No description available'}</p>
           </div>
 
           {/* Variants */}
           {product.variants?.length > 0 && (
             <div className="space-y-4">
               <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-                Select Option: <span className="text-dark ml-2">{selectedVariant?.name}</span>
+                Select Option: <span className="text-dark ml-2">{selectedVariant?.name || 'None'}</span>
               </h3>
               <div className="flex flex-wrap gap-2">
                 {product.variants.map((variant) => (
                   <button
                     key={variant.name}
                     disabled={variant.stock === 0}
-                    onClick={() => setSelectedVariant(variant)}
+                    onClick={() => {
+                      setSelectedVariant(variant);
+                      setQuantity(1);
+                    }}
                     className={cn(
                       "px-6 py-3 rounded-xl border text-sm font-bold transition-all duration-300",
                       selectedVariant?.name === variant.name 
@@ -256,11 +307,15 @@ const ProductDetail = () => {
               
               <Button 
                 className="flex-1 btn-primary h-14 text-lg rounded-xl"
-                disabled={!selectedVariant || selectedVariant.stock === 0}
+                disabled={!selectedVariant || selectedVariant.stock === 0 || addingToCart}
                 onClick={handleAddToCart}
               >
-                <ShoppingBag className="mr-2" size={20} />
-                Add to Cart
+                {addingToCart ? (
+                  <Loader2 className="mr-2 animate-spin" size={20} />
+                ) : (
+                  <ShoppingBag className="mr-2" size={20} />
+                )}
+                {addingToCart ? 'Adding...' : 'Add to Cart'}
               </Button>
             </div>
 
@@ -284,17 +339,19 @@ const ProductDetail = () => {
       </div>
 
       {/* Related Products */}
-      <section className="space-y-12">
-        <div className="text-center space-y-2">
-          <h2 className="text-3xl font-serif font-bold">You might also like</h2>
-          <p className="text-muted-foreground">Complete your look with these picks</p>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {relatedProducts.map(p => (
-            <ProductCard key={p._id} product={p} />
-          ))}
-        </div>
-      </section>
+      {relatedProducts.length > 0 && (
+        <section className="space-y-12">
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-serif font-bold">You might also like</h2>
+            <p className="text-muted-foreground">Complete your look with these picks</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {relatedProducts.map(p => (
+              <ProductCard key={p._id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 };

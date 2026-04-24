@@ -21,6 +21,7 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const formatPrice = (price) => {
+    if (!price && price !== 0) return 'KSH 0';
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
       currency: 'KES',
@@ -28,7 +29,11 @@ const Cart = () => {
     }).format(price);
   };
 
-  if (cart.length === 0 && !loading) {
+  // Safe check for empty cart
+  const cartItems = Array.isArray(cart) ? cart : [];
+  const hasItems = cartItems.length > 0;
+
+  if (!hasItems && !loading) {
     return (
       <div className="container mx-auto px-4 py-32 flex flex-col items-center justify-center text-center space-y-8">
         <motion.div
@@ -57,7 +62,7 @@ const Cart = () => {
         {/* Cart Items */}
         <div className="flex-1 space-y-8">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-serif font-black text-dark">Shopping Bag ({cart.length})</h1>
+            <h1 className="text-3xl font-serif font-black text-dark">Shopping Bag ({cartItems.length})</h1>
             <Link to="/products" className="text-sm font-bold text-primary hover:underline flex items-center gap-1 group">
               <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
               Continue Shopping
@@ -66,9 +71,9 @@ const Cart = () => {
 
           <div className="space-y-4">
             <AnimatePresence mode="popLayout">
-              {cart.map((item) => (
+              {cartItems.map((item) => (
                 <motion.div
-                  key={`${item.productId._id}-${item.variant}`}
+                  key={item?._id || `${item?.productId?._id}-${item?.variant}`}
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -79,11 +84,15 @@ const Cart = () => {
                     <CardContent className="p-4 md:p-6 flex gap-4 md:gap-6">
                       {/* Image */}
                       <div className="w-24 h-24 md:w-32 md:h-32 bg-surface rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        {item.productId.image ? (
+                        {item?.productId?.image ? (
                           <img 
                             src={item.productId.image} 
-                            alt={item.productId.name} 
+                            alt={item.productId.name || 'Product'} 
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.target.src = '';
+                              e.target.style.display = 'none';
+                            }}
                           />
                         ) : (
                           <ShoppingBag size={32} className="text-medium opacity-20" />
@@ -94,16 +103,16 @@ const Cart = () => {
                       <div className="flex-1 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-serif font-bold text-lg text-dark">{item.productId.name}</h3>
+                            <h3 className="font-serif font-bold text-lg text-dark">{item?.productId?.name || 'Product'}</h3>
                             <p className="text-xs font-bold uppercase tracking-widest text-[#c08050] mt-1">
-                              {item.variant}
+                              {item?.variant || 'Standard'}
                             </p>
                           </div>
                           <Button 
                             variant="ghost" 
                             size="icon" 
                             className="text-muted-foreground hover:text-red-500 -mt-1 -mr-1"
-                            onClick={() => removeFromCart(item._id)}
+                            onClick={() => item?._id && removeFromCart(item._id)}
                           >
                             <Trash2 size={18} />
                           </Button>
@@ -115,21 +124,24 @@ const Cart = () => {
                               variant="ghost" 
                               size="icon" 
                               className="h-8 w-8 text-medium"
-                              onClick={() => updateQuantity(item._id, item.quantity - 1)}
+                              onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) - 1)}
+                              disabled={(item?.quantity || 1) <= 1}
                             >
                               <Minus size={14} />
                             </Button>
-                            <span className="w-8 text-center font-bold text-sm">{item.quantity}</span>
+                            <span className="w-8 text-center font-bold text-sm">{item?.quantity || 1}</span>
                             <Button 
                               variant="ghost" 
                               size="icon" 
                               className="h-8 w-8 text-medium"
-                              onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                              onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) + 1)}
                             >
                               <Plus size={14} />
                             </Button>
                           </div>
-                          <p className="font-bold text-dark">{formatPrice(item.productId.price * item.quantity)}</p>
+                          <p className="font-bold text-dark">
+                            {formatPrice((item?.productId?.price || 0) * (item?.quantity || 1))}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -169,6 +181,7 @@ const Cart = () => {
             <Button 
               className="w-full btn-primary h-14 rounded-2xl text-lg font-black group"
               onClick={() => navigate('/checkout')}
+              disabled={!hasItems}
             >
               Proceed to Checkout
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />

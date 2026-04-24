@@ -22,6 +22,8 @@ import Orders from './pages/Orders';
 import OrderDetail from './pages/OrderDetail';
 import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
+import ShippingPolicy from './pages/ShippingPolicy';
+import RefundPolicy from './pages/RefundPolicy';
 import NotFound from './pages/NotFound';
 
 import AdminDashboard from './pages/admin/Dashboard';
@@ -44,6 +46,8 @@ function App() {
                 <Route path="about" element={<About />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />
+                <Route path="shipping" element={<ShippingPolicy />} />
+                <Route path="refund" element={<RefundPolicy />} />
                 
                 {/* Protected Routes */}
                 <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />

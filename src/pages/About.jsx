@@ -3,6 +3,9 @@ import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart, Sparkles } from 'lucide-react';
 import { FaCrown } from 'react-icons/fa6';
 import { Card, CardContent } from '../components/ui/card';
+import { Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Truck, RotateCcw } from 'lucide-react';
 
 const About = () => {
   const containerVariants = {
@@ -142,6 +145,28 @@ const About = () => {
             </motion.div>
           ))}
         </motion.div>
+      </section>
+      {/* Policies Link Section */}
+      <section className="container mx-auto px-4 pb-24">
+        <div className="bg-surface rounded-[3rem] p-8 md:p-16 text-center space-y-8">
+          <h2 className="text-3xl md:text-5xl font-serif font-black text-dark">Your Confidence, Our Promise.</h2>
+          <p className="text-medium text-lg max-w-2xl mx-auto">
+            We believe in transparency and providing you with the best shopping experience. 
+            Review our policies to understand how we serve you better.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link to="/shipping">
+              <Button className="btn-primary w-full sm:w-auto h-14 px-8 rounded-2xl text-lg gap-2">
+                <Truck size={20} /> Shipping Policy
+              </Button>
+            </Link>
+            <Link to="/refund">
+              <Button variant="outline" className="btn-outline w-full sm:w-auto h-14 px-8 rounded-2xl text-lg gap-2">
+                <RotateCcw size={20} /> Refund & Returns
+              </Button>
+            </Link>
+          </div>
+        </div>
       </section>
     </div>
   );

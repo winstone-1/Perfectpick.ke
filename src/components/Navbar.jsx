@@ -44,6 +44,8 @@ const isAdmin = user?.isAdmin === true;
     { name: 'Home', href: '/' },
     { name: 'Products', href: '/products' },
     { name: 'About', href: '/about' },
+    { name: 'Shipping', href: '/shipping' },
+    { name: 'Returns', href: '/refund' },
   ];
 
   return (

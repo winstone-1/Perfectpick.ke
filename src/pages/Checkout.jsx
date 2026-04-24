@@ -34,29 +34,39 @@ const Checkout = () => {
   const [orderId, setOrderId] = useState(null);
   const [checkoutRequestId, setCheckoutRequestId] = useState(null);
 
+  // Safe check for cart
+  const cartItems = Array.isArray(cart) ? cart : [];
+  const hasItems = cartItems.length > 0;
+  const total = cartTotal || 0;
+
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handlePay = async (e) => {
     e.preventDefault();
+    
     if (!formData.fullName || !formData.phone || !formData.address) {
       return toast.error('Please fill in shipping details');
+    }
+    
+    if (!hasItems) {
+      return toast.error('Your cart is empty');
     }
 
     setLoading(true);
     try {
       // Get user email from local storage or context (assuming user is logged in)
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       const email = user?.email || 'customer@example.com'; 
 
       // 1. Create Order
       const { data: orderData } = await api.post('/orders', {
-        items: cart.map(item => ({
-          productId: item.productId._id,
-          variant: item.variant,
-          quantity: item.quantity,
-          price: item.productId.price
+        items: cartItems.map(item => ({
+          productId: item?.productId?._id,
+          variant: item?.variant || 'Standard',
+          quantity: item?.quantity || 1,
+          price: item?.productId?.price || 0
         })),
         shippingAddress: {
           fullName: formData.fullName,
@@ -64,23 +74,28 @@ const Checkout = () => {
           address: formData.address,
           city: formData.city
         },
-        totalAmount: cartTotal
+        totalAmount: total
       });
+
+      if (!orderData?.order?._id) {
+        throw new Error('Failed to create order');
+      }
 
       setOrderId(orderData.order._id);
 
       // 2. Initiate Paystack M-Pesa STK Push
       const { data: paystackResponse } = await api.post('/api/payments/mpesa', {
         phone: formData.phone, 
-        amount: cartTotal,
+        amount: total,
         email: email,
         orderId: orderData.order._id
       });
 
-      setCheckoutRequestId(paystackResponse.reference); // Using same state variable for the Paystack reference
+      setCheckoutRequestId(paystackResponse.reference);
       setPaymentStatus('waiting');
       toast.success(paystackResponse.message || 'M-Pesa prompt sent to your phone');
     } catch (error) {
+      console.error('Payment initiation error:', error);
       toast.error(error.response?.data?.message || 'Failed to initiate payment');
       setPaymentStatus('failed');
     } finally {
@@ -89,18 +104,24 @@ const Checkout = () => {
   };
 
   const handleConfirmPayment = async () => {
+    if (!checkoutRequestId) {
+      toast.error('No payment reference found');
+      return;
+    }
+    
     setLoading(true);
     try {
       const { data } = await api.get(`/api/payments/verify/${checkoutRequestId}`);
 
       if (data.status === 'success') {
         setPaymentStatus('success');
-        clearCart();
+        await clearCart();
         toast.success('Payment confirmed! Your order is being processed.');
       } else {
         toast.error(`Payment status: ${data.status}. Please wait or try again.`);
       }
     } catch (error) {
+      console.error('Payment confirmation error:', error);
       toast.error('Could not confirm payment. Please try again or contact support.');
     } finally {
       setLoading(false);
@@ -108,6 +129,7 @@ const Checkout = () => {
   };
 
   const formatPrice = (price) => {
+    if (!price && price !== 0) return 'KSH 0';
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
       currency: 'KES',
@@ -115,7 +137,8 @@ const Checkout = () => {
     }).format(price);
   };
 
-  if (cart.length === 0 && paymentStatus === 'idle') {
+  // Redirect if cart is empty
+  if (!hasItems && paymentStatus === 'idle') {
     navigate('/cart');
     return null;
   }
@@ -298,15 +321,22 @@ const Checkout = () => {
             <h2 className="text-2xl font-serif font-black text-dark">Your Order</h2>
             
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-hide">
-              {cart.map((item) => (
-                <div key={item._id} className="flex gap-4">
+              {cartItems.map((item) => (
+                <div key={item?._id || `${item?.productId?._id}-${item?.variant}`} className="flex gap-4">
                   <div className="w-16 h-16 bg-surface rounded-lg flex-shrink-0 overflow-hidden">
-                    <img src={item.productId.image} alt="" className="w-full h-full object-cover" />
+                    <img 
+                      src={item?.productId?.image || '/placeholder-image.jpg'} 
+                      alt={item?.productId?.name || 'Product'} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.target.src = '/placeholder-image.jpg';
+                      }}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-dark truncate">{item.productId.name}</h4>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">{item.variant} x {item.quantity}</p>
-                    <p className="text-xs font-bold text-primary mt-1">{formatPrice(item.productId.price * item.quantity)}</p>
+                    <h4 className="text-sm font-bold text-dark truncate">{item?.productId?.name || 'Product'}</h4>
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">{item?.variant || 'Standard'} x {item?.quantity || 1}</p>
+                    <p className="text-xs font-bold text-primary mt-1">{formatPrice((item?.productId?.price || 0) * (item?.quantity || 1))}</p>
                   </div>
                 </div>
               ))}
@@ -317,7 +347,7 @@ const Checkout = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-xl font-black text-dark">
                 <span>Total</span>
-                <span className="text-primary">{formatPrice(cartTotal)}</span>
+                <span className="text-primary">{formatPrice(total)}</span>
               </div>
             </div>
 

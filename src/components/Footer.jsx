@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-footer-bg text-footer-text pt-16 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand Column */}
           <div className="space-y-6">
             <h2 className="text-3xl font-serif font-bold text-[#f3dcc0]">Perfect Pick</h2>
@@ -30,6 +30,16 @@ const Footer = () => {
               <li><Link to="/about" className="hover:text-primary transition-colors">Our Story</Link></li>
               <li><Link to="/profile" className="hover:text-primary transition-colors">My Account</Link></li>
               <li><Link to="/wishlist" className="hover:text-primary transition-colors">Wishlist</Link></li>
+            </ul>
+          </div>
+
+          {/* Policies */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-serif font-semibold">Customer Care</h3>
+            <ul className="space-y-4 text-[#f3dcc0]/80">
+              <li><Link to="/shipping" className="hover:text-primary transition-colors">Shipping Policy</Link></li>
+              <li><Link to="/refund" className="hover:text-primary transition-colors">Refund & Returns</Link></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
