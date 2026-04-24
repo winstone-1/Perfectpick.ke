@@ -13,6 +13,8 @@ import Home from './pages/Home';
 import LandingPage from './pages/LandingPage';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
+import NewArrivals from './pages/NewArrivals';
+import TrendingNow from './pages/TrendingNow';
 import About from './pages/About';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -43,6 +45,8 @@ function App() {
                 <Route path="home" element={<Home />} /> 
                 <Route path="products" element={<Products />} />
                 <Route path="products/:id" element={<ProductDetail />} />
+                <Route path="new-arrivals" element={<NewArrivals />} />
+                <Route path="trending" element={<TrendingNow />} />
                 <Route path="about" element={<About />} />
                 <Route path="login" element={<Login />} />
                 <Route path="register" element={<Register />} />

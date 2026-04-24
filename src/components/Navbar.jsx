@@ -8,7 +8,10 @@ import {
   Menu, 
   X, 
   LogOut, 
-  LayoutDashboard 
+  LayoutDashboard,
+  Sparkles,
+  Flame,
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -69,25 +72,55 @@ const isAdmin = user?.isAdmin === true;
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-8">
-          {navLinks.map((link) => (
-            <Link 
-              key={link.name} 
-              to={link.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                location.pathname === link.href ? "text-primary" : "text-medium"
-              )}
-            >
-              {link.name}
-              {location.pathname === link.href && (
-                <motion.div 
-                  layoutId="nav-underline"
-                  className="h-0.5 bg-primary rounded-full mt-0.5"
-                />
-              )}
-            </Link>
-          ))}
+        <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          <Link 
+            to="/" 
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              location.pathname === '/' ? "text-primary" : "text-medium"
+            )}
+          >
+            Home
+          </Link>
+          <Link 
+            to="/new-arrivals" 
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary flex items-center gap-1",
+              location.pathname === '/new-arrivals' ? "text-primary" : "text-medium"
+            )}
+          >
+            <Sparkles size={14} /> New Arrivals
+          </Link>
+          <Link 
+            to="/trending" 
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary flex items-center gap-1",
+              location.pathname === '/trending' ? "text-primary" : "text-medium"
+            )}
+          >
+            <Flame size={14} /> Trending
+          </Link>
+          <div className="relative group">
+            <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
+              Shop <ChevronDown size={14} />
+            </button>
+            <div className="absolute top-full left-0 w-40 bg-white shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+              <Link to="/products" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">All Products</Link>
+              <div className="h-px bg-border/10 my-1 mx-2" />
+              <Link to="/products?category=Bags" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Bags</Link>
+              <Link to="/products?category=Shoes" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shoes</Link>
+              <Link to="/products?category=Jewelry" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Jewelry</Link>
+            </div>
+          </div>
+          <Link 
+            to="/about" 
+            className={cn(
+              "text-sm font-medium transition-colors hover:text-primary",
+              location.pathname === '/about' ? "text-primary" : "text-medium"
+            )}
+          >
+            About
+          </Link>
         </div>
 
         {/* Actions */}
@@ -186,25 +219,33 @@ const isAdmin = user?.isAdmin === true;
             className="md:hidden bg-bg border-t overflow-hidden"
           >
             <div className="flex flex-col p-4 gap-4">
-              {navLinks.map((link) => (
-                <Link 
-                  key={link.name} 
-                  to={link.href}
-                  className={cn(
-                    "text-lg font-medium py-2",
-                    location.pathname === link.href ? "text-primary" : "text-medium"
-                  )}
-                >
-                  {link.name}
-                </Link>
-              ))}
+              <Link to="/" className="py-2 text-base hover:text-primary font-medium" onClick={() => setIsOpen(false)}>Home</Link>
+              <Link to="/new-arrivals" className="py-2 text-base hover:text-primary font-medium flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <Sparkles size={16} /> New Arrivals
+              </Link>
+              <Link to="/trending" className="py-2 text-base hover:text-primary font-medium flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <Flame size={16} /> Trending
+              </Link>
+              
+              <div className="pl-4 border-l-2 border-border/10 space-y-2">
+                <p className="text-xs uppercase text-muted-foreground font-black tracking-widest mb-2">Shop Categories</p>
+                <Link to="/products" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>All Collections</Link>
+                <Link to="/products?category=Bags" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Bags</Link>
+                <Link to="/products?category=Shoes" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Shoes</Link>
+                <Link to="/products?category=Jewelry" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Jewelry</Link>
+              </div>
+
+              <Link to="/about" className="py-2 text-base hover:text-primary font-medium" onClick={() => setIsOpen(false)}>About</Link>
+              
+              <div className="h-px bg-border/10 my-2" />
+              
               {user && isAdmin && (
-                <Link to="/admin" className="text-lg font-medium py-2 text-primary">
-                  Dashboard
+                <Link to="/admin" className="text-lg font-medium py-2 text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                  <LayoutDashboard size={20} /> Dashboard
                 </Link>
               )}
               {!user && (
-                <Link to="/login" className="text-lg font-medium py-2">
+                <Link to="/login" className="text-lg font-medium py-2" onClick={() => setIsOpen(false)}>
                   Login
                 </Link>
               )}
