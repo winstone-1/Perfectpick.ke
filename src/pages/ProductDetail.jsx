@@ -9,7 +9,8 @@ import {
   Heart, 
   ShieldCheck, 
   Truck, 
-  RotateCcw 
+  RotateCcw,
+  Loader2
 } from 'lucide-react';
 import api from '../api/axios';
 import { useCart } from '../context/CartContext';

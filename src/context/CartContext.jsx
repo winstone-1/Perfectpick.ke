@@ -34,37 +34,28 @@ export const CartProvider = ({ children }) => {
   }, [fetchCart]);
 
   const addToCart = async (productId, variant, quantity = 1) => {
-    if (!user) {
-      toast.error('Please login to add items to cart');
-      return;
-    }
-    
-    // Validate inputs
-    if (!productId) {
-      toast.error('Invalid product');
-      return;
-    }
-    
-    if (!variant) {
-      toast.error('Please select a variant');
-      return;
-    }
-    
-    if (quantity < 1) {
-      toast.error('Quantity must be at least 1');
-      return;
-    }
-    
-    try {
-      const { data } = await api.post('/cart', { productId, variant, quantity });
-      // Ensure data.items is always an array
-      setCart(Array.isArray(data.items) ? data.items : []);
-      toast.success('Added to cart');
-    } catch (error) {
-      console.error('Add to cart error:', error);
-      toast.error(error.response?.data?.message || 'Failed to add to cart');
-    }
-  };
+  if (!user) {
+    toast.error('Please login to add items to cart');
+    return;
+  }
+  
+  // Debug logging - check what's being sent
+  console.log('Sending to cart API:', { productId, variant, quantity });
+  
+  try {
+    const { data } = await api.post('/cart', { productId, variant, quantity });
+    console.log('Cart API response:', data);
+    setCart(Array.isArray(data.items) ? data.items : []);
+    toast.success('Added to cart');
+  } catch (error) {
+    console.error('Add to cart error details:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      headers: error.response?.headers
+    });
+    toast.error(error.response?.data?.message || 'Failed to add to cart');
+  }
+};
 
   const removeFromCart = async (itemId) => {
     if (!itemId) {
