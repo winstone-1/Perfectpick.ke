@@ -85,7 +85,7 @@ const Register = () => {
         <Card className="border-none shadow-2xl overflow-hidden rounded-3xl">
           <CardHeader className="bg-surface pt-10 pb-8 text-center space-y-2">
             <h1 className="text-3xl font-serif font-black text-dark">Create Account</h1>
-            <p className="text-muted-foreground text-sm">Join our luxury boutique community</p>
+            <p className="text-muted-foreground text-sm">Join our luxury fashion community</p>
           </CardHeader>
           
           <CardContent className="p-8 space-y-6">

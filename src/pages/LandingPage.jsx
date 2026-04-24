@@ -159,7 +159,7 @@ const LandingPage = () => {
             >
               <div className="flex items-center gap-2">
                 <Sparkles size={16} className="text-primary" />
-                <span className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Nairobi's Boutique</span>
+                <span className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Nairobi's Perfect Pick</span>
               </div>
 
               <h1 className="text-5xl md:text-7xl font-serif font-black text-white leading-[1.05]">

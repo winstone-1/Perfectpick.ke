@@ -209,7 +209,7 @@ const OrderDetail = () => {
               <h3 className="font-serif font-bold text-lg text-footer-text">Secure Shopping</h3>
             </div>
             <p className="text-sm text-white/60 leading-relaxed">
-              Every Perfect Pick purchase is backed by our authenticity guarantee. If you have any issues with your order, please contact our Nairobi boutique.
+              Every Perfect Pick purchase is backed by our authenticity guarantee. If you have any issues with your order, please contact Perfect Pick Nairobi.
             </p>
             <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10 rounded-xl h-12">
               Contact Support

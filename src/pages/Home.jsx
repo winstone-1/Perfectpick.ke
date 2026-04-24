@@ -33,7 +33,7 @@ const Home = () => {
     { name: 'Jewelry',     Icon: FaGem,         desc: 'Timeless sparkle for every occasion', href: '/products?category=jewelry'     },
     { name: 'Gifts',       Icon: FaGift,        desc: 'Perfectly wrapped thoughts',          href: '/products?category=gifts'       },
     { name: 'Accessories', Icon: FaUserTie,     desc: 'The finishing touch',                 href: '/products?category=accessories' },
-    { name: 'Clothes',     Icon: FaShirt,       desc: 'Curated fashion boutique',            href: '/products?category=clothes'     },
+    { name: 'Clothes',     Icon: FaShirt,       desc: 'Curated fashion',            href: '/products?category=clothes'     },
   ];
 
   const stats = [
@@ -66,7 +66,7 @@ const Home = () => {
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12 relative z-10">
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
             <div className="space-y-4">
-              <Badge className="bg-primary/10 text-primary border-none text-xs font-bold px-3 py-1">NAIROBI'S FINEST BOUTIQUE</Badge>
+              <Badge className="bg-primary/10 text-primary border-none text-xs font-bold px-3 py-1">NAIROBI'S FINEST</Badge>
               <h1 className="text-5xl md:text-7xl font-serif font-black text-dark leading-tight">
                 Your <span className="text-primary italic">Perfect Pick</span> Always.
               </h1>

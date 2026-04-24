@@ -12,7 +12,7 @@ const Footer = () => {
             <h2 className="text-3xl font-serif font-bold text-[#f3dcc0]">Perfect Pick</h2>
             <p className="text-[#f3dcc0]/80 max-w-xs leading-relaxed">
               Experience the finest collection of luxury bags, shoes, and jewelry in Nairobi. 
-              Our boutique is dedicated to helping you find your perfect pick.
+              Perfect Pick is dedicated to helping you find your perfect pick.
             </p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-primary transition-colors"><Globe size={20} /></a>
@@ -68,7 +68,7 @@ const Footer = () => {
         </div>
 
         <div className="border-t border-[#f3dcc0]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#f3dcc0]/60">
-          <p>© {new Date().getFullYear()} Perfect Pick Boutique. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Perfect Pick. All rights reserved.</p>
           <div className="flex gap-6">
             <Link to="#" className="hover:text-[#f3dcc0] transition-colors">Privacy Policy</Link>
             <Link to="#" className="hover:text-[#f3dcc0] transition-colors">Terms of Service</Link>

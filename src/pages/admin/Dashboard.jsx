@@ -60,7 +60,7 @@ const AdminDashboard = () => {
     <div className="container mx-auto px-4 py-12 lg:py-20 space-y-12">
       <div className="space-y-2">
         <h1 className="text-4xl font-serif font-black text-dark">Admin Dashboard</h1>
-        <p className="text-muted-foreground uppercase tracking-widest text-[10px] font-bold">Perfect Pick Boutique Management</p>
+        <p className="text-muted-foreground uppercase tracking-widest text-[10px] font-bold">Perfect Pick Management</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
