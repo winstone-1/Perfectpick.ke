@@ -18,9 +18,9 @@ const CATEGORIES = [
 ];
 
 const TRUST = [
-  { Icon: Truck,       title: 'Fast Nairobi Delivery', desc: 'Same-day and next-day delivery across Nairobi.' },
-  { Icon: ShieldCheck, title: 'Verified Authentic',    desc: 'Every item hand-picked and quality-checked.'   },
-  { Icon: RotateCcw,   title: 'Easy Exchange',         desc: 'Hassle-free returns within 7 days.'            },
+  { Icon: Truck,       title: 'Fast Nairobi Delivery', desc: 'Same-day and next-day delivery across Nairobi.', link: '/shipping' },
+  { Icon: ShieldCheck, title: 'Verified Authentic',    desc: 'Every item hand-picked and quality-checked.',   link: '/about'    },
+  { Icon: RotateCcw,   title: 'Easy Exchange',         desc: 'Hassle-free returns within 7 days.',          link: '/refund'   },
 ];
 
 const LandingPage = () => {
@@ -333,15 +333,18 @@ const LandingPage = () => {
             <h2 className="text-4xl font-serif font-black text-dark">Shop with Confidence</h2>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {TRUST.map(({ Icon, title, desc }, i) => (
-              <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="flex items-start gap-5 p-8 rounded-3xl bg-white shadow-sm border border-border/10"
-              >
-                <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0"><Icon size={24} /></div>
-                <div className="space-y-1">
-                  <h3 className="font-serif font-black text-dark text-lg">{title}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
-                </div>
+            {TRUST.map(({ Icon, title, desc, link }, i) => (
+              <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+                <Link 
+                  to={link}
+                  className="flex items-start gap-5 p-8 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-md hover:border-primary/20 transition-all duration-300 h-full group"
+                >
+                  <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors"><Icon size={24} /></div>
+                  <div className="space-y-1 text-left">
+                    <h3 className="font-serif font-black text-dark text-lg group-hover:text-primary transition-colors">{title}</h3>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>

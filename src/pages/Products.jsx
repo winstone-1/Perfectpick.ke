@@ -16,13 +16,12 @@ import {
 } from '../components/ui/select';
 import { cn } from '../lib/utils';
 
-const categories = [
-  'All', 'Bags', 'Shoes', 'Jewelry', 'Gifts', 'Accessories', 'Clothes'
-];
+// Categories will be fetched from API
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState(['All']);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
 
@@ -45,6 +44,22 @@ const Products = () => {
       setLoading(false);
     }
   }, [activeCategory, searchTerm, sort]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get('/products/categories');
+        if (data.success) {
+          // Capitalize categories for display
+          const formatted = data.data.map(c => c.charAt(0).toUpperCase() + c.slice(1));
+          setCategories(['All', ...formatted]);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {

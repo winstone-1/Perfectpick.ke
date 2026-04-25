@@ -18,6 +18,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
+import api from '../api/axios';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,8 +27,23 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const { wishlist } = useWishlist();
   const location = useLocation();
+  const [categories, setCategories] = useState([]);
 
   const wishlistCount = wishlist.length;
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get('/products/categories');
+        if (data.success) {
+          setCategories(data.data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -104,14 +120,40 @@ const isAdmin = user?.isAdmin === true;
             <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
               Shop <ChevronDown size={14} />
             </button>
-            <div className="absolute top-full left-0 w-40 bg-white shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+            <div className="absolute top-full left-0 w-48 bg-white shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
               <Link to="/products" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">All Products</Link>
               <div className="h-px bg-border/10 my-1 mx-2" />
-              <Link to="/products?category=Bags" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Bags</Link>
-              <Link to="/products?category=Shoes" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shoes</Link>
-              <Link to="/products?category=Jewelry" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Jewelry</Link>
+              {categories.length > 0 ? (
+                categories.map(category => (
+                  <Link 
+                    key={category} 
+                    to={`/products?category=${category}`} 
+                    className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary capitalize"
+                  >
+                    {category}
+                  </Link>
+                ))
+              ) : (
+                <>
+                  <Link to="/products?category=Bags" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Bags</Link>
+                  <Link to="/products?category=Shoes" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shoes</Link>
+                  <Link to="/products?category=Jewelry" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Jewelry</Link>
+                </>
+              )}
             </div>
           </div>
+
+          <div className="relative group">
+            <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
+              Support <ChevronDown size={14} />
+            </button>
+            <div className="absolute top-full left-0 w-48 bg-white shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+              <Link to="/shipping" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shipping Policy</Link>
+              <Link to="/refund" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Refunds & Returns</Link>
+              <Link to="/about" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Contact Us</Link>
+            </div>
+          </div>
+
           <Link 
             to="/about" 
             className={cn(
@@ -230,9 +272,30 @@ const isAdmin = user?.isAdmin === true;
               <div className="pl-4 border-l-2 border-border/10 space-y-2">
                 <p className="text-xs uppercase text-muted-foreground font-black tracking-widest mb-2">Shop Categories</p>
                 <Link to="/products" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>All Collections</Link>
-                <Link to="/products?category=Bags" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Bags</Link>
-                <Link to="/products?category=Shoes" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Shoes</Link>
-                <Link to="/products?category=Jewelry" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Jewelry</Link>
+                {categories.length > 0 ? (
+                  categories.map(category => (
+                    <Link 
+                      key={category} 
+                      to={`/products?category=${category}`} 
+                      className="block py-2 text-base hover:text-primary capitalize" 
+                      onClick={() => setIsOpen(false)}
+                    >
+                      {category}
+                    </Link>
+                  ))
+                ) : (
+                  <>
+                    <Link to="/products?category=Bags" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Bags</Link>
+                    <Link to="/products?category=Shoes" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Shoes</Link>
+                    <Link to="/products?category=Jewelry" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Jewelry</Link>
+                  </>
+                )}
+              </div>
+
+              <div className="pl-4 border-l-2 border-border/10 space-y-2">
+                <p className="text-xs uppercase text-muted-foreground font-black tracking-widest mb-2">Support</p>
+                <Link to="/shipping" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Shipping Policy</Link>
+                <Link to="/refund" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Refund & Returns</Link>
               </div>
 
               <Link to="/about" className="py-2 text-base hover:text-primary font-medium" onClick={() => setIsOpen(false)}>About</Link>
