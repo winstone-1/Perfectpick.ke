@@ -18,8 +18,9 @@ export const CartProvider = ({ children }) => {
     setLoading(true);
     try {
       const { data } = await api.get('/cart');
-      // Ensure data.items is always an array
-      setCart(Array.isArray(data.items) ? data.items : []);
+      // Backend returns { success: true, data: cartObject }
+      // Axios puts body in 'data', so cart is in 'data.data'
+      setCart(Array.isArray(data.data?.items) ? data.data.items : []);
     } catch (error) {
       console.error('Error fetching cart:', error);
       setCart([]); // Reset to empty array on error
@@ -45,15 +46,18 @@ export const CartProvider = ({ children }) => {
   try {
     const { data } = await api.post('/cart', { productId, variant, quantity });
     console.log('Cart API response:', data);
-    setCart(Array.isArray(data.items) ? data.items : []);
+    // Correctly access items from data.data.items
+    setCart(Array.isArray(data.data?.items) ? data.data.items : []);
     toast.success('Added to cart');
   } catch (error) {
+    const errorMsg = error.response?.data?.message || error.message || 'Failed to add to cart';
     console.error('Add to cart error details:', {
       status: error.response?.status,
+      message: errorMsg,
       data: error.response?.data,
-      headers: error.response?.headers
+      sent: { productId, variant, quantity }
     });
-    toast.error(error.response?.data?.message || 'Failed to add to cart');
+    toast.error(errorMsg);
   }
 };
 
@@ -65,7 +69,7 @@ export const CartProvider = ({ children }) => {
     
     try {
       const { data } = await api.delete(`/cart/${itemId}`);
-      setCart(Array.isArray(data.items) ? data.items : []);
+      setCart(Array.isArray(data.data?.items) ? data.data.items : []);
       toast.success('Removed from cart');
     } catch (error) {
       console.error('Remove from cart error:', error);
@@ -79,7 +83,7 @@ export const CartProvider = ({ children }) => {
     
     try {
       const { data } = await api.put(`/cart/${itemId}`, { quantity });
-      setCart(Array.isArray(data.items) ? data.items : []);
+      setCart(Array.isArray(data.data?.items) ? data.data.items : []);
     } catch (error) {
       console.error('Update quantity error:', error);
       toast.error('Failed to update quantity');
@@ -99,13 +103,14 @@ export const CartProvider = ({ children }) => {
 
   // Safe calculations with array validation
   const cartCount = Array.isArray(cart) 
-    ? cart.reduce((total, item) => total + (item?.quantity || 0), 0)
+    ? cart.reduce((total, item) => total + (Number(item?.quantity) || 0), 0)
     : 0;
     
   const cartTotal = Array.isArray(cart)
     ? cart.reduce((total, item) => {
-        const price = item?.productId?.price || 0;
-        const quantity = item?.quantity || 0;
+        // Handle both populated and unpopulated product references
+        const price = item?.product?.price || 0;
+        const quantity = Number(item?.quantity) || 0;
         return total + (price * quantity);
       }, 0)
     : 0;
