@@ -73,7 +73,7 @@ const Cart = () => {
             <AnimatePresence mode="popLayout">
               {cartItems.map((item) => (
                 <motion.div
-                  key={item?._id || `${item?.productId?._id}-${item?.variant}`}
+                  key={item?._id || `${item?.product?._id}-${item?.variant}`}
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -84,10 +84,10 @@ const Cart = () => {
                     <CardContent className="p-4 md:p-6 flex gap-4 md:gap-6">
                       {/* Image */}
                       <div className="w-24 h-24 md:w-32 md:h-32 bg-surface rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        {item?.productId?.image ? (
+                        {item?.product?.images?.[0] || item?.product?.image ? (
                           <img 
-                            src={item.productId.image} 
-                            alt={item.productId.name || 'Product'} 
+                            src={item.product.images?.[0] || item.product.image} 
+                            alt={item.product.name || 'Product'} 
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.target.src = '';
@@ -103,7 +103,7 @@ const Cart = () => {
                       <div className="flex-1 flex flex-col justify-between">
                         <div className="flex justify-between items-start">
                           <div>
-                            <h3 className="font-serif font-bold text-lg text-dark">{item?.productId?.name || 'Product'}</h3>
+                            <h3 className="font-serif font-bold text-lg text-dark">{item?.product?.name || 'Product'}</h3>
                             <p className="text-xs font-bold uppercase tracking-widest text-[#c08050] mt-1">
                               {item?.variant || 'Standard'}
                             </p>
@@ -140,7 +140,7 @@ const Cart = () => {
                             </Button>
                           </div>
                           <p className="font-bold text-dark">
-                            {formatPrice((item?.productId?.price || 0) * (item?.quantity || 1))}
+                            {formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}
                           </p>
                         </div>
                       </div>

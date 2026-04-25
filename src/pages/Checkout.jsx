@@ -63,10 +63,10 @@ const Checkout = () => {
       // 1. Create Order
       const { data: orderData } = await api.post('/orders', {
         items: cartItems.map(item => ({
-          productId: item?.productId?._id,
+          productId: item?.product?._id,
           variant: item?.variant || 'Standard',
           quantity: item?.quantity || 1,
-          price: item?.productId?.price || 0
+          price: item?.product?.price || 0
         })),
         shippingAddress: {
           fullName: formData.fullName,
@@ -322,11 +322,11 @@ const Checkout = () => {
             
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-hide">
               {cartItems.map((item) => (
-                <div key={item?._id || `${item?.productId?._id}-${item?.variant}`} className="flex gap-4">
+                <div key={item?._id || `${item?.product?._id}-${item?.variant}`} className="flex gap-4">
                   <div className="w-16 h-16 bg-surface rounded-lg flex-shrink-0 overflow-hidden">
                     <img 
-                      src={item?.productId?.image || '/placeholder-image.jpg'} 
-                      alt={item?.productId?.name || 'Product'} 
+                      src={item?.product?.images?.[0] || item?.product?.image || '/placeholder-image.jpg'} 
+                      alt={item?.product?.name || 'Product'} 
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.target.src = '/placeholder-image.jpg';
@@ -334,9 +334,9 @@ const Checkout = () => {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-dark truncate">{item?.productId?.name || 'Product'}</h4>
+                    <h4 className="text-sm font-bold text-dark truncate">{item?.product?.name || 'Product'}</h4>
                     <p className="text-[10px] text-muted-foreground uppercase font-bold">{item?.variant || 'Standard'} x {item?.quantity || 1}</p>
-                    <p className="text-xs font-bold text-primary mt-1">{formatPrice((item?.productId?.price || 0) * (item?.quantity || 1))}</p>
+                    <p className="text-xs font-bold text-primary mt-1">{formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}</p>
                   </div>
                 </div>
               ))}
