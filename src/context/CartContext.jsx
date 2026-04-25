@@ -82,10 +82,16 @@ export const CartProvider = ({ children }) => {
     if (quantity < 1) return;
     
     try {
+      console.log(`Updating quantity for item ${itemId} to ${quantity}`);
       const { data } = await api.put(`/cart/${itemId}`, { quantity });
       setCart(Array.isArray(data.data?.items) ? data.data.items : []);
     } catch (error) {
-      console.error('Update quantity error:', error);
+      console.error('Update quantity error details:', {
+        status: error.response?.status,
+        message: error.response?.data?.message || error.message,
+        itemId,
+        quantity
+      });
       toast.error('Failed to update quantity');
     }
   };

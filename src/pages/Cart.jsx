@@ -71,10 +71,12 @@ const Cart = () => {
 
           <div className="space-y-4">
             <AnimatePresence mode="popLayout">
-              {cartItems.map((item) => (
-                <motion.div
-                  key={item?._id || `${item?.product?._id}-${item?.variant}`}
-                  layout
+              {cartItems.map((item) => {
+                console.log('Cart item structure:', item);
+                return (
+                  <motion.div
+                    key={item?._id || `${item?.product?._id}-${item?.variant}`}
+                    layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, x: -20 }}
@@ -147,7 +149,8 @@ const Cart = () => {
                     </CardContent>
                   </Card>
                 </motion.div>
-              ))}
+                );
+              })}
             </AnimatePresence>
           </div>
         </div>
