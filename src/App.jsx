@@ -8,6 +8,7 @@ import { WishlistProvider } from './context/WishlistContext';
 
 import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
+import ScrollToTop from './components/ScrollToTop';
 
 import Home from './pages/Home';
 import LandingPage from './pages/LandingPage';
@@ -38,6 +39,7 @@ function App() {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
+            <ScrollToTop />
             <Toaster position="top-center" expand={true} richColors />
             <Routes>
               <Route path="/" element={<Layout />}>

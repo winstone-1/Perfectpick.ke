@@ -15,9 +15,9 @@ const Footer = () => {
               Perfect Pick is dedicated to helping you find your perfect pick.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-primary transition-colors"><Globe size={20} /></a>
-              <a href="#" className="hover:text-primary transition-colors"><MessagesSquare size={20} /></a>
-              <a href="#" className="hover:text-primary transition-colors"><Send size={20} /></a>
+              <a href="https://perfectpick.co.ke" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors"><Globe size={20} /></a>
+              <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors"><MessagesSquare size={20} /></a>
+              <a href="https://instagram.com/perfectpick" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors"><Send size={20} /></a>
             </div>
           </div>
 
@@ -70,8 +70,8 @@ const Footer = () => {
         <div className="border-t border-[#f3dcc0]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#f3dcc0]/60">
           <p>© {new Date().getFullYear()} Perfect Pick. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link to="#" className="hover:text-[#f3dcc0] transition-colors">Privacy Policy</Link>
-            <Link to="#" className="hover:text-[#f3dcc0] transition-colors">Terms of Service</Link>
+            <Link to="/about" className="hover:text-[#f3dcc0] transition-colors">Privacy Policy</Link>
+            <Link to="/about" className="hover:text-[#f3dcc0] transition-colors">Terms of Service</Link>
           </div>
         </div>
       </div>
