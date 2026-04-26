@@ -77,7 +77,8 @@ const RefundPolicy = () => {
         >
           {/* Returns Window */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -101,7 +102,8 @@ const RefundPolicy = () => {
 
           {/* Eligibility */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -151,7 +153,8 @@ const RefundPolicy = () => {
 
           {/* Exchange Process */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -185,7 +188,8 @@ const RefundPolicy = () => {
 
           {/* Refund Process */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -221,7 +225,8 @@ const RefundPolicy = () => {
 
           {/* Contact Section */}
           <motion.div variants={itemVariants} className="md:col-span-2">
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-dark text-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-footer-bg text-white">
+
               <CardContent className="p-8 md:p-12">
                 <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
                   <div className="space-y-2 text-center md:text-left">

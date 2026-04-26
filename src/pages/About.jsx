@@ -105,7 +105,8 @@ const About = () => {
               <div className="text-8xl text-primary"><FaCrown /></div>
             </div>
             {/* Quote Card */}
-            <Card className="absolute -bottom-8 -left-8 md:-left-12 border-none shadow-2xl bg-white rounded-3xl p-8 max-w-xs rotate-[-2deg]">
+            <Card className="absolute -bottom-8 -left-8 md:-left-12 border-none shadow-2xl bg-card rounded-3xl p-8 max-w-xs rotate-[-2deg]">
+
               <CardContent className="p-0 space-y-4">
                 <p className="font-serif italic text-dark text-lg leading-relaxed">
                   "Fashion is the armor to survive the reality of everyday life."
@@ -133,7 +134,8 @@ const About = () => {
             <motion.div key={i} variants={itemVariants}>
               <Card className="border-none shadow-sm h-full rounded-3xl bg-surface/30 hover:bg-surface transition-colors cursor-default">
                 <CardContent className="p-8 text-center space-y-4">
-                  <div className="mx-auto w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-primary shadow-sm">
+                  <div className="mx-auto w-12 h-12 bg-card rounded-2xl flex items-center justify-center text-primary shadow-sm">
+
                     {info.icon}
                   </div>
                   <div>

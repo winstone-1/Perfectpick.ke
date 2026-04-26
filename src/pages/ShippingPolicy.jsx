@@ -76,7 +76,8 @@ const ShippingPolicy = () => {
         >
           {/* Delivery Zones & Timeframes */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -122,7 +123,8 @@ const ShippingPolicy = () => {
 
           {/* Delivery Costs */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -163,7 +165,8 @@ const ShippingPolicy = () => {
 
           {/* Order Processing */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -197,7 +200,8 @@ const ShippingPolicy = () => {
 
           {/* Tracking */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-white">
+            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
+
               <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
@@ -211,14 +215,16 @@ const ShippingPolicy = () => {
                   Stay updated on your order's journey. Once dispatched, you'll receive a tracking update via SMS or WhatsApp.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <a href="mailto:perfectpicknairobi@gmail.com" className="flex items-center gap-3 p-4 bg-surface rounded-2xl hover:bg-primary/10 transition-colors group">
+                  <a href="mailto:perfectpicknairobi@gmail.com" className="flex items-center gap-3 p-4 bg-muted/50 rounded-2xl hover:bg-primary/10 transition-colors group">
+
                     <Mail className="text-primary group-hover:scale-110 transition-transform" size={20} />
                     <div className="overflow-hidden">
                       <p className="text-xs text-muted-foreground uppercase font-black">Email Us</p>
                       <p className="text-sm font-bold text-dark truncate">perfectpicknairobi@gmail.com</p>
                     </div>
                   </a>
-                  <a href="https://wa.me/254700000000" className="flex items-center gap-3 p-4 bg-surface rounded-2xl hover:bg-primary/10 transition-colors group">
+                  <a href="https://wa.me/254700000000" className="flex items-center gap-3 p-4 bg-muted/50 rounded-2xl hover:bg-primary/10 transition-colors group">
+
                     <Phone className="text-primary group-hover:scale-110 transition-transform" size={20} />
                     <div>
                       <p className="text-xs text-muted-foreground uppercase font-black">WhatsApp</p>
@@ -235,7 +241,8 @@ const ShippingPolicy = () => {
             <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-primary text-white">
               <CardContent className="p-8 md:p-12">
                 <div className="flex flex-col md:flex-row gap-8 items-center">
-                  <div className="w-20 h-20 bg-white/20 rounded-3xl flex items-center justify-center shrink-0">
+                  <div className="w-20 h-20 bg-footer-bg/20 rounded-3xl flex items-center justify-center shrink-0">
+
                     <Info size={40} />
                   </div>
                   <div className="space-y-4">

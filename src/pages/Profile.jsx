@@ -109,11 +109,13 @@ const Profile = () => {
       <div className="flex flex-col lg:flex-row gap-12 max-w-6xl mx-auto">
         {/* Sidebar */}
         <div className="w-full lg:w-80 space-y-6">
-          <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+          <Card className="border-none shadow-xl rounded-[2.5rem] bg-card overflow-hidden">
+
             <CardContent className="p-8 text-center space-y-6">
               {/* Avatar */}
               <div className="relative inline-block">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg mx-auto bg-surface flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-card shadow-lg mx-auto bg-surface flex items-center justify-center">
+
                   {avatarPreview ? (
                     <img 
                       src={avatarPreview} 
@@ -137,8 +139,9 @@ const Profile = () => {
                 <button 
                   onClick={() => avatarInputRef.current.click()}
                   disabled={uploadingAvatar}
-                  className="absolute bottom-0 right-0 p-2 bg-dark text-white rounded-full border-2 border-white hover:bg-primary transition-colors disabled:opacity-50"
+                  className="absolute bottom-0 right-0 p-2 bg-primary text-white rounded-full border-2 border-card hover:bg-primary-hover transition-colors disabled:opacity-50"
                 >
+
                   {uploadingAvatar 
                     ? <Loader2 size={16} className="animate-spin" /> 
                     : <Camera size={16} />
@@ -177,7 +180,8 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          <div className="bg-dark rounded-[2.5rem] p-8 text-white space-y-4">
+          <div className="bg-footer-bg rounded-[2.5rem] p-8 text-white space-y-4">
+
             <div className="flex items-center gap-2 text-primary">
               <ShieldCheck size={20} />
               <h3 className="font-serif font-bold text-footer-text">Security Note</h3>
@@ -194,7 +198,8 @@ const Profile = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-8">
             {/* Personal Info */}
-            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+            <Card className="border-none shadow-xl rounded-[2.5rem] bg-card overflow-hidden">
+
               <div className="bg-surface px-8 py-5 border-b border-border/10">
                 <h3 className="font-serif font-bold text-lg">Personal Information</h3>
               </div>
@@ -233,7 +238,8 @@ const Profile = () => {
             </Card>
 
             {/* Change Password */}
-            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
+            <Card className="border-none shadow-xl rounded-[2.5rem] bg-card overflow-hidden">
+
               <div className="bg-surface px-8 py-5 border-b border-border/10">
                 <h3 className="font-serif font-bold text-lg">Update Password</h3>
               </div>
