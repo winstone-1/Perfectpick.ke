@@ -19,6 +19,8 @@ import { useWishlist } from '../context/WishlistContext';
 import { Button } from './ui/button';
 import { cn } from '../lib/utils';
 import api from '../api/axios';
+import DarkModeToggle from './DarkModeToggle';
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -120,7 +122,8 @@ const isAdmin = user?.isAdmin === true;
             <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
               Shop <ChevronDown size={14} />
             </button>
-            <div className="absolute top-full left-0 w-48 bg-white shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+            <div className="absolute top-full left-0 w-48 bg-white dark:bg-zinc-900 shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+
               <Link to="/products" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">All Products</Link>
               <div className="h-px bg-border/10 my-1 mx-2" />
               {categories.length > 0 ? (
@@ -147,7 +150,8 @@ const isAdmin = user?.isAdmin === true;
             <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
               Support <ChevronDown size={14} />
             </button>
-            <div className="absolute top-full left-0 w-48 bg-white shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+            <div className="absolute top-full left-0 w-48 bg-white dark:bg-zinc-900 shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
+
               <Link to="/shipping" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shipping Policy</Link>
               <Link to="/refund" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Refunds & Returns</Link>
               <Link to="/about" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Contact Us</Link>
@@ -167,7 +171,10 @@ const isAdmin = user?.isAdmin === true;
 
         {/* Actions */}
         <div className="flex items-center gap-2 md:gap-4">
+          <DarkModeToggle />
+          
           {user ? (
+
             <>
               {isAdmin && (
                 <Link to="/admin" className="hidden sm:block">
@@ -258,8 +265,9 @@ const isAdmin = user?.isAdmin === true;
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-bg border-t overflow-hidden"
+            className="md:hidden bg-bg dark:bg-bg-dark border-t overflow-hidden"
           >
+
             <div className="flex flex-col p-4 gap-4">
               <Link to="/" className="py-2 text-base hover:text-primary font-medium" onClick={() => setIsOpen(false)}>Home</Link>
               <Link to="/new-arrivals" className="py-2 text-base hover:text-primary font-medium flex items-center gap-2" onClick={() => setIsOpen(false)}>
