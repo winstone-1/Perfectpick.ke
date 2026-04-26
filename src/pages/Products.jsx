@@ -94,10 +94,11 @@ const Products = () => {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
             <Input 
               placeholder="Search for bags, shoes, jewelry..."
-              className="pl-10 h-12 bg-white rounded-xl border-border/20 shadow-sm focus:ring-primary"
+              className="pl-10 h-12 bg-surface dark:bg-card rounded-xl border-border/20 shadow-sm focus:ring-primary font-medium text-lg placeholder:font-normal"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
+
           </div>
         </div>
         
@@ -107,9 +108,10 @@ const Products = () => {
             <span>Sort By:</span>
           </div>
           <Select value={sort} onValueChange={handleSortChange}>
-            <SelectTrigger className="w-[180px] bg-white rounded-xl h-11">
+            <SelectTrigger className="w-[180px] bg-surface dark:bg-card rounded-xl h-11">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
+
             <SelectContent>
               <SelectItem value="newest">Newest First</SelectItem>
               <SelectItem value="price-low">Price: Low to High</SelectItem>
@@ -130,7 +132,8 @@ const Products = () => {
               "rounded-full px-6 transition-all duration-300",
               activeCategory === cat 
                 ? "bg-primary text-white border-none shadow-md" 
-                : "bg-white border-border/10 text-medium hover:border-primary hover:text-primary"
+                : "bg-surface dark:bg-card border-border/10 text-medium hover:border-primary hover:text-primary"
+
             )}
           >
             {cat}

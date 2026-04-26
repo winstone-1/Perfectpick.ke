@@ -1,10 +1,8 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
 
-@custom-variant dark (&:where(.dark, .dark *));
-
-
 @theme {
+
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
 
@@ -28,7 +26,10 @@
   --radius-sm: 4px;
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
+
   :root {
     --background: var(--color-bg);
     --foreground: var(--color-dark);
@@ -54,26 +55,27 @@
 
   .dark {
     --background: var(--color-bg-dark);
-    --foreground: #f3dcc0;
-    --card: 240 10% 10%;
-    --card-foreground: #f3dcc0;
-    --popover: 240 10% 10%;
-    --popover-foreground: #f3dcc0;
-    --secondary: 240 10% 15%;
-    --secondary-foreground: #f3dcc0;
-    --muted: 240 10% 15%;
-    --muted-foreground: 240 5% 65%;
-    --accent: 240 10% 15%;
-    --accent-foreground: #f3dcc0;
-    --border: 240 10% 20%;
-    --input: 240 10% 20%;
+    --foreground: #ffffff;
+    --card: 240 10% 12%;
+    --card-foreground: #ffffff;
+    --popover: 240 10% 12%;
+    --popover-foreground: #ffffff;
+    --secondary: 240 10% 18%;
+    --secondary-foreground: #ffffff;
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 5% 75%;
+    --accent: 240 10% 18%;
+    --accent-foreground: #ffffff;
+    --border: 240 10% 25%;
+    --input: 240 10% 25%;
     
     --color-bg: var(--color-bg-dark);
     --color-surface: var(--color-surface-dark);
     --color-border: var(--color-border-dark);
-    --color-dark: #f3dcc0;
-    --color-medium: #dcbfa1;
+    --color-dark: #ffffff;
+    --color-medium: #f3dcc0;
   }
+
 
   * {
     @apply transition-colors duration-300;
