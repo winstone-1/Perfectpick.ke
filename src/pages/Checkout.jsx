@@ -29,10 +29,18 @@ const Checkout = () => {
     city: 'Nairobi',
   });
 
-  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, waiting, success, failed
+  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, waiting, success, failed, fallback
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [checkoutRequestId, setCheckoutRequestId] = useState(null);
+  const [fallbackData, setFallbackData] = useState({ tillNumber: '3175088' });
+
+  const normalizePhoneNumber = (phone) => {
+    let clean = phone.replace(/\D/g, '');
+    if (clean.startsWith('0')) clean = '254' + clean.slice(1);
+    if (clean.length === 9) clean = '254' + clean;
+    return clean;
+  };
 
   // Safe check for cart
   const cartItems = Array.isArray(cart) ? cart : [];
@@ -96,8 +104,15 @@ const Checkout = () => {
       toast.success(paystackResponse.message || 'M-Pesa prompt sent to your phone');
     } catch (error) {
       console.error('Payment initiation error:', error);
-      toast.error(error.response?.data?.message || 'Failed to initiate payment');
-      setPaymentStatus('failed');
+      const isFallback = error.response?.data?.fallback;
+      if (isFallback) {
+        setFallbackData({ tillNumber: error.response.data.tillNumber || '3175088' });
+        setPaymentStatus('fallback');
+        toast.info('STK push failed. Please pay manually using the Till Number.');
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to initiate payment');
+        setPaymentStatus('failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -265,6 +280,61 @@ const Checkout = () => {
                         Cancel payment
                       </button>
                     </div>
+                  </motion.div>
+                )}
+
+                {paymentStatus === 'fallback' && (
+                  <motion.div 
+                    key="fallback"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="space-y-6 py-2"
+                  >
+                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 space-y-4">
+                      <div className="flex items-center gap-3 text-amber-800 font-bold">
+                        <XCircle size={20} className="text-amber-600" />
+                        <span>STK Push could not be sent</span>
+                      </div>
+                      <p className="text-sm text-amber-700 leading-relaxed">
+                        Don't worry! You can still complete your order by paying manually to our Till Number below.
+                      </p>
+                    </div>
+
+                    <div className="bg-surface p-6 rounded-2xl space-y-4 border-2 border-primary/20">
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Buy Goods Till Number</p>
+                        <p className="text-4xl font-mono font-black text-primary text-center tracking-tighter">{fallbackData.tillNumber}</p>
+                      </div>
+                      <div className="bg-white/50 p-3 rounded-xl border border-border/5">
+                        <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-black">
+                          The Perfect Pick Selection
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-dark">How to pay:</h4>
+                      <ol className="text-xs space-y-3 text-muted-foreground font-medium">
+                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">1</span> Go to M-Pesa menu & select Lipa na M-Pesa</li>
+                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">2</span> Select Buy Goods and Services</li>
+                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">3</span> Enter Till Number: <span className="font-bold text-dark">{fallbackData.tillNumber}</span></li>
+                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">4</span> Enter Amount: <span className="font-bold text-dark">{formatPrice(total)}</span></li>
+                      </ol>
+                    </div>
+
+                    <Button 
+                      className="w-full btn-primary h-14 rounded-2xl text-lg font-black"
+                      onClick={() => navigate('/orders')}
+                    >
+                      I've Paid — View My Orders
+                    </Button>
+                    <button 
+                      className="w-full text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+                      onClick={() => setPaymentStatus('idle')}
+                    >
+                      Try automated payment again
+                    </button>
                   </motion.div>
                 )}
 
