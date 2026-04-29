@@ -19,7 +19,7 @@ import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 
 const Checkout = () => {
-  const { cart, cartTotal, clearCart } = useCart();
+  const { cart, cartTotal, fetchCart } = useCart();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,20 +29,12 @@ const Checkout = () => {
     city: 'Nairobi',
   });
 
-  const [paymentStatus, setPaymentStatus] = useState('idle'); // idle, waiting, success, failed, fallback
+  const [paymentStatus, setPaymentStatus] = useState('idle');
   const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [checkoutRequestId, setCheckoutRequestId] = useState(null);
   const [fallbackData, setFallbackData] = useState({ tillNumber: '3175088' });
 
-  const normalizePhoneNumber = (phone) => {
-    let clean = phone.replace(/\D/g, '');
-    if (clean.startsWith('0')) clean = '254' + clean.slice(1);
-    if (clean.length === 9) clean = '254' + clean;
-    return clean;
-  };
-
-  // Safe check for cart
   const cartItems = Array.isArray(cart) ? cart : [];
   const hasItems = cartItems.length > 0;
   const total = cartTotal || 0;
@@ -53,11 +45,11 @@ const Checkout = () => {
 
   const handlePay = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.fullName || !formData.phone || !formData.address) {
       return toast.error('Please fill in shipping details');
     }
-    
+
     if (!hasItems) {
       return toast.error('Your cart is empty');
     }
@@ -65,23 +57,16 @@ const Checkout = () => {
     setLoading(true);
     try {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const email = user?.email || 'customer@example.com'; 
+      const email = user?.email || 'customer@example.com';
 
-      // 1. Create Order — field names match Order model exactly
+      // 1. Create Order — controller reads from DB cart, only needs shippingAddress
       const { data: orderData } = await api.post('/orders', {
-        items: cartItems.map(item => ({
-          product: item?.product?._id,       // ✅ fixed: was `productId`
-          variant: item?.variant || 'Standard',
-          quantity: item?.quantity || 1,
-          price: item?.product?.price || 0,
-        })),
         shippingAddress: {
           fullName: formData.fullName,
           phone: formData.phone,
           address: formData.address,
           city: formData.city,
         },
-        totalPrice: total,                   // ✅ fixed: was `totalAmount`
       });
 
       if (!orderData?.order?._id) {
@@ -92,9 +77,9 @@ const Checkout = () => {
 
       // 2. Initiate Paystack M-Pesa STK Push
       const { data: paystackResponse } = await api.post('/payments/mpesa', {
-        phone: formData.phone, 
+        phone: formData.phone,
         amount: total,
-        email: email,
+        email,
         orderId: orderData.order._id,
       });
 
@@ -122,14 +107,15 @@ const Checkout = () => {
       toast.error('No payment reference found');
       return;
     }
-    
+
     setLoading(true);
     try {
       const { data } = await api.get(`/payments/verify/${checkoutRequestId}`);
 
       if (data.status === 'success') {
         setPaymentStatus('success');
-        await clearCart();
+        // Cart already cleared by order controller on backend — just refresh local state
+        if (fetchCart) await fetchCart();
         toast.success('Payment confirmed! Your order is being processed.');
       } else {
         toast.error(`Payment status: ${data.status}. Please wait or try again.`);
@@ -151,7 +137,6 @@ const Checkout = () => {
     }).format(price);
   };
 
-  // Redirect if cart is empty
   if (!hasItems && paymentStatus === 'idle') {
     navigate('/cart');
     return null;
@@ -178,7 +163,7 @@ const Checkout = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Full Name</label>
-                  <Input 
+                  <Input
                     name="fullName"
                     placeholder="Recipient Name"
                     className="h-12 rounded-xl"
@@ -189,7 +174,7 @@ const Checkout = () => {
                 </div>
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">M-Pesa Phone Number</label>
-                  <Input 
+                  <Input
                     name="phone"
                     placeholder="0712XXXXXX"
                     className="h-12 rounded-xl"
@@ -200,7 +185,7 @@ const Checkout = () => {
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Street Address / Building / Office</label>
-                  <Input 
+                  <Input
                     name="address"
                     placeholder="e.g. Garden Estate, House 42"
                     className="h-12 rounded-xl"
@@ -222,7 +207,7 @@ const Checkout = () => {
             <CardContent className="p-8">
               <AnimatePresence mode="wait">
                 {paymentStatus === 'idle' && (
-                  <motion.div 
+                  <motion.div
                     key="idle"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -241,18 +226,18 @@ const Checkout = () => {
                     <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100 text-sm text-emerald-800 leading-relaxed">
                       Enter your M-Pesa phone number above. Click "Pay with M-Pesa" and you will receive a prompt to enter your PIN.
                     </div>
-                    <Button 
+                    <Button
                       className="w-full bg-[#39b54a] hover:bg-[#329e41] text-white h-14 rounded-2xl text-lg font-black"
                       onClick={handlePay}
                       disabled={loading}
                     >
-                      {loading ? <Loader2 className="animate-spin" /> : "Pay with M-Pesa"}
+                      {loading ? <Loader2 className="animate-spin" /> : 'Pay with M-Pesa'}
                     </Button>
                   </motion.div>
                 )}
 
                 {paymentStatus === 'waiting' && (
-                  <motion.div 
+                  <motion.div
                     key="waiting"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -262,17 +247,20 @@ const Checkout = () => {
                     <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
                     <div className="space-y-2">
                       <h3 className="text-xl font-bold text-dark">Check your phone</h3>
-                      <p className="text-muted-foreground">We've sent an M-Pesa STK push to <span className="font-bold text-dark">{formData.phone}</span>. Enter your PIN to complete payment.</p>
+                      <p className="text-muted-foreground">
+                        We've sent an M-Pesa STK push to{' '}
+                        <span className="font-bold text-dark">{formData.phone}</span>. Enter your PIN to complete payment.
+                      </p>
                     </div>
                     <div className="flex flex-col gap-3">
-                      <Button 
+                      <Button
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 rounded-2xl font-bold"
                         onClick={handleConfirmPayment}
                         disabled={loading}
                       >
                         {loading ? <Loader2 className="animate-spin mr-2" /> : "I've paid — confirm"}
                       </Button>
-                      <button 
+                      <button
                         className="text-sm text-red-500 font-bold hover:underline"
                         onClick={() => setPaymentStatus('idle')}
                       >
@@ -283,7 +271,7 @@ const Checkout = () => {
                 )}
 
                 {paymentStatus === 'fallback' && (
-                  <motion.div 
+                  <motion.div
                     key="fallback"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -322,13 +310,13 @@ const Checkout = () => {
                       </ol>
                     </div>
 
-                    <Button 
+                    <Button
                       className="w-full btn-primary h-14 rounded-2xl text-lg font-black"
                       onClick={() => navigate('/orders')}
                     >
                       I've Paid — View My Orders
                     </Button>
-                    <button 
+                    <button
                       className="w-full text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
                       onClick={() => setPaymentStatus('idle')}
                     >
@@ -338,7 +326,7 @@ const Checkout = () => {
                 )}
 
                 {paymentStatus === 'success' && (
-                  <motion.div 
+                  <motion.div
                     key="success"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -347,9 +335,11 @@ const Checkout = () => {
                     <CheckCircle2 className="mx-auto text-emerald-500" size={64} />
                     <div className="space-y-2">
                       <h3 className="text-2xl font-serif font-black text-dark">Payment Confirmed!</h3>
-                      <p className="text-muted-foreground">Your order <span className="font-bold text-dark">#{orderId?.slice(-6).toUpperCase()}</span> has been placed successfully.</p>
+                      <p className="text-muted-foreground">
+                        Your order <span className="font-bold text-dark">#{orderId?.slice(-6).toUpperCase()}</span> has been placed successfully.
+                      </p>
                     </div>
-                    <Button 
+                    <Button
                       className="btn-primary h-12 px-8 rounded-xl"
                       onClick={() => navigate('/orders')}
                     >
@@ -359,7 +349,7 @@ const Checkout = () => {
                 )}
 
                 {paymentStatus === 'failed' && (
-                  <motion.div 
+                  <motion.div
                     key="failed"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -370,7 +360,7 @@ const Checkout = () => {
                       <h3 className="text-2xl font-serif font-black text-dark">Payment Failed</h3>
                       <p className="text-muted-foreground">Something went wrong with your transaction. Please try again.</p>
                     </div>
-                    <Button 
+                    <Button
                       variant="outline"
                       className="btn-outline h-12 px-8 rounded-xl"
                       onClick={() => setPaymentStatus('idle')}
@@ -388,18 +378,16 @@ const Checkout = () => {
         <div className="w-full lg:w-[400px]">
           <div className="bg-white rounded-3xl p-8 shadow-xl border border-border/10 sticky top-24 space-y-8">
             <h2 className="text-2xl font-serif font-black text-dark">Your Order</h2>
-            
+
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-hide">
               {cartItems.map((item) => (
                 <div key={item?._id || `${item?.product?._id}-${item?.variant}`} className="flex gap-4">
                   <div className="w-16 h-16 bg-surface rounded-lg flex-shrink-0 overflow-hidden">
-                    <img 
-                      src={item?.product?.images?.[0] || item?.product?.image || '/placeholder-image.jpg'} 
-                      alt={item?.product?.name || 'Product'} 
+                    <img
+                      src={item?.product?.images?.[0] || item?.product?.image || '/placeholder-image.jpg'}
+                      alt={item?.product?.name || 'Product'}
                       className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.target.src = '/placeholder-image.jpg';
-                      }}
+                      onError={(e) => { e.target.src = '/placeholder-image.jpg'; }}
                     />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -412,7 +400,7 @@ const Checkout = () => {
             </div>
 
             <Separator className="bg-border/10" />
-            
+
             <div className="space-y-2">
               <div className="flex justify-between text-xl font-black text-dark">
                 <span>Total</span>
