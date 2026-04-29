@@ -64,25 +64,24 @@ const Checkout = () => {
 
     setLoading(true);
     try {
-      // Get user email from local storage or context (assuming user is logged in)
       const user = JSON.parse(localStorage.getItem('user') || '{}');
       const email = user?.email || 'customer@example.com'; 
 
-      // 1. Create Order
+      // 1. Create Order — field names match Order model exactly
       const { data: orderData } = await api.post('/orders', {
         items: cartItems.map(item => ({
-          productId: item?.product?._id,
+          product: item?.product?._id,       // ✅ fixed: was `productId`
           variant: item?.variant || 'Standard',
           quantity: item?.quantity || 1,
-          price: item?.product?.price || 0
+          price: item?.product?.price || 0,
         })),
         shippingAddress: {
           fullName: formData.fullName,
           phone: formData.phone,
           address: formData.address,
-          city: formData.city
+          city: formData.city,
         },
-        totalAmount: total
+        totalPrice: total,                   // ✅ fixed: was `totalAmount`
       });
 
       if (!orderData?.order?._id) {
@@ -92,11 +91,11 @@ const Checkout = () => {
       setOrderId(orderData.order._id);
 
       // 2. Initiate Paystack M-Pesa STK Push
-      const { data: paystackResponse } = await api.post('/api/payments/mpesa', {
+      const { data: paystackResponse } = await api.post('/payments/mpesa', {
         phone: formData.phone, 
         amount: total,
         email: email,
-        orderId: orderData.order._id
+        orderId: orderData.order._id,
       });
 
       setCheckoutRequestId(paystackResponse.reference);
@@ -126,7 +125,7 @@ const Checkout = () => {
     
     setLoading(true);
     try {
-      const { data } = await api.get(`/api/payments/verify/${checkoutRequestId}`);
+      const { data } = await api.get(`/payments/verify/${checkoutRequestId}`);
 
       if (data.status === 'success') {
         setPaymentStatus('success');
