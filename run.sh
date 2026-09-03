@@ -17,18 +17,16 @@ if [ ! -f "$ROOT_DIR/apps/backend/.env" ]; then
   echo "⚠️  Missing apps/backend/.env — copy from apps/backend/.env.example"
 fi
 
-# Ensure deps
+# Ensure deps (npm workspaces — root install covers apps/*)
 if [ ! -d "$ROOT_DIR/node_modules" ]; then
-  echo "==> Installing root deps (concurrently)..."
+  echo "==> Installing deps (workspaces)..."
   npm install --prefix "$ROOT_DIR"
-fi
-if [ ! -d "$ROOT_DIR/apps/frontend/node_modules" ]; then
-  echo "==> Installing frontend deps..."
-  npm install --prefix "$ROOT_DIR/apps/frontend"
-fi
-if [ ! -d "$ROOT_DIR/apps/backend/node_modules" ]; then
-  echo "==> Installing backend deps..."
-  npm install --prefix "$ROOT_DIR/apps/backend"
+else
+  # verify workspaces hoisted (vite + express should be in root)
+  if [ ! -d "$ROOT_DIR/node_modules/vite" ] || [ ! -d "$ROOT_DIR/node_modules/express" ]; then
+    echo "==> Workspaces missing — reinstalling..."
+    npm install --prefix "$ROOT_DIR"
+  fi
 fi
 
 echo "==> Starting backend (port 3000) + frontend (port 5173)..."
