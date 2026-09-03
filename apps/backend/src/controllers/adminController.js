@@ -4,14 +4,15 @@ import User from '../models/User.js';
 
 export const getStats = async (req, res, next) => {
     try {
-        const [totalProducts, totalOrders, totalUsers, orders] = await Promise.all([
+        const [totalProducts, totalOrders, totalUsers, orders, pendingOrders] = await Promise.all([
             Product.countDocuments(),
             Order.countDocuments(),
             User.countDocuments(),
-            Order.find({})
+            Order.find({}),
+            Order.countDocuments({ status: 'pending' })
         ]);
         const totalRevenue = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
-        res.json({ success: true, data: { totalProducts, totalOrders, totalUsers, totalRevenue } });
+        res.json({ success: true, data: { totalProducts, totalOrders, totalUsers, totalRevenue, pendingOrders } });
     } catch (error) {
         next(error);
     }
@@ -48,20 +49,26 @@ export const updateProduct = async (req, res, next) => {
 
         let { name, price, description, category, variants, images, featured, discount, discountLabel } = req.body;
 
-        images = req.body.images || product.images;
         if (typeof images === 'string') {
             try { images = JSON.parse(images); } catch { images = [images]; }
+        } else if (!images) {
+            images = product.images;
         }
         if (typeof variants === 'string') {
-            try { variants = JSON.parse(variants); } catch { variants = []; }
+            try { variants = JSON.parse(variants); } catch { variants = product.variants; }
+        } else if (!variants) {
+            variants = product.variants;
         }
 
-        Object.assign(product, {
-            name, price, description, category, variants, images,
-            featured: featured === 'true' || featured === true,
-            discount: Number(discount) || 0,
-            discountLabel: discountLabel || product.discountLabel,
-        });
+        if (name !== undefined) product.name = name;
+        if (price !== undefined) product.price = price;
+        if (description !== undefined) product.description = description;
+        if (category !== undefined) product.category = category;
+        if (variants !== undefined) product.variants = variants;
+        if (images !== undefined) product.images = images;
+        if (featured !== undefined) product.featured = featured === 'true' || featured === true;
+        if (discount !== undefined) product.discount = Number(discount) || 0;
+        if (discountLabel !== undefined) product.discountLabel = discountLabel;
 
         const updatedProduct = await product.save();
         res.json({ success: true, data: updatedProduct });

@@ -24,15 +24,21 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       try {
         const { data } = await api.get('/admin/stats');
-        setStats(data.stats);
+        // backend returns {success:true, data:{totalProducts,totalOrders,totalUsers,totalRevenue,pendingOrders}}
+        const s = data.data || data.stats;
+        setStats({
+          totalOrders: s.totalOrders ?? 0,
+          totalUsers: s.totalUsers ?? 0,
+          totalRevenue: s.totalRevenue ?? 0,
+          pendingOrders: s.pendingOrders ?? 0,
+        });
       } catch (error) {
         console.error('Failed to fetch stats:', error);
-        // Fallback for demo if API fails
         setStats({
-          totalOrders: 156,
-          totalUsers: 842,
-          totalRevenue: 1245000,
-          pendingOrders: 12
+          totalOrders: 0,
+          totalUsers: 0,
+          totalRevenue: 0,
+          pendingOrders: 0
         });
       } finally {
         setLoading(false);

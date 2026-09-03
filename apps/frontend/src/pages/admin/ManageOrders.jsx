@@ -133,7 +133,7 @@ const ManageOrders = () => {
                   <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 pl-0 lg:pl-12 lg:border-l border-border/10">
                     <div className="text-center md:text-right space-y-1">
                       <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">Amount Paid</p>
-                      <p className="text-2xl font-serif font-black text-primary">{PriceDisplay(order.totalAmount)}</p>
+                      <p className="text-2xl font-serif font-black text-primary">{PriceDisplay(order.totalPrice ?? order.totalAmount)}</p>
                     </div>
 
                     <div className="space-y-4 w-full md:w-auto">
@@ -150,7 +150,7 @@ const ManageOrders = () => {
                       </div>
                       <Select 
                         disabled={updatingId === order._id}
-                        defaultValue={order.status} 
+                        value={order.status} 
                         onValueChange={(val) => handleStatusChange(order._id, val)}
                       >
                         <SelectTrigger className="w-full md:w-[180px] h-11 rounded-xl bg-surface border-transparent focus:ring-primary font-bold text-xs uppercase tracking-widest">
@@ -166,7 +166,7 @@ const ManageOrders = () => {
                       </Select>
                     </div>
 
-                    <Link to={`/admin/orders/${order._id}`} className="hidden md:block">
+                    <Link to={`/orders/${order._id}`} className="hidden md:block" title="View order">
                       <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full hover:bg-surface text-muted-foreground hover:text-primary transition-all">
                         <ExternalLink size={20} />
                       </Button>
