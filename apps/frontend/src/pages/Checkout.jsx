@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 import { 
   CheckCircle2, 
   XCircle, 
@@ -21,6 +22,7 @@ import { toast } from 'sonner';
 const Checkout = () => {
   const { cart, cartTotal, fetchCart } = useCart();
   const navigate = useNavigate();
+  const containerRef = useRef(null);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -143,15 +145,58 @@ const Checkout = () => {
     }
   }, [hasItems, paymentStatus, navigate]);
 
+  // GSAP polish — visual only, respects prefers-reduced-motion, does not touch payment logic
+  useLayoutEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = gsap.context(() => {
+      gsap.from('.checkout-col', {
+        y: 20,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.12,
+        ease: 'power3.out',
+        delay: 0.1,
+      });
+      gsap.from('.checkout-card', {
+        y: 16,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power2.out',
+        delay: 0.3,
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, []);
+
+  useLayoutEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (paymentStatus === 'fallback') {
+      gsap.fromTo('.checkout-till',
+        { scale: 0.92, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.4)' }
+      );
+    }
+    if (paymentStatus === 'success') {
+      gsap.fromTo('#success-check',
+        { scale: 0, rotation: -15 },
+        { scale: 1, rotation: 0, duration: 0.7, ease: 'elastic.out(1,0.5)' }
+      );
+    }
+    if (paymentStatus === 'waiting') {
+      gsap.to('.waiting-spinner', { rotation: 360, duration: 1, repeat: -1, ease: 'linear' });
+    }
+  }, [paymentStatus]);
+
   if (!hasItems && paymentStatus === 'idle') {
     return null;
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 lg:py-20">
+    <div ref={containerRef} className="container mx-auto px-4 py-12 lg:py-20">
       <div className="flex flex-col lg:flex-row gap-12 max-w-6xl mx-auto">
         {/* Shipping Form */}
-        <div className="flex-1 space-y-8">
+        <div className="flex-1 space-y-8 checkout-col">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate('/cart')}>
               <ChevronLeft size={24} />
@@ -159,7 +204,7 @@ const Checkout = () => {
             <h1 className="text-3xl font-serif font-black text-dark">Checkout</h1>
           </div>
 
-          <Card className="border-none shadow-xl rounded-3xl overflow-hidden">
+          <Card className="border-none shadow-xl rounded-3xl overflow-hidden checkout-card">
             <div className="bg-surface px-8 py-4 border-b border-border/10 flex items-center gap-2">
               <Truck className="text-primary" size={20} />
               <h2 className="font-serif font-bold text-lg">Shipping Information</h2>
@@ -204,7 +249,7 @@ const Checkout = () => {
           </Card>
 
           {/* M-Pesa Section */}
-          <Card className="border-none shadow-xl rounded-3xl overflow-hidden">
+          <Card className="border-none shadow-xl rounded-3xl overflow-hidden checkout-card">
             <div className="bg-emerald-50 px-8 py-4 border-b border-emerald-100 flex items-center gap-2">
               <Smartphone className="text-emerald-600" size={20} />
               <h2 className="font-serif font-bold text-lg text-emerald-900">Payment Method: M-Pesa</h2>
@@ -249,7 +294,7 @@ const Checkout = () => {
                     exit={{ opacity: 0, scale: 0.95 }}
                     className="text-center space-y-6 py-4"
                   >
-                    <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+                    <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto waiting-spinner" />
                     <div className="space-y-2">
                       <h3 className="text-xl font-bold text-dark">Check your phone</h3>
                       <p className="text-muted-foreground">
@@ -296,7 +341,7 @@ const Checkout = () => {
                     <div className="bg-surface p-6 rounded-2xl space-y-4 border-2 border-primary/20">
                       <div className="space-y-1">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Buy Goods Till Number</p>
-                        <p className="text-4xl font-mono font-black text-primary text-center tracking-tighter">{fallbackData.tillNumber}</p>
+                        <p className="text-4xl font-mono font-black text-primary text-center tracking-tighter checkout-till">{fallbackData.tillNumber}</p>
                       </div>
                       <div className="bg-white/50 p-3 rounded-xl border border-border/5">
                         <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-black">
@@ -337,7 +382,7 @@ const Checkout = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center space-y-6 py-8"
                   >
-                    <CheckCircle2 className="mx-auto text-emerald-500" size={64} />
+                    <CheckCircle2 id="success-check" className="mx-auto text-emerald-500" size={64} />
                     <div className="space-y-2">
                       <h3 className="text-2xl font-serif font-black text-dark">Payment Confirmed!</h3>
                       <p className="text-muted-foreground">
@@ -380,8 +425,8 @@ const Checkout = () => {
         </div>
 
         {/* Order Summary Sidebar */}
-        <div className="w-full lg:w-[400px]">
-          <div className="bg-white rounded-3xl p-8 shadow-xl border border-border/10 sticky top-24 space-y-8">
+        <div className="w-full lg:w-[400px] checkout-col">
+          <div className="bg-white rounded-3xl p-8 shadow-xl border border-border/10 sticky top-24 space-y-8 checkout-card">
             <h2 className="text-2xl font-serif font-black text-dark">Your Order</h2>
 
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-hide">
