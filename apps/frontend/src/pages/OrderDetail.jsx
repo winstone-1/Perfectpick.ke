@@ -9,13 +9,15 @@ import {
   Calendar, 
   ShieldCheck, 
   CheckCircle2, 
-  Clock 
+  Clock,
+  ShoppingBag
 } from 'lucide-react';
 import api from '../api/axios';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent } from '../components/ui/card';
 import { Separator } from '../components/ui/separator';
 import { Skeleton } from '../components/ui/skeleton';
+import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 
 const OrderDetail = () => {
@@ -27,7 +29,9 @@ const OrderDetail = () => {
     const fetchOrder = async () => {
       try {
         const { data } = await api.get(`/orders/${id}`);
-        setOrder(data.order);
+        // backend returns {success:true, data: order} (orderController) — support both shapes
+        const fetched = data.data || data.order;
+        setOrder(fetched);
       } catch (error) {
         console.error('Failed to fetch order:', error);
       } finally {
@@ -44,8 +48,8 @@ const OrderDetail = () => {
     { label: 'Delivered', icon: <CheckCircle2 size={16} />, status: 'delivered' }
   ];
 
-  const currentStepIndex = order ? steps.findIndex(s => s.status === order.status.toLowerCase()) : 0;
-  const isCancelled = order?.status.toLowerCase() === 'cancelled';
+  const currentStepIndex = order ? steps.findIndex(s => s.status === order.status?.toLowerCase()) : 0;
+  const isCancelled = order?.status?.toLowerCase() === 'cancelled';
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-KE', {
@@ -138,18 +142,22 @@ const OrderDetail = () => {
               <h2 className="font-serif font-black text-xl">Order Items</h2>
             </div>
             <CardContent className="p-8 md:p-10 space-y-8">
-              {order.items.map((item, i) => (
+              {order.items.map((item, i) => {
+                const prod = item.product || item.productId;
+                const img = prod?.images?.[0] || prod?.image;
+                const name = prod?.name || 'Product';
+                return (
                 <div key={i} className="flex flex-col sm:flex-row gap-6 sm:items-center justify-between group">
                   <div className="flex gap-6 items-center">
                     <div className="h-24 w-24 bg-surface rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-                      {item.productId.image ? (
-                        <img src={item.productId.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                      {img ? (
+                        <img src={img} alt={name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                       ) : (
                         <Package size={32} className="text-medium opacity-20" />
                       )}
                     </div>
                     <div className="space-y-1">
-                      <h4 className="font-serif font-bold text-lg text-dark">{item.productId.name}</h4>
+                      <h4 className="font-serif font-bold text-lg text-dark">{name}</h4>
                       <p className="text-xs font-bold uppercase tracking-widest text-primary">{item.variant}</p>
                       <p className="text-sm text-medium">{item.quantity} x {formatPrice(item.price)}</p>
                     </div>
@@ -158,7 +166,8 @@ const OrderDetail = () => {
                     <p className="font-black text-xl text-dark">{formatPrice(item.price * item.quantity)}</p>
                   </div>
                 </div>
-              ))}
+                );
+              })}
               
               <Separator className="bg-border/10" />
               
@@ -166,7 +175,7 @@ const OrderDetail = () => {
                 <div className="space-y-2 w-full max-w-xs">
                   <div className="flex justify-between text-medium">
                     <span>Subtotal</span>
-                    <span>{formatPrice(order.totalAmount)}</span>
+                    <span>{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                   </div>
                   <div className="flex justify-between text-medium">
                     <span>Delivery</span>
@@ -174,7 +183,7 @@ const OrderDetail = () => {
                   </div>
                   <div className="flex justify-between items-center text-2xl font-black text-dark pt-4">
                     <span>Total</span>
-                    <span className="text-primary">{formatPrice(order.totalAmount)}</span>
+                    <span className="text-primary">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                   </div>
                 </div>
               </div>

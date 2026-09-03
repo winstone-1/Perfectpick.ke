@@ -130,7 +130,7 @@ const Orders = () => {
 
                     {/* Total + Action */}
                     <div className="flex items-center gap-4">
-                      <span className="text-lg font-black text-primary">{formatPrice(order.totalPrice)}</span>
+                      <span className="text-lg font-black text-primary">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                       <Button
                         variant="ghost"
                         size="icon"

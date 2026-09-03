@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -137,8 +137,13 @@ const Checkout = () => {
     }).format(price);
   };
 
+  useEffect(() => {
+    if (!hasItems && paymentStatus === 'idle') {
+      navigate('/cart');
+    }
+  }, [hasItems, paymentStatus, navigate]);
+
   if (!hasItems && paymentStatus === 'idle') {
-    navigate('/cart');
     return null;
   }
 

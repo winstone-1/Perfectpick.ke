@@ -76,7 +76,7 @@ const ProductCard = ({ product }) => {
           </div>
 
           {/* New/Featured Badge */}
-          {product.isFeatured && (
+          {(product.featured || product.isFeatured) && (
             <div className="absolute top-3 left-3">
               <Badge className="bg-primary text-white border-none px-2 py-0.5 text-[10px] uppercase tracking-wider font-bold">
                 Featured
