@@ -55,25 +55,33 @@ app.use(helmet({
 }));
 
 app.use(morgan('dev'));
+// Paystack webhook requires raw body — must be before express.json()
+app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// DEBUG - Remove after testing
-app.get('/api/test', (req, res) => {
-    res.json({ message: 'API is working!', timestamp: new Date().toISOString() });
-});
+// Startup env validation (non-blocking, logs security warnings)
+if (!process.env.PAYSTACK_SECRET_KEY) console.warn('[SECURITY] PAYSTACK_SECRET_KEY not set — Paystack payments will fail');
+if (!process.env.JWT_SECRET) console.warn('[SECURITY] JWT_SECRET not set — auth will fail');
+if (!process.env.MONGODB_URI && !process.env.MONGO_URI) console.warn('[SECURITY] MONGODB_URI not set — DB not connected');
 
-// Routes Mounting
-app.use('/api/auth/config-check', (req, res) => {
-    res.json({
-        database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
-        firebaseAdmin: !!admin.apps.length ? 'Initialized' : 'Not Initialized',
-        env: {
-            hasServiceAccount: !!process.env.FIREBASE_SERVICE_ACCOUNT,
-            hasStorageBucket: !!process.env.FIREBASE_STORAGE_BUCKET,
-            nodeEnv: process.env.NODE_ENV
-        }
-    });
-});
+// DEBUG routes — only in non-production
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/api/test', (req, res) => {
+      res.json({ message: 'API is working!', timestamp: new Date().toISOString() });
+  });
+  app.use('/api/auth/config-check', (req, res) => {
+      res.json({
+          database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
+          firebaseAdmin: !!admin.apps.length ? 'Initialized' : 'Not Initialized',
+          env: {
+              hasServiceAccount: !!process.env.FIREBASE_SERVICE_ACCOUNT,
+              hasStorageBucket: !!process.env.FIREBASE_STORAGE_BUCKET,
+              nodeEnv: process.env.NODE_ENV
+          }
+      });
+  });
+}
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);

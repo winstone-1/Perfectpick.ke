@@ -22,10 +22,16 @@ const normalizePhoneNumber = (phone) => {
 // @access  Private
 export const initiateMpesaPayment = async (req, res) => {
   try {
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      return res.status(500).json({ success: false, message: 'Paystack not configured — missing PAYSTACK_SECRET_KEY' });
+    }
     const { amount, email, phone, orderId } = req.body;
 
     if (!amount || !email || !phone || !orderId) {
       return res.status(400).json({ message: 'Missing required fields' });
+    }
+    if (isNaN(amount) || Number(amount) <= 0) {
+      return res.status(400).json({ message: 'Invalid amount' });
     }
 
     const normalizedPhone = normalizePhoneNumber(phone);
@@ -90,7 +96,11 @@ export const initiateMpesaPayment = async (req, res) => {
 // @access  Private
 export const verifyPayment = async (req, res) => {
   try {
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      return res.status(500).json({ success: false, message: 'Paystack not configured' });
+    }
     const { reference } = req.params;
+    if (!reference) return res.status(400).json({ success: false, message: 'Missing reference' });
 
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
@@ -142,16 +152,23 @@ export const verifyPayment = async (req, res) => {
 // @access  Public
 export const handlePaystackWebhook = async (req, res) => {
   try {
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      console.error('[SECURITY] PAYSTACK_SECRET_KEY not set — rejecting webhook');
+      return res.status(500).send('Server misconfiguration');
+    }
+    // Paystack requires raw body for HMAC. Router uses express.raw(), so req.body is Buffer.
+    // Fallback to JSON.stringify only if raw not provided (e.g., direct test).
+    const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(JSON.stringify(req.body));
     const hash = crypto
       .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
-      .update(JSON.stringify(req.body))
+      .update(rawBody)
       .digest('hex');
 
     if (hash !== req.headers['x-paystack-signature']) {
       return res.status(401).send('Invalid signature');
     }
 
-    const event = req.body;
+    const event = Buffer.isBuffer(req.body) ? JSON.parse(req.body.toString()) : req.body;
 
     if (event.event === 'charge.success') {
       const { reference } = event.data;

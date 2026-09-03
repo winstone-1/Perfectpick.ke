@@ -6,6 +6,6 @@ const router = express.Router();
 
 router.post('/mpesa', protect, initiateMpesaPayment);
 router.get('/verify/:reference', protect, verifyPayment);
-router.post('/webhook', handlePaystackWebhook); // Public
+router.post('/webhook', handlePaystackWebhook); // Public — raw body handled at app level, signature verified inside controller
 
 export default router;
