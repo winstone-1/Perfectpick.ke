@@ -1,0 +1,28 @@
+{
+  "name": "perfectpick-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Monorepo for PerfectPick.ke - luxury fragrance e-commerce (frontend + backend)",
+  "type": "module",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=apps/backend\" \"npm run dev --workspace=apps/frontend\"",
+    "dev:frontend": "npm run dev --workspace=apps/frontend",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "install:all": "npm install --workspaces",
+    "build": "npm run build --workspace=apps/frontend",
+    "build:all": "npm run build --workspace=apps/frontend",
+    "start": "npm run start --workspace=apps/backend",
+    "lint": "npm run lint --workspace=apps/frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "npm@11.17.0"
+}

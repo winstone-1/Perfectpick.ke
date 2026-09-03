@@ -1,0 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+
+@theme {
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+
+  --color-primary: #c08050;
+  --color-primary-hover: #9a6340;
+  --color-dark: #3d271a;
+  --color-medium: #5c3a26;
+  --color-muted: #9a6340;
+  --color-bg: #fdf8f3;
+  --color-surface: #f9eede;
+  --color-border: color-mix(in srgb, #e8c49a 40%, transparent);
+  --color-footer-bg: #3d271a;
+  --color-footer-text: #f3dcc0;
+
+  --color-bg-dark: #121212;
+  --color-surface-dark: #1e1e1e;
+  --color-border-dark: #2a2a2a;
+
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-sm: 4px;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+
+  :root {
+    --background: var(--color-bg);
+    --foreground: var(--color-dark);
+    --card: 0 0% 100%;
+    --card-foreground: var(--color-dark);
+    --popover: 0 0% 100%;
+    --popover-foreground: var(--color-dark);
+    --primary: 34 45% 53%; /* #c08050 approximated to HSL */
+    --primary-foreground: 34 100% 95%;
+    --secondary: 35 45% 93%; /* #f9eede */
+    --secondary-foreground: 34 45% 20%;
+    --muted: 35 45% 93%;
+    --muted-foreground: 34 25% 45%;
+    --accent: 35 45% 93%;
+    --accent-foreground: 34 45% 20%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 34 50% 85%;
+    --input: 34 50% 85%;
+    --ring: 34 45% 53%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: var(--color-bg-dark);
+    --foreground: #ffffff;
+    --card: 240 10% 12%;
+    --card-foreground: #ffffff;
+    --popover: 240 10% 12%;
+    --popover-foreground: #ffffff;
+    --secondary: 240 10% 18%;
+    --secondary-foreground: #ffffff;
+    --muted: 240 10% 18%;
+    --muted-foreground: 240 5% 75%;
+    --accent: 240 10% 18%;
+    --accent-foreground: #ffffff;
+    --border: 240 10% 25%;
+    --input: 240 10% 25%;
+    
+    --color-bg: var(--color-bg-dark);
+    --color-surface: var(--color-surface-dark);
+    --color-border: var(--color-border-dark);
+    --color-dark: #ffffff;
+    --color-medium: #f3dcc0;
+  }
+
+
+  * {
+    @apply transition-colors duration-300;
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    @apply transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-serif);
+  }
+}
+
+/* Custom Utilities */
+@utility btn-primary {
+  @apply bg-primary text-white hover:bg-primary-hover transition-all duration-300 rounded-md px-4 py-2 inline-flex items-center justify-center font-medium active:scale-95;
+}
+
+@utility btn-outline {
+  @apply border border-primary text-primary hover:bg-surface transition-all duration-300 rounded-md px-4 py-2 inline-flex items-center justify-center font-medium active:scale-95;
+}
+
+@utility glass {
+  @apply bg-white/40 backdrop-blur-md border border-white/20;
+}

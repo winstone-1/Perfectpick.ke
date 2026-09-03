@@ -1,0 +1,180 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Flame, Eye, Heart, TrendingUp, ShoppingBag, Trophy } from 'lucide-react';
+import api from '../api/axios';
+import ProductCard from '../components/ProductCard';
+import { Skeleton } from '../components/ui/skeleton';
+import { Badge } from '../components/ui/badge';
+import { cn } from '../lib/utils';
+
+const TrendingNow = () => {
+  const [activeTab, setActiveTab] = useState('viewCount'); // 'viewCount', 'wishlistCount', 'salesCount'
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const tabs = [
+    { id: 'viewCount', label: 'Most Viewed', icon: <Eye size={18} /> },
+    { id: 'wishlistCount', label: 'Most Wished', icon: <Heart size={18} /> },
+    { id: 'salesCount', label: 'Best Selling', icon: <TrendingUp size={18} /> },
+  ];
+
+  useEffect(() => {
+    const fetchTrending = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/products?sort=-${activeTab}&limit=12`);
+        // Expected response format: { data: { data: [...] } }
+        setProducts(response.data?.data || []);
+      } catch (error) {
+        console.error('Error fetching trending products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrending();
+  }, [activeTab]);
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Hero Section */}
+      <section className="bg-surface py-12 md:py-20 px-4 md:px-8 border-b border-border/10">
+        <div className="container mx-auto text-center space-y-4 md:space-y-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="inline-flex items-center gap-2 bg-red-500/10 text-red-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
+          >
+            <Flame size={14} className="fill-red-600" /> High Demand
+          </motion.div>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-6xl font-serif font-black text-[#1a1a1a]"
+          >
+            Trending <span className="text-primary italic">Now</span>
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-sm md:text-base text-medium max-w-2xl mx-auto leading-relaxed px-4"
+          >
+            What Nairobi is loving right now. Updated daily based on customer activity, 
+            purchases, and social buzz.
+          </motion.p>
+        </div>
+      </section>
+
+      {/* Tabs & Content */}
+      <section className="container mx-auto py-8 md:py-12 px-4 md:px-8 space-y-8">
+        {/* Custom Tabs */}
+        <div className="flex justify-center">
+          <div className="flex bg-surface p-1 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={cn(
+                  "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                  activeTab === tab.id 
+                    ? "bg-white text-primary shadow-sm ring-1 ring-border/5" 
+                    : "text-medium hover:text-dark hover:bg-white/50"
+                )}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Products Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            {[...Array(8)].map((_, i) => (
+              <div key={i} className="space-y-4">
+                <Skeleton className="aspect-square w-full rounded-2xl" />
+                <Skeleton className="h-4 w-2/3" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+            ))}
+          </div>
+        ) : products.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            <AnimatePresence mode="popLayout">
+              {products.map((product, index) => (
+                <motion.div
+                  layout
+                  key={`${activeTab}-${product._id}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.4, delay: index * 0.05 }}
+                  className="relative"
+                >
+                  <ProductCard product={product} />
+                  
+                  {/* Rank Badges for Top 3 */}
+                  {index < 3 && (
+                    <div className="absolute top-3 left-3 pointer-events-none">
+                      <div className={cn(
+                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-lg border-none text-[10px] font-black uppercase tracking-widest text-white",
+                        index === 0 ? "bg-primary" : "bg-dark"
+                      )}>
+                        <Trophy size={12} className={index === 0 ? "fill-white" : ""} />
+                        #{index + 1} Trending
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dynamic Stat Badge */}
+                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Badge variant="secondary" className="bg-white/90 backdrop-blur-md text-dark border-none">
+                      {activeTab === 'viewCount' && `${product.viewCount || 0} views`}
+                      {activeTab === 'wishlistCount' && `${product.wishlistCount || 0} wishes`}
+                      {activeTab === 'salesCount' && `${product.salesCount || 0} sold`}
+                    </Badge>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <div className="py-20 text-center space-y-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface text-medium">
+              <TrendingUp size={40} />
+            </div>
+            <h3 className="text-xl font-serif font-bold text-dark">Nothing trending yet</h3>
+            <p className="text-muted-foreground max-w-xs mx-auto">
+              Our data is currently being updated. Check back in a few moments.
+            </p>
+          </div>
+        )}
+      </section>
+
+      {/* Social Trust Section */}
+      <section className="bg-surface py-12 md:py-20 px-4 md:px-8 border-t border-border/10">
+        <div className="container mx-auto max-w-4xl text-center space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-dark">Join the Movement</h2>
+            <p className="text-medium max-w-xl mx-auto">
+              See how our community is styling their Perfect Picks. Use <span className="font-bold text-primary">#PerfectPickNairobi</span> to be featured.
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="aspect-square bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div className="w-full h-full bg-border/20 flex items-center justify-center">
+                  <ShoppingBag className="text-border/40" size={24} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default TrendingNow;
