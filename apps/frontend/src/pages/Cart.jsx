@@ -72,7 +72,6 @@ const Cart = () => {
           <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {cartItems.map((item) => {
-                console.log('Cart item structure:', item);
                 return (
                   <motion.div
                     key={item?._id || `${item?.product?._id}-${item?.variant}`}

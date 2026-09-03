@@ -39,24 +39,12 @@ export const CartProvider = ({ children }) => {
     toast.error('Please login to add items to cart');
     return;
   }
-  
-  // Debug logging - check what's being sent
-  console.log('Sending to cart API:', { productId, variant, quantity });
-  
   try {
     const { data } = await api.post('/cart', { productId, variant, quantity });
-    console.log('Cart API response:', data);
-    // Correctly access items from data.data.items
     setCart(Array.isArray(data.data?.items) ? data.data.items : []);
     toast.success('Added to cart');
   } catch (error) {
     const errorMsg = error.response?.data?.message || error.message || 'Failed to add to cart';
-    console.error('Add to cart error details:', {
-      status: error.response?.status,
-      message: errorMsg,
-      data: error.response?.data,
-      sent: { productId, variant, quantity }
-    });
     toast.error(errorMsg);
   }
 };
@@ -79,20 +67,16 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = async (itemId, quantity) => {
     if (!itemId) return;
-    if (quantity < 1) return;
-    
+    if (quantity < 1) {
+      // remove if quantity drops below 1
+      await removeFromCart(itemId);
+      return;
+    }
     try {
-      console.log(`Updating quantity for item ${itemId} to ${quantity}`);
       const { data } = await api.put(`/cart/${itemId}`, { quantity });
       setCart(Array.isArray(data.data?.items) ? data.data.items : []);
     } catch (error) {
-      console.error('Update quantity error details:', {
-        status: error.response?.status,
-        message: error.response?.data?.message || error.message,
-        itemId,
-        quantity
-      });
-      toast.error('Failed to update quantity');
+      toast.error(error.response?.data?.message || 'Failed to update quantity');
     }
   };
 
@@ -126,6 +110,7 @@ export const CartProvider = ({ children }) => {
       value={{ 
         cart: Array.isArray(cart) ? cart : [], 
         loading, 
+        fetchCart,
         addToCart, 
         removeFromCart, 
         updateQuantity, 
