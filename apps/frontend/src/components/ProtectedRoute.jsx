@@ -10,7 +10,8 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (adminOnly && !user.isAdmin) {
+  const isAdmin = user.isAdmin === true || user.role === 'admin' || user.role === 'manager';
+  if (adminOnly && !isAdmin) {
     return <Navigate to="/" replace />;
   }
 
