@@ -21,14 +21,24 @@ export const getProducts = async (req, res) => {
 
         let productsQuery = Product.find(query);
 
-        if (sort === 'price_asc') {
+        if (sort === 'price_asc' || sort === 'price-low') {
             productsQuery = productsQuery.sort({ price: 1 });
-        } else if (sort === 'price_desc') {
+        } else if (sort === 'price_desc' || sort === 'price-high') {
             productsQuery = productsQuery.sort({ price: -1 });
-        } else if (sort === 'newest') {
+        } else if (sort === 'newest' || sort === '-createdAt') {
             productsQuery = productsQuery.sort({ createdAt: -1 });
+        } else if (sort) {
+            // support minus prefix like -viewCount, -salesCount
+            const field = sort.startsWith('-') ? sort.slice(1) : sort;
+            const dir = sort.startsWith('-') ? -1 : 1;
+            try { productsQuery = productsQuery.sort({ [field]: dir }); } catch {}
         } else {
             productsQuery = productsQuery.sort({ createdAt: -1 });
+        }
+
+        if (req.query.limit) {
+            const lim = parseInt(req.query.limit, 10);
+            if (!isNaN(lim) && lim > 0 && lim <= 50) productsQuery = productsQuery.limit(lim);
         }
 
         const result = await productsQuery;

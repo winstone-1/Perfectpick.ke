@@ -49,7 +49,7 @@ const LandingPage = () => {
   useEffect(() => {
     const load = async () => {
       try {
-        const { data } = await api.get('/products/featured');
+        const { data } = await api.get('/products?featured=true');
         const products = data.data || [];
         setFeatured(products);
         setVideos(products.flatMap(p => p.videos || []));
