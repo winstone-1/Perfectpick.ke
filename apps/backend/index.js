@@ -24,21 +24,13 @@ const app = express();
 
 const allowedOrigins = [
     'http://localhost:5173',
-    'http://localhost:3000',
-    'https://antigravity-ebon-five.vercel.app',
-    'https://antigravity-fdyo5r0qe-winstone-1s-projects.vercel.app',
-    'https://web-production-e851a4.up.railway.app',
     process.env.CLIENT_URL_PROD,
 ].filter(Boolean);
 
 // Middleware - CORS must be at the very top!
 app.use(cors({
     origin: (origin, callback) => {
-        if (
-            !origin ||
-            allowedOrigins.includes(origin) ||
-            origin.endsWith('.vercel.app')
-        ) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Not allowed by CORS'));
