@@ -1,6 +1,6 @@
 # PerfectPick.ke — Design System
 
-> Auto-generated via `impeccable init` from the actual merged codebase (`apps/frontend/src/index.css`, `App.jsx`, `components/*`, `pages/Checkout.jsx` et al). The perfume mock (Sicilian Bergamot & Fig → terracotta `Jazz Club` + beige `Santal 33`) is the source mood.
+> Auto-generated via `impeccable init` from the actual merged codebase (`apps/frontend/src/index.css`, `App.jsx`, `components/*`, `pages/Checkout.jsx` et al) — refreshed 2026-09-05 after Phase 2 hardening. The perfume mock (Sicilian Bergamot & Fig → terracotta `Jazz Club` + beige `Santal 33`) is the source mood.
 
 ## 1. Tokens (from `src/index.css:5-28`)
 
@@ -53,13 +53,13 @@ Shadcn tokens: `primary 34 45% 53%` (~#c08050), `secondary #f9eede`, `muted #f9e
 - **Lucide** (`ChevronLeft, ShoppingBag, Truck, Smartphone …`) + **react-icons/gi** (`GiHandBag, GiHighHeel, GiNecklace`). Size `16-28`. Thin stroke, `opacity-20` for empty states.
 - **Product imagery:** Circular crop on catalog (`rounded-xl aspect-square bg-surface`), circular on Cart (`rounded-2xl overflow-hidden`), `object-cover group-hover:scale-110`.
 
-## 6. Motion (before GSAP polish)
+## 6. Motion (GSAP polish — implemented)
 
 - Existing `framer-motion` for page `Layout: AnimatePresence mode="wait"` keyed by `location.pathname`, card `whileHover y:-5`, entrance `initial opacity 0 y 20`, checkout `AnimatePresence` for payment states (`idle/waiting/fallback/success/failed`) with `scale 0.95→1`.
-- **Phase 3 GSAP plan (visual only, no payment logic):**
-  - Checkout: staggered entrance of shipping form → M-Pesa card → sidebar via `gsap.from(".checkout-col", {y:20, opacity:0, stagger:0.12})`; button `active:scale-95` + `gsap.to` pulse on `waiting` spinner; success check `gsap.from("#success-check", {scale:0})`.
-  - Landing: already has `Framer` hero; add GSAP `ScrollTrigger` for categories parallax.
-  - Respect `prefers-reduced-motion`.
+- **GSAP (Phase 3, visual only, `prefers-reduced-motion` respected):**
+  - Checkout (`Checkout.jsx:146`): `gsap.context` staggered entrance `.checkout-col` + `.checkout-card` (`y:20, opacity:0, stagger 0.12`), fallback Till `back.out(1.4)`, success `elastic.out(1,0.5)`, waiting spinner `rotation:360 repeat:-1`. No `ScrollTrigger` imported (bundle conscious, only `gsap` core).
+  - Landing: `Framer` hero retained; GSAP `ScrollTrigger` deferred to next polish (not imported to keep bundle < 1 MB).
+  - All GSAP via `useLayoutEffect` + `gsap.context` cleanup.
 
 ## 7. Checkout / Pricing Page — Target (mock → code)
 

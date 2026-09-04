@@ -1,6 +1,6 @@
 # PerfectPick.ke — Product Definition
 
-> Auto-generated via `impeccable init` from merged monorepo `apps/frontend` + `apps/backend` (2026-09-03). Source of truth is the actual code, not external docs.
+> Auto-generated via `impeccable init` from merged monorepo `apps/frontend` + `apps/backend` (2026-09-05). Refreshed after Phase 2 (auth CORS env hardening). Source of truth is the actual code.
 
 ## 1. Vision
 
@@ -50,27 +50,28 @@ Tagline: *“Nairobi’s Perfect Pick — curated bags, shoes, jewelry & gifts, 
 - `GET /api/products, /featured, /categories, /:id` + `POST/PUT/DELETE` (admin)
 - `GET/POST /api/cart, PUT/DELETE /api/cart/:id`
 - `POST /api/orders, GET /orders/myorders, GET /orders/:id`
-- `GET /api/admin/stats, /orders, /users, POST /products, PUT /products/:id, DELETE, PUT /orders/:id`
-- `POST /api/payments/mpesa, GET /verify/:reference, POST /webhook` (Paystack) + legacy `POST /api/mpesa/stkpush` (Daraja)
+- `GET /api/admin/stats (now pendingOrders), /orders, /users, POST /products, PUT /products/:id, DELETE, PUT /orders/:id`
+- `POST /api/payments/mpesa, GET /verify/:reference, POST /webhook` (Paystack, raw-body HMAC) + legacy `POST /api/mpesa/stkpush` (Daraja, code retained, env spec removed)
 
 ## 6. Data Model (from `models`)
 
 - **Product** `category enum bags|shoes|jewelry|gifts|accessories|clothes`, `images[]`, `videos[]`, `featured`, `discount`, `discountBanner/Label`, `variants{name,stock}`, timestamps
 - **Cart** `user ref User, items[{product ref Product, variant string, quantity}]`
 - **Order** `user, items[{product,variant,quantity,price}], shippingAddress{fullName,phone,address,city}, totalPrice, status pending|processing|shipped|delivered|cancelled, isPaid, paidAt, paymentResult{id,status}`
-- **User** `name,email,password(hash), isAdmin, avatar`, timestamps + Firebase linkage via `firebaseAdmin`
+- **User** `name,email,password(hash), isAdmin (normalized with role admin/manager), avatar`, timestamps + Firebase linkage via `firebaseAdmin` (dotenv load order fixed)
 
 ## 7. Payments
 
-- Provider: **Paystack** (M-Pesa mobile_money `provider: mpesa`, `currency: KES`, `amount*100` kobo). Transport: `Authorization: Bearer sk_test_…` server-only.
-- Flow: `Checkout` → `POST /orders` (creates from DB cart) → `POST /payments/mpesa` → STK → `GET /verify/:reference` → webhook → `clearUserCart`.
-- Fallback: Till `3175088` instruction when STK fails.
+- Provider: **Paystack** (M-Pesa mobile_money `provider: mpesa`, `currency: KES`, `amount*100` kobo). Transport: `Authorization: Bearer sk_test_…` server-only. Env: 12 vars (stale 6 M-Pesa Daraja removed).
+- Flow: `Checkout` → `POST /orders` (creates from DB cart) → `POST /payments/mpesa` → STK → `GET /verify/:reference` → webhook (`express.raw` HMAC, env guard) → `clearUserCart`.
+- Fallback: Till instruction when STK fails (hardcoded fallback retained but env spec removed).
+- CORS: explicit allowlist `http://localhost:5173` + `CLIENT_URL_PROD` (wildcard `*.vercel.app` + `credentials:true` removed).
 
 ## 8. Tech Stack (actual)
 
-- **Frontend** `apps/frontend`: React 19, Vite 8, Tailwind 4, `@tailwindcss/vite`, `tailwind-merge`, `clsx`, `class-variance-authority`, Radix `@react-dialog/select/separator/slot`, `lucide-react` + `react-icons/gi`, `framer-motion` 12, `GSAP` (Phase 3), `axios` 1.15, `react-router-dom` 7, `sonner`, `firebase` 12. **No** `cloudinary/multer` in browser after Phase 2.
-- **Backend** `apps/backend`: Node 18+, Express 5, `mongoose` 9, `firebase-admin` 13, `cloudinary` 1.41 + `multer-storage-cloudinary`, `multer` 2, `bcryptjs`, `jsonwebtoken`, `cors`, `helmet`, `morgan`, `dotenv`, `nodemon`.
-- **Monorepo**: npm workspaces `apps/*`, `concurrently`, `run.sh` (bash).
+- **Frontend** `apps/frontend`: React 19, Vite 8, Tailwind 4, `@tailwindcss/vite`, `tailwind-merge`, `clsx`, `class-variance-authority`, Radix `@react-dialog/select/separator/slot`, `lucide-react` + `react-icons/gi`, `framer-motion` 12, `GSAP 3` (checkout entrance/till bounce/success elastic, `prefers-reduced-motion` respected), `axios` 1.15 (robust interceptor, 401 handling), `react-router-dom` 7, `sonner`, `firebase` 12. **No** `cloudinary/multer` in browser after Phase 2.
+- **Backend** `apps/backend`: Node 18+, Express 5, `mongoose` 9, `firebase-admin` 13, `cloudinary` 1.41 + `multer-storage-cloudinary`, `multer` 2, `bcryptjs`, `jsonwebtoken`, `cors` (explicit allowlist), `helmet`, `morgan`, `dotenv` (import 'dotenv/config' early), `nodemon`.
+- **Monorepo**: npm workspaces `apps/*`, `concurrently`, `run.sh` (workspace-aware).
 
 ## 9. Non-Goals / Constraints
 
