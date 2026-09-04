@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import gsap from 'gsap';
 import { ShoppingBag, Truck, ShieldCheck, RotateCcw, ArrowRight, Sparkles, Tag, UserPlus } from 'lucide-react';
 import { GiHandBag, GiHighHeel, GiNecklace, GiPresent } from 'react-icons/gi';
 import { FaUserTie, FaShirt } from 'react-icons/fa6';
@@ -40,6 +41,7 @@ const LandingPage = () => {
   const videoInterval  = useRef(null);
   const imageInterval  = useRef(null);
   const bannerInterval = useRef(null);
+  const pageRef        = useRef(null);
 
   // If user is already logged in, go straight to /home
   useEffect(() => {
@@ -93,6 +95,30 @@ const LandingPage = () => {
 
   const goToBanner = (idx) => { setBannerIndex(idx); clearInterval(bannerInterval.current); };
 
+  // GSAP polish — subtle reveals, respects reduced motion, no functional change
+  useLayoutEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const ctx = gsap.context(() => {
+      gsap.from('.landing-category', {
+        y: 18,
+        opacity: 0,
+        duration: 0.6,
+        stagger: 0.07,
+        ease: 'power2.out',
+        delay: 0.2,
+      });
+      gsap.from('.landing-trust', {
+        y: 16,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.08,
+        ease: 'power2.out',
+        delay: 0.4,
+      });
+    }, pageRef);
+    return () => ctx.revert();
+  }, [featured]);
+
   const heroProduct = featured[heroIndex];
 
   const slideVariants = {
@@ -109,7 +135,7 @@ const LandingPage = () => {
   if (user) return null;
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div ref={pageRef} className="min-h-screen bg-bg">
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
       <section className="relative h-[92vh] overflow-hidden bg-surface">
@@ -296,7 +322,7 @@ const LandingPage = () => {
       )}
 
       {/* ── CATEGORIES ───────────────────────────────────────────── */}
-      <section className="py-20 container mx-auto px-6">
+      <section className="py-20 lg:py-24 container mx-auto px-6 bg-gradient-to-b from-transparent via-surface/20 to-transparent">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-12 space-y-2"
@@ -307,15 +333,15 @@ const LandingPage = () => {
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {CATEGORIES.map(({ label, Icon, value }, i) => (
-            <motion.div key={value} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }}>
+            <motion.div key={value} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="landing-category">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full group flex flex-col items-center justify-center gap-4 p-6 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-xl hover:border-primary/20 hover:-translate-y-1 transition-all duration-300"
+                className="w-full group flex flex-col items-center justify-center gap-4 p-7 rounded-[2rem] bg-white shadow-[0_4px_12px_rgba(61,39,26,0.06)] border border-border/10 hover:shadow-[0_8px_24px_rgba(61,39,26,0.12)] hover:border-primary/20 hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-sm"
               >
                 <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
                   <Icon size={28} />
                 </div>
-                <span className="font-serif font-black text-dark">{label}</span>
+                <span className="font-serif font-black text-dark tracking-tight">{label}</span>
               </button>
             </motion.div>
           ))}
@@ -323,7 +349,7 @@ const LandingPage = () => {
       </section>
 
       {/* ── TRUST PILLARS ────────────────────────────────────────── */}
-      <section className="py-20 bg-surface">
+      <section className="py-20 lg:py-24 bg-surface">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -334,10 +360,10 @@ const LandingPage = () => {
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {TRUST.map(({ Icon, title, desc, link }, i) => (
-              <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}>
+              <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="landing-trust">
                 <Link 
                   to={link}
-                  className="flex items-start gap-5 p-8 rounded-3xl bg-white shadow-sm border border-border/10 hover:shadow-md hover:border-primary/20 transition-all duration-300 h-full group"
+                  className="flex items-start gap-5 p-8 rounded-[2rem] bg-white shadow-[0_4px_12px_rgba(61,39,26,0.06)] border border-border/10 hover:shadow-[0_8px_24px_rgba(61,39,26,0.10)] hover:border-primary/20 transition-all duration-300 h-full group backdrop-blur-sm"
                 >
                   <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors"><Icon size={24} /></div>
                   <div className="space-y-1 text-left">
