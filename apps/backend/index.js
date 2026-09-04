@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import express from 'express';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -15,8 +15,6 @@ import orderRoutes from './src/routes/orderRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
 import mpesaRoutes from './src/routes/mpesaRoutes.js';
 import paymentRoutes from './src/routes/paymentRoutes.js';
-
-dotenv.config();
 
 connectDB();
 
