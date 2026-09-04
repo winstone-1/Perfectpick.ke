@@ -193,8 +193,8 @@ const Checkout = () => {
   }
 
   return (
-    <div ref={containerRef} className="container mx-auto px-4 py-12 lg:py-20">
-      <div className="flex flex-col lg:flex-row gap-12 max-w-6xl mx-auto">
+    <div ref={containerRef} className="container mx-auto px-4 py-16 lg:py-24 bg-gradient-to-b from-bg via-bg to-surface/20">
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 max-w-7xl mx-auto">
         {/* Shipping Form */}
         <div className="flex-1 space-y-8 checkout-col">
           <div className="flex items-center gap-4">
@@ -204,12 +204,12 @@ const Checkout = () => {
             <h1 className="text-3xl font-serif font-black text-dark">Checkout</h1>
           </div>
 
-          <Card className="border-none shadow-xl rounded-3xl overflow-hidden checkout-card">
-            <div className="bg-surface px-8 py-4 border-b border-border/10 flex items-center gap-2">
+          <Card className="border-none shadow-[0_8px_30px_rgba(61,39,26,0.08)] rounded-[2rem] overflow-hidden checkout-card backdrop-blur-sm">
+            <div className="bg-surface/80 px-8 py-5 border-b border-border/10 flex items-center gap-3">
               <Truck className="text-primary" size={20} />
-              <h2 className="font-serif font-bold text-lg">Shipping Information</h2>
+              <h2 className="font-serif font-bold text-lg tracking-tight">Shipping Information</h2>
             </div>
-            <CardContent className="p-8 space-y-6">
+            <CardContent className="p-8 md:p-10 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Full Name</label>
@@ -249,10 +249,10 @@ const Checkout = () => {
           </Card>
 
           {/* M-Pesa Section */}
-          <Card className="border-none shadow-xl rounded-3xl overflow-hidden checkout-card">
-            <div className="bg-emerald-50 px-8 py-4 border-b border-emerald-100 flex items-center gap-2">
+          <Card className="border-none shadow-[0_8px_30px_rgba(61,39,26,0.08)] rounded-[2rem] overflow-hidden checkout-card">
+            <div className="bg-emerald-50/80 px-8 py-5 border-b border-emerald-100 flex items-center gap-3 backdrop-blur-sm">
               <Smartphone className="text-emerald-600" size={20} />
-              <h2 className="font-serif font-bold text-lg text-emerald-900">Payment Method: M-Pesa</h2>
+              <h2 className="font-serif font-bold text-lg text-emerald-900 tracking-tight">Payment Method — M-Pesa</h2>
             </div>
             <CardContent className="p-8">
               <AnimatePresence mode="wait">
@@ -425,8 +425,8 @@ const Checkout = () => {
         </div>
 
         {/* Order Summary Sidebar */}
-        <div className="w-full lg:w-[400px] checkout-col">
-          <div className="bg-white rounded-3xl p-8 shadow-xl border border-border/10 sticky top-24 space-y-8 checkout-card">
+        <div className="w-full lg:w-[420px] checkout-col">
+          <div className="bg-white/90 backdrop-blur-md rounded-[2rem] p-8 md:p-9 shadow-[0_8px_30px_rgba(61,39,26,0.08)] border border-border/10 sticky top-28 space-y-8 checkout-card">
             <h2 className="text-2xl font-serif font-black text-dark">Your Order</h2>
 
             <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-hide">
