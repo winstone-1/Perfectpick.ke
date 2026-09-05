@@ -11,6 +11,7 @@ import {
   CreditCard, 
   Truck 
 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa6';
 import { useCart } from '../context/CartContext';
 import api from '../api/axios';
 import { Button } from '../components/ui/button';
@@ -131,7 +132,7 @@ const Checkout = () => {
   };
 
   const formatPrice = (price) => {
-    if (!price && price !== 0) return 'KSH 0';
+    if (!price && price !== 0) return 'KES 0';
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
       currency: 'KES',
@@ -192,53 +193,61 @@ const Checkout = () => {
     return null;
   }
 
+  const whatsappCheckoutHelp = `https://wa.me/254787251690?text=${encodeURIComponent(
+    `Hi PerfectPick Support! I need help with my order checkout (${formData.fullName ? `Name: ${formData.fullName}, ` : ''}Total: ${formatPrice(total)})`
+  )}`;
+
   return (
-    <div ref={containerRef} className="container mx-auto px-4 py-16 lg:py-24 bg-gradient-to-b from-bg via-bg to-surface/20">
+    <div ref={containerRef} className="container mx-auto px-4 sm:px-6 py-12 lg:py-20">
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 max-w-7xl mx-auto">
-        {/* Shipping Form */}
+        {/* Shipping & Payment Column */}
         <div className="flex-1 space-y-8 checkout-col">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/cart')}>
-              <ChevronLeft size={24} />
+            <Button variant="ghost" size="icon" onClick={() => navigate('/cart')} className="rounded-full hover:bg-surface dark:hover:bg-stone-800">
+              <ChevronLeft size={22} />
             </Button>
-            <h1 className="text-3xl font-serif font-black text-dark">Checkout</h1>
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">Checkout</h1>
+              <p className="text-xs text-muted-foreground dark:text-stone-400 font-bold uppercase tracking-widest mt-0.5">Secure M-Pesa Payment</p>
+            </div>
           </div>
 
-          <Card className="border-none shadow-[0_8px_30px_rgba(61,39,26,0.08)] rounded-[2rem] overflow-hidden checkout-card backdrop-blur-sm">
-            <div className="bg-surface/80 px-8 py-5 border-b border-border/10 flex items-center gap-3">
+          {/* Shipping Information */}
+          <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_8px_30px_rgba(61,39,26,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] rounded-[2rem] overflow-hidden checkout-card bg-card">
+            <div className="bg-surface/80 dark:bg-stone-800/80 px-8 py-5 border-b border-stone-200/50 dark:border-stone-800 flex items-center gap-3">
               <Truck className="text-primary" size={20} />
-              <h2 className="font-serif font-bold text-lg tracking-tight">Shipping Information</h2>
+              <h2 className="font-serif font-bold text-lg tracking-tight text-dark dark:text-stone-100">Shipping Details</h2>
             </div>
-            <CardContent className="p-8 md:p-10 space-y-6">
+            <CardContent className="p-6 sm:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Full Name</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-primary">Full Name</label>
                   <Input
                     name="fullName"
-                    placeholder="Recipient Name"
-                    className="h-12 rounded-xl"
+                    placeholder="e.g. Sarah Muthoni"
+                    className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
                     value={formData.fullName}
                     onChange={handleInputChange}
                     disabled={paymentStatus !== 'idle'}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">M-Pesa Phone Number</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-primary">M-Pesa Phone Number</label>
                   <Input
                     name="phone"
                     placeholder="0712XXXXXX"
-                    className="h-12 rounded-xl"
+                    className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
                     value={formData.phone}
                     onChange={handleInputChange}
                     disabled={paymentStatus !== 'idle'}
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Street Address / Building / Office</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-primary">Delivery Address / House / Building</label>
                   <Input
                     name="address"
-                    placeholder="e.g. Garden Estate, House 42"
-                    className="h-12 rounded-xl"
+                    placeholder="e.g. Westlands, Mpaka Road, Suite 4B"
+                    className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
                     value={formData.address}
                     onChange={handleInputChange}
                     disabled={paymentStatus !== 'idle'}
@@ -249,35 +258,37 @@ const Checkout = () => {
           </Card>
 
           {/* M-Pesa Section */}
-          <Card className="border-none shadow-[0_8px_30px_rgba(61,39,26,0.08)] rounded-[2rem] overflow-hidden checkout-card">
-            <div className="bg-emerald-50/80 px-8 py-5 border-b border-emerald-100 flex items-center gap-3 backdrop-blur-sm">
-              <Smartphone className="text-emerald-600" size={20} />
-              <h2 className="font-serif font-bold text-lg text-emerald-900 tracking-tight">Payment Method — M-Pesa</h2>
+          <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_8px_30px_rgba(61,39,26,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] rounded-[2rem] overflow-hidden checkout-card bg-card">
+            <div className="bg-emerald-50/80 dark:bg-emerald-950/60 px-8 py-5 border-b border-emerald-100 dark:border-emerald-900/60 flex items-center gap-3">
+              <Smartphone className="text-emerald-600 dark:text-emerald-400" size={20} />
+              <h2 className="font-serif font-bold text-lg text-emerald-950 dark:text-emerald-200 tracking-tight">Payment Method — M-Pesa</h2>
             </div>
-            <CardContent className="p-8">
+            <CardContent className="p-6 sm:p-8">
               <AnimatePresence mode="wait">
                 {paymentStatus === 'idle' && (
                   <motion.div
                     key="idle"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
                     className="space-y-6"
                   >
-                    <div className="bg-surface p-6 rounded-2xl space-y-4 border border-border/10">
+                    <div className="bg-surface dark:bg-stone-800/80 p-6 rounded-2xl space-y-3 border border-stone-200/70 dark:border-stone-700">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">M-Pesa Till No.</span>
-                        <span className="text-lg font-mono font-black text-primary">3175088</span>
+                        <span className="text-xs font-black text-muted-foreground dark:text-stone-400 uppercase tracking-wider">M-Pesa Till No.</span>
+                        <span className="text-xl font-mono font-black text-primary dark:text-amber-300">3175088</span>
                       </div>
-                      <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-black">
+                      <p className="text-[10px] text-muted-foreground dark:text-stone-400 text-center uppercase tracking-widest font-black">
                         The Perfect Pick Selection
                       </p>
                     </div>
-                    <div className="bg-emerald-50/50 rounded-2xl p-6 border border-emerald-100 text-sm text-emerald-800 leading-relaxed">
-                      Enter your M-Pesa phone number above. Click "Pay with M-Pesa" and you will receive a prompt to enter your PIN.
+
+                    <div className="bg-emerald-50/60 dark:bg-emerald-950/30 rounded-2xl p-5 border border-emerald-100 dark:border-emerald-900/50 text-xs sm:text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">
+                      Enter your phone number above. Clicking <strong>"Pay with M-Pesa"</strong> will trigger an automated STK push prompt directly to your phone.
                     </div>
+
                     <Button
-                      className="w-full bg-[#39b54a] hover:bg-[#329e41] text-white h-14 rounded-2xl text-lg font-black"
+                      className="w-full bg-[#25a538] hover:bg-[#1f8c2e] text-white h-14 rounded-2xl text-lg font-black shadow-md cursor-pointer transition-transform active:scale-98"
                       onClick={handlePay}
                       disabled={loading}
                     >
@@ -289,32 +300,32 @@ const Checkout = () => {
                 {paymentStatus === 'waiting' && (
                   <motion.div
                     key="waiting"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
                     className="text-center space-y-6 py-4"
                   >
                     <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full mx-auto waiting-spinner" />
                     <div className="space-y-2">
-                      <h3 className="text-xl font-bold text-dark">Check your phone</h3>
-                      <p className="text-muted-foreground">
-                        We've sent an M-Pesa STK push to{' '}
-                        <span className="font-bold text-dark">{formData.phone}</span>. Enter your PIN to complete payment.
+                      <h3 className="text-2xl font-serif font-black text-dark dark:text-stone-100">Check Your Phone</h3>
+                      <p className="text-muted-foreground dark:text-stone-300 text-sm max-w-sm mx-auto">
+                        An M-Pesa prompt has been sent to{' '}
+                        <span className="font-bold text-dark dark:text-stone-100">{formData.phone}</span>. Enter your PIN to complete the transaction.
                       </p>
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 max-w-sm mx-auto">
                       <Button
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 rounded-2xl font-bold"
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-13 rounded-2xl font-black text-base shadow-md cursor-pointer"
                         onClick={handleConfirmPayment}
                         disabled={loading}
                       >
-                        {loading ? <Loader2 className="animate-spin mr-2" /> : "I've paid — confirm"}
+                        {loading ? <Loader2 className="animate-spin mr-2" /> : "I've Entered PIN — Confirm"}
                       </Button>
                       <button
-                        className="text-sm text-red-500 font-bold hover:underline"
+                        className="text-xs text-red-500 font-bold hover:underline cursor-pointer py-1"
                         onClick={() => setPaymentStatus('idle')}
                       >
-                        Cancel payment
+                        Cancel or retry
                       </button>
                     </div>
                   </motion.div>
@@ -323,54 +334,50 @@ const Checkout = () => {
                 {paymentStatus === 'fallback' && (
                   <motion.div
                     key="fallback"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
                     className="space-y-6 py-2"
                   >
-                    <div className="bg-amber-50 border border-amber-100 rounded-2xl p-6 space-y-4">
-                      <div className="flex items-center gap-3 text-amber-800 font-bold">
-                        <XCircle size={20} className="text-amber-600" />
-                        <span>STK Push could not be sent</span>
+                    <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-5 space-y-2">
+                      <div className="flex items-center gap-2.5 text-amber-900 dark:text-amber-200 font-bold text-sm">
+                        <XCircle size={18} className="text-amber-600 dark:text-amber-400" />
+                        <span>Automated prompt timed out</span>
                       </div>
-                      <p className="text-sm text-amber-700 leading-relaxed">
-                        Don't worry! You can still complete your order by paying manually to our Till Number below.
+                      <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+                        Please pay manually via M-Pesa Buy Goods Till number below to complete your order.
                       </p>
                     </div>
 
-                    <div className="bg-surface p-6 rounded-2xl space-y-4 border-2 border-primary/20">
-                      <div className="space-y-1">
-                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Buy Goods Till Number</p>
-                        <p className="text-4xl font-mono font-black text-primary text-center tracking-tighter checkout-till">{fallbackData.tillNumber}</p>
-                      </div>
-                      <div className="bg-white/50 p-3 rounded-xl border border-border/5">
-                        <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest font-black">
-                          The Perfect Pick Selection
-                        </p>
-                      </div>
+                    <div className="bg-surface dark:bg-stone-800 p-6 rounded-2xl space-y-3 border-2 border-primary/30">
+                      <p className="text-[10px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest text-center">Buy Goods Till Number</p>
+                      <p className="text-4xl font-mono font-black text-primary dark:text-amber-300 text-center tracking-tighter checkout-till">{fallbackData.tillNumber}</p>
+                      <p className="text-[10px] text-muted-foreground dark:text-stone-400 text-center uppercase tracking-widest font-black">
+                        The Perfect Pick Selection
+                      </p>
                     </div>
 
-                    <div className="space-y-4">
-                      <h4 className="text-xs font-black uppercase tracking-widest text-dark">How to pay:</h4>
-                      <ol className="text-xs space-y-3 text-muted-foreground font-medium">
-                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">1</span> Go to M-Pesa menu & select Lipa na M-Pesa</li>
-                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">2</span> Select Buy Goods and Services</li>
-                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">3</span> Enter Till Number: <span className="font-bold text-dark">{fallbackData.tillNumber}</span></li>
-                        <li className="flex gap-3"><span className="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0 font-bold">4</span> Enter Amount: <span className="font-bold text-dark">{formatPrice(total)}</span></li>
+                    <div className="space-y-3 bg-surface/50 dark:bg-stone-900/60 p-5 rounded-2xl border border-stone-200/50 dark:border-stone-800">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-dark dark:text-stone-100">Step-by-step:</h4>
+                      <ol className="text-xs space-y-2 text-medium dark:text-stone-300 font-medium">
+                        <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center shrink-0">1</span> M-Pesa &gt; Lipa na M-Pesa</li>
+                        <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center shrink-0">2</span> Buy Goods and Services</li>
+                        <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center shrink-0">3</span> Till Number: <strong className="text-dark dark:text-stone-100 ml-1">{fallbackData.tillNumber}</strong></li>
+                        <li className="flex gap-2.5"><span className="w-4 h-4 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center shrink-0">4</span> Amount: <strong className="text-dark dark:text-stone-100 ml-1">{formatPrice(total)}</strong></li>
                       </ol>
                     </div>
 
                     <Button
-                      className="w-full btn-primary h-14 rounded-2xl text-lg font-black"
+                      className="w-full btn-primary h-14 rounded-2xl text-base font-black shadow-md cursor-pointer"
                       onClick={() => navigate('/orders')}
                     >
                       I've Paid — View My Orders
                     </Button>
                     <button
-                      className="w-full text-xs font-bold text-muted-foreground hover:text-primary transition-colors"
+                      className="w-full text-xs font-bold text-muted-foreground dark:text-stone-400 hover:text-primary transition-colors cursor-pointer text-center"
                       onClick={() => setPaymentStatus('idle')}
                     >
-                      Try automated payment again
+                      Try automated STK payment again
                     </button>
                   </motion.div>
                 )}
@@ -378,15 +385,15 @@ const Checkout = () => {
                 {paymentStatus === 'success' && (
                   <motion.div
                     key="success"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center space-y-6 py-8"
                   >
-                    <CheckCircle2 id="success-check" className="mx-auto text-emerald-500" size={64} />
+                    <CheckCircle2 id="success-check" className="mx-auto text-emerald-500" size={60} />
                     <div className="space-y-2">
-                      <h3 className="text-2xl font-serif font-black text-dark">Payment Confirmed!</h3>
-                      <p className="text-muted-foreground">
-                        Your order <span className="font-bold text-dark">#{orderId?.slice(-6).toUpperCase()}</span> has been placed successfully.
+                      <h3 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Payment Confirmed!</h3>
+                      <p className="text-muted-foreground dark:text-stone-300 text-sm">
+                        Order <span className="font-mono font-black text-dark dark:text-stone-100">#{orderId?.slice(-6).toUpperCase()}</span> placed successfully.
                       </p>
                     </div>
                     <Button
@@ -401,14 +408,14 @@ const Checkout = () => {
                 {paymentStatus === 'failed' && (
                   <motion.div
                     key="failed"
-                    initial={{ opacity: 0, scale: 0.95 }}
+                    initial={{ opacity: 0, scale: 0.96 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="text-center space-y-6 py-8"
                   >
-                    <XCircle className="mx-auto text-red-500" size={64} />
+                    <XCircle className="mx-auto text-red-500" size={60} />
                     <div className="space-y-2">
-                      <h3 className="text-2xl font-serif font-black text-dark">Payment Failed</h3>
-                      <p className="text-muted-foreground">Something went wrong with your transaction. Please try again.</p>
+                      <h3 className="text-2xl font-serif font-black text-dark dark:text-stone-100">Payment Failed</h3>
+                      <p className="text-muted-foreground dark:text-stone-300 text-sm">We couldn't process this transaction. Please try again or use WhatsApp support.</p>
                     </div>
                     <Button
                       variant="outline"
@@ -425,14 +432,14 @@ const Checkout = () => {
         </div>
 
         {/* Order Summary Sidebar */}
-        <div className="w-full lg:w-[420px] checkout-col">
-          <div className="bg-white/90 backdrop-blur-md rounded-[2rem] p-8 md:p-9 shadow-[0_8px_30px_rgba(61,39,26,0.08)] border border-border/10 sticky top-28 space-y-8 checkout-card">
-            <h2 className="text-2xl font-serif font-black text-dark">Your Order</h2>
+        <div className="w-full lg:w-[400px] checkout-col">
+          <div className="bg-card text-card-foreground rounded-[2rem] p-7 sm:p-8 shadow-[0_8px_30px_rgba(61,39,26,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] border border-stone-200/70 dark:border-stone-800 sticky top-24 space-y-6 checkout-card">
+            <h2 className="text-2xl font-serif font-black text-dark dark:text-stone-100">Your Order</h2>
 
-            <div className="space-y-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-hide">
+            <div className="space-y-4 max-h-[35vh] overflow-y-auto pr-2 scrollbar-hide">
               {cartItems.map((item) => (
-                <div key={item?._id || `${item?.product?._id}-${item?.variant}`} className="flex gap-4">
-                  <div className="w-16 h-16 bg-surface rounded-lg flex-shrink-0 overflow-hidden">
+                <div key={item?._id || `${item?.product?._id}-${item?.variant}`} className="flex gap-3.5 items-center">
+                  <div className="w-14 h-14 bg-surface dark:bg-stone-800 rounded-xl flex-shrink-0 overflow-hidden border border-stone-200/50 dark:border-stone-700">
                     <img
                       src={item?.product?.images?.[0] || item?.product?.image || '/placeholder-image.jpg'}
                       alt={item?.product?.name || 'Product'}
@@ -441,26 +448,46 @@ const Checkout = () => {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-dark truncate">{item?.product?.name || 'Product'}</h4>
-                    <p className="text-[10px] text-muted-foreground uppercase font-bold">{item?.variant || 'Standard'} x {item?.quantity || 1}</p>
-                    <p className="text-xs font-bold text-primary mt-1">{formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}</p>
+                    <h4 className="text-sm font-bold text-dark dark:text-stone-100 truncate">{item?.product?.name || 'Product'}</h4>
+                    <p className="text-[10px] text-muted-foreground dark:text-stone-400 uppercase font-bold">{item?.variant || 'Standard'} x {item?.quantity || 1}</p>
+                    <p className="text-xs font-black text-primary dark:text-amber-300 mt-0.5">{formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <Separator className="bg-border/10" />
+            <Separator className="bg-border/40 dark:bg-stone-800" />
 
             <div className="space-y-2">
-              <div className="flex justify-between text-xl font-black text-dark">
+              <div className="flex justify-between text-sm text-medium dark:text-stone-300">
+                <span>Subtotal</span>
+                <span>{formatPrice(total)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-medium dark:text-stone-300">
+                <span>Delivery (Nairobi)</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase text-xs">Free</span>
+              </div>
+              <Separator className="bg-border/30 dark:bg-stone-800" />
+              <div className="flex justify-between text-xl font-black text-dark dark:text-stone-100 pt-1">
                 <span>Total</span>
-                <span className="text-primary">{formatPrice(total)}</span>
+                <span className="text-primary dark:text-amber-300">{formatPrice(total)}</span>
               </div>
             </div>
 
-            <div className="rounded-2xl bg-surface p-4 flex gap-3 text-xs text-medium leading-relaxed">
-              <CreditCard className="text-primary flex-shrink-0" size={16} />
-              <p>Your payment is secure via Safaricom M-Pesa. Please do not close this window during the process.</p>
+            {/* WhatsApp Assistance Button on Checkout */}
+            <a
+              href={whatsappCheckoutHelp}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full p-3 rounded-xl border border-emerald-500/30 bg-emerald-50/50 dark:bg-emerald-950/30 hover:bg-emerald-100/60 dark:hover:bg-emerald-900/40 text-emerald-900 dark:text-emerald-300 flex items-center justify-center gap-2 text-xs font-bold transition-colors"
+            >
+              <FaWhatsapp size={16} className="text-emerald-600 dark:text-emerald-400" />
+              <span>Need help? Chat on WhatsApp</span>
+            </a>
+
+            <div className="rounded-2xl bg-surface dark:bg-stone-800/80 p-4 flex gap-3 text-xs text-medium dark:text-stone-300 leading-relaxed border border-stone-200/50 dark:border-stone-700">
+              <CreditCard className="text-primary shrink-0 mt-0.5" size={16} />
+              <p>M-Pesa encrypted payment. Your order is dispatched promptly once payment completes.</p>
             </div>
           </div>
         </div>
