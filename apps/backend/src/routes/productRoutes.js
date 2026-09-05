@@ -6,7 +6,8 @@ import {
     createProduct,
     updateProduct,
     deleteProduct,
-    getCategories
+    getCategories,
+    getCategoryGroups
 } from '../controllers/productController.js';
 import { protect, admin } from '../middleware/protect.js';
 
@@ -16,6 +17,7 @@ const router = express.Router();
 router.get('/', getProducts);
 router.get('/featured', getFeaturedProducts);  // <-- ADD THIS for /api/products/featured
 router.get('/categories', getCategories);
+router.get('/category-groups', getCategoryGroups);
 router.get('/:id', getProductById);
 
 // Admin routes

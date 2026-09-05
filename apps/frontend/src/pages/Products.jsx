@@ -17,11 +17,15 @@ import {
 } from '../components/ui/select';
 import { cn } from '../lib/utils';
 
-const FALLBACK_CATEGORIES = ['All', 'Bags', 'Shoes', 'Jewelry', 'Gifts', 'Accessories', 'Clothes'];
+const FALLBACK_CATEGORIES = ['All', 'bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes', 'handbags', 'earrings', 'hairclips', 'keyrings', 'phone-charms', 'beauty-accessories', 'gift-boxes', 'mugs', 'fans', 'body-mists', 'oils', 'ponchos', 'sweaters', 'cardigans', 'watches', 'rings'];
 
 const formatCategoryLabel = (value) => {
-  if (value === 'All') return 'All';
-  return value.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    if (value === 'All') return 'All';
+    return value.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+};
+
+const flattenGroupedCategories = (groups) => {
+    return groups.flatMap(g => g.categories);
 };
 
 const Products = () => {
@@ -53,19 +57,20 @@ const Products = () => {
   }, [activeCategory, searchTerm, sort]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await api.get('/products/categories');
+const fetchCategories = async () => {
+    try {
+        const { data } = await api.get('/products/category-groups');
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          setCategories(['All', ...data.data]);
+            const flat = flattenGroupedCategories(data.data);
+            setCategories(['All', ...flat]);
         } else {
-          setCategories(FALLBACK_CATEGORIES);
+            setCategories(FALLBACK_CATEGORIES);
         }
-      } catch (error) {
+    } catch (error) {
         console.error("Error fetching categories:", error);
         setCategories(FALLBACK_CATEGORIES);
-      }
-    };
+    }
+};
     fetchCategories();
   }, []);
 

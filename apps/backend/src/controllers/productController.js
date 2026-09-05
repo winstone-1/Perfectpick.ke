@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import { CATEGORY_GROUPS } from '../config/categories.js';
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -175,10 +176,26 @@ export const getFeaturedProducts = async (req, res) => {
 // @access  Public
 export const getCategories = async (req, res) => {
     try {
-        const categories = Product.schema.path('category').enumValues;
+        const categories = CATEGORY_GROUPS.flatMap(g => g.categories);
         res.json({ success: true, data: categories });
     } catch (error) {
         console.error(`Error in getCategories: ${error.message}`);
         res.status(500).json({ success: false, message: 'Server error while fetching categories' });
+    }
+};
+
+// @desc    Fetch category groups
+// @route   GET /api/products/category-groups
+// @access  Public
+export const getCategoryGroups = async (req, res) => {
+    try {
+        const groups = CATEGORY_GROUPS.map(g => ({
+            parent: g.parent,
+            categories: g.categories,
+        }));
+        res.json({ success: true, data: groups });
+    } catch (error) {
+        console.error(`Error in getCategoryGroups: ${error.message}`);
+        res.status(500).json({ success: false, message: 'Server error while fetching category groups' });
     }
 };

@@ -70,19 +70,20 @@ const Home = () => {
 
   const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const { data } = await api.get('/products/categories');
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          setCategories(data.data.map(value => getCategoryMeta(value)));
+        try {
+            const { data } = await api.get('/products/category-groups');
+            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                const flat = data.data.flatMap(g => g.categories);
+                setCategories(flat.map(value => getCategoryMeta(value)));
+            }
+        } catch {
+            // keep fallback for loading/error
         }
-      } catch {
-        // keep fallback for loading/error
-      }
     };
     fetchCategories();
-  }, []);
+}, []);
 
   const stats = [
     { label: 'Curated Products', value: '500+' },

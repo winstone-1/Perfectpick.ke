@@ -34,21 +34,22 @@ const Navbar = () => {
 
   const wishlistCount = wishlist.length;
 
-  useEffect(() => {
+useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const { data } = await api.get('/products/categories');
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          setCategories(data.data);
-        } else {
-          setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
+        try {
+            const { data } = await api.get('/products/category-groups');
+            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                const flat = data.data.flatMap(g => g.categories);
+                setCategories(flat);
+            } else {
+                setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
+            }
+        } catch (error) {
+            setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
         }
-      } catch (error) {
-        setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
-      }
     };
     fetchCategories();
-  }, []);
+}, []);
 
   useEffect(() => {
     const handleScroll = () => {

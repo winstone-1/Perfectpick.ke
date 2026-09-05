@@ -106,24 +106,25 @@ const LandingPage = () => {
     return () => clearInterval(bannerInterval.current);
   }, [banners]);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const { data } = await api.get('/products/categories');
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          const mapped = data.data.map(value => ({
-            label: formatCategoryLabel(value),
-            value,
-            Icon: getIconForCategory(value),
-          }));
-          setCategories(mapped);
+        try {
+            const { data } = await api.get('/products/category-groups');
+            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                const flat = data.data.flatMap(g => g.categories);
+                const mapped = flat.map(value => ({
+                    label: formatCategoryLabel(value),
+                    value,
+                    Icon: getIconForCategory(value),
+                }));
+                setCategories(mapped);
+            }
+        } catch {
+            // keep fallback
         }
-      } catch {
-        // keep fallback
-      }
     };
     fetchCategories();
-  }, []);
+}, []);
 
   const goToBanner = (idx) => { setBannerIndex(idx); clearInterval(bannerInterval.current); };
 
