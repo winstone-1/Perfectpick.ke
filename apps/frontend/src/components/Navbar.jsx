@@ -200,7 +200,7 @@ const Navbar = () => {
               
               <Link to="/wishlist" className="relative group" title="Wishlist">
                 <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
-                  <Heart size={20} className={wishlistedCount > 0 ? "fill-red-500 text-red-500" : ""} />
+                  <Heart size={20} className={wishlistCount > 0 ? "fill-red-500 text-red-500" : ""} />
                   <AnimatePresence>
                     {wishlistCount > 0 && (
                       <motion.span 
