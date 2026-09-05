@@ -10,7 +10,8 @@ import {
   ShieldCheck, 
   CheckCircle2, 
   Clock,
-  ShoppingBag
+  ShoppingBag,
+  MessageCircle
 } from 'lucide-react';
 import api from '../api/axios';
 import { Badge } from '../components/ui/badge';
@@ -59,51 +60,61 @@ const OrderDetail = () => {
     }).format(price);
   };
 
+  const openWhatsApp = () => {
+    const orderId = order?._id?.slice(-6).toUpperCase() || id;
+    const text = encodeURIComponent(`Hello PerfectPick! I am inquiring about my Order #${orderId}.`);
+    window.open(`https://wa.me/254787251690?text=${text}`, '_blank');
+  };
+
   if (loading) return <div className="container mx-auto px-4 py-20"><Skeleton className="h-[600px] w-full rounded-3xl" /></div>;
-  if (!order) return <div className="container mx-auto px-4 py-20 text-center">Order not found</div>;
+  if (!order) return <div className="container mx-auto px-4 py-20 text-center text-dark dark:text-stone-100">Order not found</div>;
 
   return (
-    <div className="container mx-auto px-4 py-12 lg:py-20 space-y-12">
+    <div className="container mx-auto px-4 sm:px-6 py-10 lg:py-16 space-y-10">
       <Link 
         to="/orders" 
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group"
+        className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground dark:text-stone-400 hover:text-primary transition-colors group uppercase tracking-wider"
       >
-        <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+        <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
         Back to Orders
       </Link>
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-border/40 dark:border-stone-800">
         <div className="space-y-2">
-          <div className="flex items-center gap-3">
-            <h1 className="text-3xl md:text-5xl font-serif font-black text-dark">Order Details</h1>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-3xl md:text-4xl font-serif font-black text-dark dark:text-stone-100">Order Details</h1>
             <Badge className={cn(
-              "rounded-full px-4 py-1 border shadow-sm font-bold uppercase text-[10px] tracking-widest",
-              isCancelled ? "bg-red-100 text-red-700 border-red-200" : "bg-emerald-100 text-emerald-700 border-emerald-200"
+              "rounded-full px-3.5 py-1 border shadow-xs font-bold uppercase text-[10px] tracking-widest",
+              isCancelled 
+                ? "bg-rose-100 text-rose-800 dark:bg-rose-950/70 dark:text-rose-300 border-rose-200 dark:border-rose-900" 
+                : "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-900"
             )}>
               {order.status}
             </Badge>
           </div>
-          <p className="text-muted-foreground font-mono text-sm uppercase">Order #{order._id.toUpperCase()}</p>
+          <p className="text-muted-foreground dark:text-stone-400 font-mono text-xs uppercase tracking-wider">
+            Order #{order._id?.toUpperCase()}
+          </p>
         </div>
-        <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
-          <Calendar size={18} />
+        <div className="flex items-center gap-2 text-muted-foreground dark:text-stone-400 text-xs font-medium">
+          <Calendar size={16} className="text-primary" />
           <span>Placed on {new Date(order.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-10 items-start">
         {/* Progress & Items */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-8">
           {/* Progress Tracker */}
           {!isCancelled && (
-            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-              <CardContent className="p-8 md:p-12">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl bg-card text-card-foreground overflow-hidden">
+              <CardContent className="p-6 md:p-8">
                 <div className="relative flex justify-between">
                   {/* Progress Line */}
-                  <div className="absolute top-5 left-0 w-full h-0.5 bg-border/20 z-0" />
+                  <div className="absolute top-5 left-0 w-full h-0.5 bg-stone-200 dark:bg-stone-800 z-0" />
                   <motion.div 
                     initial={{ width: 0 }}
-                    animate={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
+                    animate={{ width: `${(Math.max(0, currentStepIndex) / (steps.length - 1)) * 100}%` }}
                     className="absolute top-5 left-0 h-0.5 bg-primary z-0"
                   />
                   
@@ -111,19 +122,21 @@ const OrderDetail = () => {
                     const isActive = i <= currentStepIndex;
                     const isCurrent = i === currentStepIndex;
                     return (
-                      <div key={i} className="relative z-10 flex flex-col items-center gap-3">
+                      <div key={i} className="relative z-10 flex flex-col items-center gap-2">
                         <motion.div 
-                          animate={{ scale: isCurrent ? 1.2 : 1 }}
+                          animate={{ scale: isCurrent ? 1.15 : 1 }}
                           className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-500",
-                            isActive ? "bg-primary border-primary text-white" : "bg-white border-border/20 text-muted-foreground"
+                            "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-colors duration-500 shadow-xs",
+                            isActive 
+                              ? "bg-primary border-primary text-white dark:text-stone-900" 
+                              : "bg-surface dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-muted-foreground dark:text-stone-400"
                           )}
                         >
                           {step.icon}
                         </motion.div>
                         <span className={cn(
-                          "text-[10px] uppercase font-black tracking-widest",
-                          isActive ? "text-dark" : "text-muted-foreground"
+                          "text-[10px] uppercase font-black tracking-wider text-center",
+                          isActive ? "text-dark dark:text-stone-100" : "text-muted-foreground dark:text-stone-500"
                         )}>
                           {step.label}
                         </span>
@@ -136,54 +149,55 @@ const OrderDetail = () => {
           )}
 
           {/* Items List */}
-          <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-            <div className="bg-surface px-10 py-6 border-b border-border/10 flex items-center gap-4">
+          <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl bg-card text-card-foreground overflow-hidden">
+            <div className="bg-surface/50 dark:bg-stone-900/60 px-6 sm:px-8 py-5 border-b border-border/40 dark:border-stone-800 flex items-center gap-3">
               <ShoppingBag className="text-primary" size={20} />
-              <h2 className="font-serif font-black text-xl">Order Items</h2>
+              <h2 className="font-serif font-black text-lg text-dark dark:text-stone-100">Order Items</h2>
             </div>
-            <CardContent className="p-8 md:p-10 space-y-8">
-              {order.items.map((item, i) => {
+            <CardContent className="p-6 sm:p-8 space-y-6">
+              {order.items?.map((item, i) => {
                 const prod = item.product || item.productId;
                 const img = prod?.images?.[0] || prod?.image;
                 const name = prod?.name || 'Product';
                 return (
-                <div key={i} className="flex flex-col sm:flex-row gap-6 sm:items-center justify-between group">
-                  <div className="flex gap-6 items-center">
-                    <div className="h-24 w-24 bg-surface rounded-2xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                <div key={i} className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between group">
+                  <div className="flex gap-4 sm:gap-5 items-center">
+                    <div className="h-20 w-20 bg-surface dark:bg-stone-800 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center border border-stone-200/50 dark:border-stone-700">
                       {img ? (
-                        <img src={img} alt={name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <img src={img} alt={name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                       ) : (
-                        <Package size={32} className="text-medium opacity-20" />
+                        <Package size={28} className="text-medium dark:text-stone-400 opacity-30" />
                       )}
                     </div>
                     <div className="space-y-1">
-                      <h4 className="font-serif font-bold text-lg text-dark">{name}</h4>
-                      <p className="text-xs font-bold uppercase tracking-widest text-primary">{item.variant}</p>
-                      <p className="text-sm text-medium">{item.quantity} x {formatPrice(item.price)}</p>
+                      <h4 className="font-serif font-bold text-base text-dark dark:text-stone-100">{name}</h4>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-primary">{item.variant || 'Standard'}</p>
+                      <p className="text-xs text-muted-foreground dark:text-stone-400">{item.quantity} × {formatPrice(item.price)}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-xl text-dark">{formatPrice(item.price * item.quantity)}</p>
+                    <p className="font-black text-lg text-primary dark:text-amber-300">{formatPrice(item.price * item.quantity)}</p>
                   </div>
                 </div>
                 );
               })}
               
-              <Separator className="bg-border/10" />
+              <Separator className="bg-border/40 dark:bg-stone-800" />
               
-              <div className="flex justify-end pt-4">
-                <div className="space-y-2 w-full max-w-xs">
-                  <div className="flex justify-between text-medium">
+              <div className="flex justify-end pt-2">
+                <div className="space-y-2.5 w-full max-w-xs text-sm">
+                  <div className="flex justify-between text-medium dark:text-stone-300">
                     <span>Subtotal</span>
-                    <span>{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
+                    <span className="font-bold text-dark dark:text-stone-100">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                   </div>
-                  <div className="flex justify-between text-medium">
+                  <div className="flex justify-between text-medium dark:text-stone-300">
                     <span>Delivery</span>
-                    <span className="text-emerald-600 font-bold uppercase text-[10px] tracking-widest">Free</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase text-[11px] tracking-wider">Free (Nairobi)</span>
                   </div>
-                  <div className="flex justify-between items-center text-2xl font-black text-dark pt-4">
+                  <Separator className="bg-border/40 dark:bg-stone-800" />
+                  <div className="flex justify-between items-center text-xl font-black text-dark dark:text-stone-100 pt-1">
                     <span>Total</span>
-                    <span className="text-primary">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
+                    <span className="text-primary dark:text-amber-300">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                   </div>
                 </div>
               </div>
@@ -192,36 +206,40 @@ const OrderDetail = () => {
         </div>
 
         {/* Info Sidebar */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {/* Shipping Address */}
-          <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-            <div className="bg-surface px-8 py-5 border-b border-border/10 flex items-center gap-3">
+          <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl bg-card text-card-foreground overflow-hidden">
+            <div className="bg-surface/50 dark:bg-stone-900/60 px-6 py-4 border-b border-border/40 dark:border-stone-800 flex items-center gap-2.5">
               <MapPin className="text-primary" size={18} />
-              <h3 className="font-serif font-bold">Shipping Address</h3>
+              <h3 className="font-serif font-bold text-dark dark:text-stone-100">Shipping Address</h3>
             </div>
-            <CardContent className="p-8 space-y-4">
-              <div className="space-y-1">
-                <p className="font-bold text-dark text-lg">{order.shippingAddress.fullName}</p>
-                <p className="text-medium">{order.shippingAddress.phone}</p>
+            <CardContent className="p-6 space-y-3 text-sm">
+              <div className="space-y-0.5">
+                <p className="font-bold text-dark dark:text-stone-100">{order.shippingAddress?.fullName}</p>
+                <p className="text-muted-foreground dark:text-stone-400">{order.shippingAddress?.phone}</p>
               </div>
-              <p className="text-medium leading-relaxed">
-                {order.shippingAddress.address}<br />
-                {order.shippingAddress.city}, Kenya
+              <p className="text-muted-foreground dark:text-stone-300 leading-relaxed">
+                {order.shippingAddress?.address}<br />
+                {order.shippingAddress?.city}, Kenya
               </p>
             </CardContent>
           </Card>
 
-          {/* Secure Note */}
-          <div className="bg-dark rounded-[2.5rem] p-8 text-white space-y-4 shadow-xl">
-            <div className="flex items-center gap-3 text-primary">
-              <ShieldCheck size={24} />
-              <h3 className="font-serif font-bold text-lg text-footer-text">Secure Shopping</h3>
+          {/* Secure Note & Support */}
+          <div className="bg-stone-900 dark:bg-stone-950 rounded-3xl p-6 text-stone-100 space-y-4 border border-stone-800 shadow-xl">
+            <div className="flex items-center gap-2.5 text-amber-400">
+              <ShieldCheck size={22} />
+              <h3 className="font-serif font-bold text-base text-stone-100">Authenticity Guarantee</h3>
             </div>
-            <p className="text-sm text-white/60 leading-relaxed">
-              Every Perfect Pick purchase is backed by our authenticity guarantee. If you have any issues with your order, please contact Perfect Pick Nairobi.
+            <p className="text-xs text-stone-300 dark:text-stone-400 leading-relaxed">
+              Every Perfect Pick purchase is backed by our customer satisfaction promise. Need assistance with this order?
             </p>
-            <Button variant="outline" className="w-full border-white/20 text-white hover:bg-white/10 rounded-xl h-12">
-              Contact Support
+            <Button 
+              onClick={openWhatsApp}
+              className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl h-12 flex items-center justify-center gap-2 cursor-pointer shadow-md"
+            >
+              <MessageCircle size={18} />
+              Chat on WhatsApp
             </Button>
           </div>
         </div>
