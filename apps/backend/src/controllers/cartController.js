@@ -9,6 +9,14 @@ export const getCart = async (req, res, next) => {
         if (!cart) {
             cart = await Cart.create({ user: req.user._id, items: [] });
         }
+
+        // Remove stale items where product no longer exists (deleted from DB)
+        const staleItems = cart.items.filter(item => !item.product);
+        if (staleItems.length > 0) {
+            cart.items = cart.items.filter(item => item.product);
+            await cart.save();
+        }
+
         res.json({ success: true, data: cart });
     } catch (error) {
         next(error);

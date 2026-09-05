@@ -8,10 +8,18 @@ export const addOrderItems = async (req, res, next) => {
     try {
         const { shippingAddress } = req.body;
 
-        const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
+        let cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
 
         if (!cart || cart.items.length === 0) {
             return res.status(400).json({ success: false, message: 'Cart is empty' });
+        }
+
+        // Remove stale items where product no longer exists (deleted from DB)
+        const staleCount = cart.items.filter(item => !item.product).length;
+        if (staleCount > 0) {
+            console.warn(`[WARN] Removing ${staleCount} stale cart item(s) with missing product references`);
+            cart.items = cart.items.filter(item => item.product);
+            await cart.save();
         }
 
         let totalPrice = 0;
