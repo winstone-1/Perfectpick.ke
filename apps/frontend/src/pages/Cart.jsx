@@ -21,7 +21,7 @@ const Cart = () => {
   const navigate = useNavigate();
 
   const formatPrice = (price) => {
-    if (!price && price !== 0) return 'KSH 0';
+    if (!price && price !== 0) return 'KES 0';
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
       currency: 'KES',
@@ -35,35 +35,40 @@ const Cart = () => {
 
   if (!hasItems && !loading) {
     return (
-      <div className="container mx-auto px-4 py-32 flex flex-col items-center justify-center text-center space-y-8">
+      <div className="container mx-auto px-4 py-28 flex flex-col items-center justify-center text-center space-y-6">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="w-32 h-32 bg-surface rounded-full flex items-center justify-center text-primary"
+          className="w-28 h-28 bg-surface dark:bg-stone-800 rounded-full flex items-center justify-center text-primary"
         >
-          <ShoppingBag size={64} />
+          <ShoppingBag size={52} />
         </motion.div>
         <div className="space-y-2">
-          <h1 className="text-3xl font-serif font-black text-dark">Your bag is empty</h1>
-          <p className="text-muted-foreground max-w-xs">
-            Looks like you haven't added any luxury pieces to your cart yet.
+          <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Your bag is empty</h1>
+          <p className="text-muted-foreground dark:text-stone-400 text-sm max-w-sm mx-auto">
+            Looks like you haven't added any luxury pieces to your cart yet. Explore our curated Nairobi catalog.
           </p>
         </div>
         <Link to="/products">
-          <Button className="btn-primary h-12 px-10 rounded-full">Explore Our Collection</Button>
+          <Button className="btn-primary h-12 px-8 rounded-full">Explore Collection</Button>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 lg:py-20">
-      <div className="flex flex-col lg:flex-row gap-12">
+    <div className="container mx-auto px-4 sm:px-6 py-10 lg:py-16">
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-14">
         {/* Cart Items */}
-        <div className="flex-1 space-y-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-serif font-black text-dark">Shopping Bag ({cartItems.length})</h1>
-            <Link to="/products" className="text-sm font-bold text-primary hover:underline flex items-center gap-1 group">
+        <div className="flex-1 space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-border/40 dark:border-stone-800">
+            <div>
+              <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Shopping Bag</h1>
+              <p className="text-xs text-muted-foreground dark:text-stone-400 uppercase font-black tracking-widest mt-0.5">
+                {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} selected
+              </p>
+            </div>
+            <Link to="/products" className="text-xs font-bold text-primary hover:underline flex items-center gap-1 group">
               <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
               Continue Shopping
             </Link>
@@ -72,82 +77,88 @@ const Cart = () => {
           <div className="space-y-4">
             <AnimatePresence mode="popLayout">
               {cartItems.map((item) => {
+                const prod = item?.product;
+                const img = prod?.images?.[0] || prod?.image;
+                const name = prod?.name || 'Product';
+                const price = prod?.price || 0;
+                const itemTotal = price * (item?.quantity || 1);
+
                 return (
                   <motion.div
-                    key={item?._id || `${item?.product?._id}-${item?.variant}`}
+                    key={item?._id || `${prod?._id}-${item?.variant}`}
                     layout
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Card className="border-none shadow-sm overflow-hidden bg-white/50 hover:bg-white transition-colors">
-                    <CardContent className="p-4 md:p-6 flex gap-4 md:gap-6">
-                      {/* Image */}
-                      <div className="w-24 h-24 md:w-32 md:h-32 bg-surface rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        {item?.product?.images?.[0] || item?.product?.image ? (
-                          <img 
-                            src={item.product.images?.[0] || item.product.image} 
-                            alt={item.product.name || 'Product'} 
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              e.target.src = '';
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                        ) : (
-                          <ShoppingBag size={32} className="text-medium opacity-20" />
-                        )}
-                      </div>
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_16px_rgba(61,39,26,0.03)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] rounded-3xl overflow-hidden bg-card">
+                      <CardContent className="p-4 sm:p-6 flex gap-4 sm:gap-6 items-center">
+                        {/* Image */}
+                        <div className="w-20 h-20 sm:w-28 sm:h-28 bg-surface dark:bg-stone-800 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center border border-stone-200/50 dark:border-stone-700">
+                          {img ? (
+                            <img 
+                              src={img} 
+                              alt={name} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.style.display = 'none'; }}
+                            />
+                          ) : (
+                            <ShoppingBag size={28} className="text-medium opacity-20" />
+                          )}
+                        </div>
 
-                      {/* Details */}
-                      <div className="flex-1 flex flex-col justify-between">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-serif font-bold text-lg text-dark">{item?.product?.name || 'Product'}</h3>
-                            <p className="text-xs font-bold uppercase tracking-widest text-[#c08050] mt-1">
-                              {item?.variant || 'Standard'}
+                        {/* Details */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between py-1">
+                          <div className="flex justify-between items-start gap-2">
+                            <div>
+                              <h3 className="font-serif font-bold text-base sm:text-lg text-dark dark:text-stone-100 truncate">{name}</h3>
+                              <p className="text-[11px] font-black uppercase tracking-widest text-primary mt-0.5">
+                                {item?.variant || 'Standard'}
+                              </p>
+                            </div>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="text-muted-foreground dark:text-stone-400 hover:text-red-500 dark:hover:text-red-400 -mt-1 -mr-1"
+                              onClick={() => item?._id && removeFromCart(item._id)}
+                              aria-label="Remove item"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          </div>
+
+                          <div className="flex justify-between items-end mt-4">
+                            {/* Stepper */}
+                            <div className="flex items-center border border-stone-200/80 dark:border-stone-700 rounded-xl p-0.5 bg-surface/50 dark:bg-stone-800">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-7 w-7 text-medium dark:text-stone-300"
+                                onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) - 1)}
+                                disabled={(item?.quantity || 1) <= 1}
+                              >
+                                <Minus size={12} />
+                              </Button>
+                              <span className="w-7 text-center font-bold text-xs text-dark dark:text-stone-100">{item?.quantity || 1}</span>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="h-7 w-7 text-medium dark:text-stone-300"
+                                onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) + 1)}
+                              >
+                                <Plus size={12} />
+                              </Button>
+                            </div>
+
+                            <p className="font-black text-base sm:text-lg text-primary dark:text-amber-300">
+                              {formatPrice(itemTotal)}
                             </p>
                           </div>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="text-muted-foreground hover:text-red-500 -mt-1 -mr-1"
-                            onClick={() => item?._id && removeFromCart(item._id)}
-                          >
-                            <Trash2 size={18} />
-                          </Button>
                         </div>
-
-                        <div className="flex justify-between items-end mt-4">
-                          <div className="flex items-center border border-border/10 rounded-lg p-0.5 bg-bg/50">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-medium"
-                              onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) - 1)}
-                              disabled={(item?.quantity || 1) <= 1}
-                            >
-                              <Minus size={14} />
-                            </Button>
-                            <span className="w-8 text-center font-bold text-sm">{item?.quantity || 1}</span>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="h-8 w-8 text-medium"
-                              onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) + 1)}
-                            >
-                              <Plus size={14} />
-                            </Button>
-                          </div>
-                          <p className="font-bold text-dark">
-                            {formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 );
               })}
             </AnimatePresence>
@@ -155,43 +166,43 @@ const Cart = () => {
         </div>
 
         {/* Summary Sidebar */}
-        <div className="w-full lg:w-[400px]">
-          <div className="bg-white rounded-3xl p-8 shadow-xl border border-border/10 sticky top-24 space-y-8">
-            <h2 className="text-2xl font-serif font-black text-dark">Order Summary</h2>
+        <div className="w-full lg:w-[380px]">
+          <div className="bg-card text-card-foreground rounded-[2rem] p-7 sm:p-8 shadow-[0_8px_30px_rgba(61,39,26,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] border border-stone-200/70 dark:border-stone-800 sticky top-24 space-y-6">
+            <h2 className="text-2xl font-serif font-black text-dark dark:text-stone-100">Order Summary</h2>
             
-            <div className="space-y-4">
-              <div className="flex justify-between text-medium">
+            <div className="space-y-3.5">
+              <div className="flex justify-between text-sm text-medium dark:text-stone-300">
                 <span>Subtotal</span>
-                <span>{formatPrice(cartTotal)}</span>
+                <span className="font-bold text-dark dark:text-stone-100">{formatPrice(cartTotal)}</span>
               </div>
-              <div className="flex justify-between text-medium">
-                <span>Delivery</span>
-                <span className="text-emerald-600 font-bold uppercase text-[10px] tracking-widest mt-1">Free</span>
+              <div className="flex justify-between text-sm text-medium dark:text-stone-300">
+                <span>Estimated Delivery</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold uppercase text-xs">Free (Nairobi)</span>
               </div>
-              <p className="text-[10px] text-muted-foreground leading-relaxed italic">
-                * Standard delivery within Nairobi takes 1-2 business days.
+              <p className="text-[11px] text-muted-foreground dark:text-stone-400 leading-relaxed">
+                Standard delivery in Nairobi takes 1–2 business days.
               </p>
               
-              <Separator className="bg-border/10" />
+              <Separator className="bg-border/40 dark:bg-stone-800" />
               
-              <div className="flex justify-between items-center text-xl font-black text-dark pt-2">
+              <div className="flex justify-between items-center text-xl font-black text-dark dark:text-stone-100 pt-1">
                 <span>Total</span>
-                <span className="text-primary">{formatPrice(cartTotal)}</span>
+                <span className="text-primary dark:text-amber-300">{formatPrice(cartTotal)}</span>
               </div>
             </div>
 
             <Button 
-              className="w-full btn-primary h-14 rounded-2xl text-lg font-black group"
+              className="w-full btn-primary h-14 rounded-2xl text-base font-black group shadow-md cursor-pointer"
               onClick={() => navigate('/checkout')}
               disabled={!hasItems}
             >
               Proceed to Checkout
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={18} />
             </Button>
 
-            <div className="pt-4 flex items-center justify-center gap-2 text-xs text-muted-foreground font-medium">
-              <Truck size={14} />
-              <span>Free delivery across Nairobi CBD</span>
+            <div className="pt-2 flex items-center justify-center gap-2 text-xs text-muted-foreground dark:text-stone-400 font-medium">
+              <Truck size={14} className="text-primary" />
+              <span>Free delivery across Nairobi CBD & Estates</span>
             </div>
           </div>
         </div>
