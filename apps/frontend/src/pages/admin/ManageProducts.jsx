@@ -173,8 +173,7 @@ const ManageProducts = () => {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Delete this product?')) return;
+  const performDelete = async (id) => {
     try {
       await api.delete(`/admin/products/${id}`);
       toast.success('Product deleted');
@@ -182,6 +181,20 @@ const ManageProducts = () => {
     } catch {
       toast.error('Failed to delete product');
     }
+  };
+
+  const handleDelete = (id) => {
+    toast('Delete this product?', {
+      description: 'This action cannot be undone.',
+      action: {
+        label: 'Delete',
+        onClick: () => performDelete(id),
+      },
+      cancel: {
+        label: 'Cancel',
+        onClick: () => {},
+      },
+    });
   };
 
   const PriceDisplay = (price) => new Intl.NumberFormat('en-KE', {
