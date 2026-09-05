@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart, Sparkles, Truck, RotateCcw, MessageCircle } from 'lucide-react';
 import { FaCrown, FaInstagram, FaXTwitter, FaTiktok, FaWhatsapp } from 'react-icons/fa6';
@@ -21,8 +21,8 @@ const About = () => {
     { 
       icon: <MapPin className="text-primary dark:text-amber-300" size={22} />, 
       title: 'Visit Us', 
-      detail: 'Nairobi Commercial Center, Floor 2, Nairobi, Kenya',
-      link: null 
+      detail: 'Amaziah Square, Muthiga\nAlong Waiyaki Way, Nairobi',
+      link: 'https://maps.google.com/?q=Amaziah+Square+Muthiga+Waiyaki+Way+Nairobi'
     },
     { 
       icon: <Phone className="text-primary dark:text-amber-300" size={22} />, 
@@ -199,7 +199,7 @@ const About = () => {
                   <div>
                     <h3 className="font-serif font-bold text-base text-dark dark:text-stone-100">{info.title}</h3>
                     {info.link ? (
-                      <a href={info.link} className="text-xs text-primary dark:text-amber-300 hover:underline mt-1 inline-block font-medium">
+                      <a href={info.link} target={info.link && info.link.startsWith("http") ? "_blank" : undefined} rel={info.link && info.link.startsWith("http") ? "noopener noreferrer" : undefined} className="text-xs text-primary dark:text-amber-300 hover:underline mt-1 block font-medium whitespace-pre-line leading-relaxed">
                         {info.detail}
                       </a>
                     ) : (

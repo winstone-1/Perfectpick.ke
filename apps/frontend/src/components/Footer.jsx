@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
@@ -76,7 +76,7 @@ const Footer = () => {
             <ul className="space-y-3.5 text-sm text-footer-text/85">
               <li className="flex items-start gap-3">
                 <MapPin className="text-primary shrink-0 mt-0.5" size={17} />
-                <span>Nairobi Commercial Center, Floor 2, Nairobi, Kenya</span>
+                <a href="https://maps.google.com/?q=Amaziah+Square+Muthiga+Waiyaki+Way+Nairobi" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors leading-relaxed">Amaziah Square, Muthiga<br />Along Waiyaki Way, Nairobi</a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="text-primary shrink-0" size={17} />

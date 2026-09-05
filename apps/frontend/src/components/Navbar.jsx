@@ -21,6 +21,12 @@ import { cn } from '../lib/utils';
 import api from '../api/axios';
 import DarkModeToggle from './DarkModeToggle';
 
+// Resolve brand logo from assets automatically.
+// Drop logo.jpg (or .png/.webp) into src/assets/ and rebuild to activate.
+const logoModules = import.meta.glob('../assets/logo.{jpg,jpeg,png,webp}', { eager: true });
+const logoEntry   = Object.values(logoModules)[0];
+const logoSrc     = logoEntry?.default ?? null;
+
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -93,16 +99,23 @@ useEffect(() => {
     >
       <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center gap-2 group shrink-0" aria-label="Perfect Pick — home">
           <motion.div
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-1.5"
+            className="flex items-center gap-2"
           >
-            <span className="text-2xl sm:text-3xl font-serif font-black text-dark dark:text-[#faf7f4] tracking-tight group-hover:text-primary transition-colors">
+            {logoSrc && (
+              <img
+                src={logoSrc}
+                alt="Perfect Pick logo"
+                className="h-9 w-9 rounded-full object-cover border border-primary/20 shadow-sm group-hover:ring-2 group-hover:ring-primary/40 transition-all"
+              />
+            )}
+            <span className="text-xl sm:text-2xl font-serif font-black text-dark dark:text-[#faf7f4] tracking-tight group-hover:text-primary transition-colors leading-none">
               Perfect Pick
             </span>
-            <span className="w-2 h-2 rounded-full bg-primary inline-block" />
+            {!logoSrc && <span className="w-2 h-2 rounded-full bg-primary inline-block" />}
           </motion.div>
         </Link>
 
