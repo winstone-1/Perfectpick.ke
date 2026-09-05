@@ -231,12 +231,12 @@ const LandingPage = () => {
             key={`tag-${heroIndex}`}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute bottom-24 right-8 md:right-16 z-10 bg-white/90 backdrop-blur-sm rounded-2xl px-5 py-3 shadow-xl cursor-pointer hover:bg-white transition-colors"
+            className="absolute bottom-24 right-8 md:right-16 z-10 bg-card/95 text-card-foreground backdrop-blur-md rounded-2xl px-5 py-3 shadow-xl cursor-pointer hover:bg-card transition-colors border border-stone-200/70 dark:border-stone-800"
             onClick={() => navigate(`/products/${heroProduct._id}`)}
           >
-            <p className="text-xs text-muted-foreground font-bold uppercase tracking-wider">Featured</p>
-            <p className="font-serif font-black text-dark text-sm mt-0.5">{heroProduct.name}</p>
-            <p className="text-primary font-bold text-sm">{formatKES(heroProduct.price)}</p>
+            <p className="text-[10px] text-muted-foreground dark:text-stone-400 font-bold uppercase tracking-wider">Featured Pick</p>
+            <p className="font-serif font-black text-dark dark:text-stone-100 text-sm mt-0.5">{heroProduct.name}</p>
+            <p className="text-primary dark:text-amber-300 font-black text-sm">{formatKES(heroProduct.price)}</p>
           </motion.div>
         )}
 
@@ -253,18 +253,18 @@ const LandingPage = () => {
 
       {/* ── SALE BANNERS ─────────────────────────────────────────── */}
       {banners.length > 0 && (
-        <section className="py-16 bg-dark relative overflow-hidden">
+        <section className="py-16 bg-stone-900 dark:bg-stone-950 relative overflow-hidden border-y border-stone-800">
           <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, #c08050 0%, transparent 60%)' }} />
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="text-center mb-10 space-y-2"
             >
-              <div className="flex items-center justify-center gap-2 text-primary">
+              <div className="flex items-center justify-center gap-2 text-amber-400">
                 <Tag size={16} />
-                <span className="text-xs font-bold uppercase tracking-[0.3em]">Limited Time</span>
+                <span className="text-xs font-bold uppercase tracking-[0.3em]">Limited Time Exclusive</span>
               </div>
-              <h2 className="text-4xl font-serif font-black text-white">Current Sales</h2>
+              <h2 className="text-3xl sm:text-4xl font-serif font-black text-stone-100">Current Sales</h2>
             </motion.div>
 
             <div className="relative">
@@ -274,32 +274,32 @@ const LandingPage = () => {
                     key={bannerIndex}
                     initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.98 }}
                     transition={{ duration: 0.5 }}
-                    className="relative rounded-3xl overflow-hidden cursor-pointer group"
+                    className="relative rounded-3xl overflow-hidden cursor-pointer group border border-stone-800"
                     onClick={() => navigate('/register')}
                   >
                     <img src={banners[bannerIndex].discountBanner} alt={banners[bannerIndex].discountLabel || 'Sale'}
                       className="w-full h-64 md:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
                     <div className="absolute inset-0 flex items-center px-8 md:px-16">
                       <div className="space-y-3">
                         {banners[bannerIndex].discountLabel && (
-                          <span className="inline-block bg-primary text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full">
+                          <span className="inline-block bg-primary text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-md">
                             {banners[bannerIndex].discountLabel}
                           </span>
                         )}
                         <h3 className="text-3xl md:text-5xl font-serif font-black text-white leading-tight">
                           {banners[bannerIndex].discount}% Off
                         </h3>
-                        <p className="text-white/80 font-bold text-lg">{banners[bannerIndex].name}</p>
-                        <div className="flex items-center gap-4 pt-2">
+                        <p className="text-white/90 font-bold text-base sm:text-lg">{banners[bannerIndex].name}</p>
+                        <div className="flex items-center gap-4 pt-1">
                           <span className="text-white/50 line-through text-sm">{formatKES(banners[bannerIndex].price)}</span>
-                          <span className="text-primary font-black text-xl">
+                          <span className="text-amber-400 font-black text-xl">
                             {formatKES(banners[bannerIndex].price * (1 - banners[bannerIndex].discount / 100))}
                           </span>
                         </div>
-                        <Button className="btn-primary h-11 px-6 rounded-xl text-sm mt-2" onClick={(e) => { e.stopPropagation(); navigate('/register'); }}>
-                          Sign Up to Shop <ArrowRight size={14} className="ml-2" />
+                        <Button className="btn-primary h-11 px-6 rounded-xl text-xs font-bold uppercase tracking-wider mt-2 cursor-pointer shadow-md" onClick={(e) => { e.stopPropagation(); navigate('/register'); }}>
+                          Sign Up to Shop <ArrowRight size={14} className="ml-1.5" />
                         </Button>
                       </div>
                     </div>
@@ -322,26 +322,26 @@ const LandingPage = () => {
       )}
 
       {/* ── CATEGORIES ───────────────────────────────────────────── */}
-      <section className="py-20 lg:py-24 container mx-auto px-6 bg-gradient-to-b from-transparent via-surface/20 to-transparent">
+      <section className="py-16 lg:py-24 container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-12 space-y-2"
         >
-          <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Browse by</p>
-          <h2 className="text-4xl font-serif font-black text-dark">Categories</h2>
+          <p className="text-primary dark:text-amber-300 text-xs font-black uppercase tracking-[0.3em]">Curated Picks</p>
+          <h2 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">Browse Categories</h2>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
           {CATEGORIES.map(({ label, Icon, value }, i) => (
-            <motion.div key={value} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.08 }} className="landing-category">
+            <motion.div key={value} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="landing-category">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full group flex flex-col items-center justify-center gap-4 p-7 rounded-[2rem] bg-white shadow-[0_4px_12px_rgba(61,39,26,0.06)] border border-border/10 hover:shadow-[0_8px_24px_rgba(61,39,26,0.12)] hover:border-primary/20 hover:-translate-y-1.5 transition-all duration-300 backdrop-blur-sm"
+                className="w-full group flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] bg-card text-card-foreground shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-stone-200/70 dark:border-stone-800 hover:shadow-lg hover:border-primary/40 dark:hover:border-amber-400/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
-                <div className="w-14 h-14 rounded-2xl bg-surface flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300">
-                  <Icon size={28} />
+                <div className="w-14 h-14 rounded-2xl bg-surface dark:bg-stone-800 flex items-center justify-center text-primary dark:text-amber-300 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-amber-400 dark:group-hover:text-stone-950 transition-all duration-300 border border-stone-200/50 dark:border-stone-700">
+                  <Icon size={26} />
                 </div>
-                <span className="font-serif font-black text-dark tracking-tight">{label}</span>
+                <span className="font-serif font-black text-dark dark:text-stone-100 text-sm tracking-tight">{label}</span>
               </button>
             </motion.div>
           ))}
@@ -349,26 +349,26 @@ const LandingPage = () => {
       </section>
 
       {/* ── TRUST PILLARS ────────────────────────────────────────── */}
-      <section className="py-20 lg:py-24 bg-surface">
+      <section className="py-16 lg:py-20 bg-surface/50 dark:bg-stone-900/50 border-t border-border/40 dark:border-stone-800">
         <div className="container mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center mb-12 space-y-2"
           >
-            <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Why us</p>
-            <h2 className="text-4xl font-serif font-black text-dark">Shop with Confidence</h2>
+            <p className="text-primary dark:text-amber-300 text-xs font-black uppercase tracking-[0.3em]">Our Promise</p>
+            <h2 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">Shop with Confidence</h2>
           </motion.div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {TRUST.map(({ Icon, title, desc, link }, i) => (
               <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="landing-trust">
                 <Link 
                   to={link}
-                  className="flex items-start gap-5 p-8 rounded-[2rem] bg-white shadow-[0_4px_12px_rgba(61,39,26,0.06)] border border-border/10 hover:shadow-[0_8px_24px_rgba(61,39,26,0.10)] hover:border-primary/20 transition-all duration-300 h-full group backdrop-blur-sm"
+                  className="flex items-start gap-4 p-6 sm:p-7 rounded-3xl bg-card text-card-foreground shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-stone-200/70 dark:border-stone-800 hover:shadow-lg hover:border-primary/40 dark:hover:border-amber-400/40 transition-all duration-300 h-full group"
                 >
-                  <div className="p-4 bg-surface rounded-2xl text-primary flex-shrink-0 group-hover:bg-primary group-hover:text-white transition-colors"><Icon size={24} /></div>
+                  <div className="p-3.5 bg-surface dark:bg-stone-800 rounded-2xl text-primary dark:text-amber-300 shrink-0 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-amber-400 dark:group-hover:text-stone-950 transition-colors border border-stone-200/50 dark:border-stone-700"><Icon size={22} /></div>
                   <div className="space-y-1 text-left">
-                    <h3 className="font-serif font-black text-dark text-lg group-hover:text-primary transition-colors">{title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
+                    <h3 className="font-serif font-black text-dark dark:text-stone-100 text-base group-hover:text-primary dark:group-hover:text-amber-300 transition-colors">{title}</h3>
+                    <p className="text-muted-foreground dark:text-stone-400 text-xs leading-relaxed">{desc}</p>
                   </div>
                 </Link>
               </motion.div>
@@ -378,29 +378,29 @@ const LandingPage = () => {
       </section>
 
       {/* ── FOOTER CTA ───────────────────────────────────────────── */}
-      <section className="mx-6 my-20 rounded-[2.5rem] overflow-hidden bg-dark relative">
+      <section className="mx-4 sm:mx-6 my-16 rounded-[2.5rem] overflow-hidden bg-stone-900 dark:bg-stone-950 relative border border-stone-800 shadow-2xl">
         <div className="absolute inset-0 opacity-5"
           style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #c08050 0%, transparent 50%), radial-gradient(circle at 80% 50%, #c08050 0%, transparent 50%)' }}
         />
-        <div className="relative z-10 py-20 px-8 text-center space-y-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-4">
-            <p className="text-primary text-xs font-bold uppercase tracking-[0.3em]">Perfect Pick Nairobi</p>
-            <h2 className="text-4xl md:text-5xl font-serif font-black text-white leading-tight">
+        <div className="relative z-10 py-16 px-6 text-center space-y-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-3">
+            <p className="text-amber-400 text-xs font-black uppercase tracking-[0.3em]">Perfect Pick Nairobi</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-stone-100 leading-tight">
               Discover your next<br />
-              <span className="text-primary italic">favourite piece</span>
+              <span className="text-primary dark:text-amber-300 italic">favourite luxury piece</span>
             </h2>
-            <p className="text-white/50 max-w-md mx-auto text-sm leading-relaxed">
-              Join thousands of Nairobi women finding their perfect style.
+            <p className="text-stone-400 max-w-md mx-auto text-xs sm:text-sm leading-relaxed">
+              Join stylish fashion enthusiasts across Nairobi finding their authentic style.
             </p>
           </motion.div>
-          <div className="flex items-center justify-center gap-4">
-            <Button onClick={() => navigate('/register')} className="btn-primary h-14 px-10 text-base rounded-2xl">
-              <UserPlus size={18} className="mr-2" /> Create Account
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <Button onClick={() => navigate('/register')} className="btn-primary h-13 px-8 text-sm font-bold rounded-2xl shadow-md cursor-pointer">
+              <UserPlus size={16} className="mr-2" /> Create Account
             </Button>
             <Button variant="ghost" onClick={() => navigate('/login')}
-              className="h-14 px-6 text-white hover:text-primary hover:bg-white/10 rounded-2xl font-bold"
+              className="h-13 px-6 text-stone-200 hover:text-white hover:bg-stone-800 rounded-2xl font-bold text-sm cursor-pointer"
             >
-              Sign In <ArrowRight size={16} className="ml-2" />
+              Sign In <ArrowRight size={16} className="ml-1.5" />
             </Button>
           </div>
         </div>
