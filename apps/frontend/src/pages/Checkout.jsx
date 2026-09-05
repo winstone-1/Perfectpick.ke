@@ -113,11 +113,10 @@ const Checkout = () => {
 
     setLoading(true);
     try {
-      const { data } = await api.get(`/payments/verify/${checkoutRequestId}`);
+      const { data } = await api.get(`/payments/charge/${checkoutRequestId}`);
 
       if (data.status === 'success') {
         setPaymentStatus('success');
-        // Cart already cleared by order controller on backend — just refresh local state
         if (fetchCart) await fetchCart();
         toast.success('Payment confirmed! Your order is being processed.');
       } else {
@@ -130,6 +129,36 @@ const Checkout = () => {
       setLoading(false);
     }
   };
+
+  // Auto-poll charge status while waiting for STK push
+  useEffect(() => {
+    if (paymentStatus !== 'waiting' || !checkoutRequestId) return;
+
+    let attempts = 0;
+    const maxAttempts = 30; // 30 attempts × 5s = 2.5 min max
+    const interval = setInterval(async () => {
+      attempts++;
+      try {
+        const { data } = await api.get(`/payments/charge/${checkoutRequestId}`);
+        if (data.status === 'success') {
+          clearInterval(interval);
+          setPaymentStatus('success');
+          if (fetchCart) await fetchCart();
+          toast.success('Payment confirmed! Your order is being processed.');
+        } else if (data.status === 'failed') {
+          clearInterval(interval);
+          setPaymentStatus('failed');
+        } else if (attempts >= maxAttempts) {
+          clearInterval(interval);
+          toast.info('STK prompt timed out. You can still confirm manually or try again.');
+        }
+      } catch {
+        // Silently retry on network errors
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [paymentStatus, checkoutRequestId, fetchCart]);
 
   const formatPrice = (price) => {
     if (!price && price !== 0) return 'KES 0';

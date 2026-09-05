@@ -3,18 +3,21 @@ import crypto from 'crypto';
 import Order from '../models/Order.js';
 import { clearUserCart } from './orderController.js';
 
-// Helper to normalize Kenyan phone numbers
+// Helper to normalize Kenyan phone numbers for Paystack mobile money
+// Paystack expects 254XXXXXXXXX format (no '+' prefix)
 const normalizePhoneNumber = (phone) => {
-    let cleanPhone = phone.replace(/\D/g, ''); // Removes non-digits
-    
-    if (cleanPhone.startsWith('0')) {
-        cleanPhone = '254' + cleanPhone.slice(1);
-    } else if (cleanPhone.length === 9) {
-        cleanPhone = '254' + cleanPhone;
+    let cleanPhone = phone.replace(/\D/g, '');
+
+    if (cleanPhone.startsWith('254')) {
+        return cleanPhone;
     }
-    
-    // Ensure the final format has the '+' prefix
-    return `+${cleanPhone}`; 
+    if (cleanPhone.startsWith('0')) {
+        return '254' + cleanPhone.slice(1);
+    }
+    if (cleanPhone.length === 9) {
+        return '254' + cleanPhone;
+    }
+    return cleanPhone;
 };
 
 // @desc    Initiate Paystack M-Pesa STK Push
@@ -87,6 +90,57 @@ export const initiateMpesaPayment = async (req, res) => {
       message: error.response?.data?.message || 'Failed to initiate STK push. Please pay manually.',
       fallback: true,
       tillNumber: process.env.MPESA_TILL_NUMBER || '3175088',
+    });
+  }
+};
+
+// @desc    Poll Paystack charge status (for auto-polling after STK push)
+// @route   GET /api/payments/charge/:reference
+// @access  Private
+export const getChargeStatus = async (req, res) => {
+  try {
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      return res.status(500).json({ success: false, message: 'Paystack not configured' });
+    }
+    const { reference } = req.params;
+    if (!reference) return res.status(400).json({ success: false, message: 'Missing reference' });
+
+    const response = await axios.get(
+      `https://api.paystack.co/charge/${reference}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        },
+      }
+    );
+
+    const charge = response.data;
+    if (charge.status && charge.data.status === 'success') {
+      // Payment confirmed — update order
+      const order = await Order.findOne({ 'paymentResult.id': reference });
+      if (order && !order.isPaid) {
+        order.isPaid = true;
+        order.paidAt = Date.now();
+        order.status = 'processing';
+        order.paymentResult.status = 'success';
+        await order.save();
+        await clearUserCart(order.user);
+        console.log(`[CHARGE-POLL] Order ${order._id} paid, cart cleared`);
+      }
+      return res.json({ success: true, status: 'success', data: charge.data });
+    }
+
+    // Still pending or failed
+    return res.json({
+      success: charge.status,
+      status: charge.data?.status || 'pending',
+      message: charge.data?.display_text || 'Payment processing',
+    });
+  } catch (error) {
+    console.error('Paystack Charge Poll Error:', error.response?.data || error.message);
+    return res.status(500).json({
+      success: false,
+      message: error.response?.data?.message || 'Failed to check charge status',
     });
   }
 };
