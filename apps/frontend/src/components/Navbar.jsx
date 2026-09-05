@@ -21,7 +21,6 @@ import { cn } from '../lib/utils';
 import api from '../api/axios';
 import DarkModeToggle from './DarkModeToggle';
 
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -37,11 +36,13 @@ const Navbar = () => {
     const fetchCategories = async () => {
       try {
         const { data } = await api.get('/products/categories');
-        if (data.success) {
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           setCategories(data.data);
+        } else {
+          setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
       }
     };
     fetchCategories();
@@ -59,33 +60,29 @@ const Navbar = () => {
     setIsOpen(false);
   }, [location]);
 
-const isAdmin = user?.isAdmin === true;
-
-  const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'Products', href: '/products' },
-    { name: 'About', href: '/about' },
-    { name: 'Shipping', href: '/shipping' },
-    { name: 'Returns', href: '/refund' },
-  ];
+  const isAdmin = user?.isAdmin === true || user?.role === 'admin' || user?.role === 'manager';
 
   return (
     <nav 
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300 border-b",
-        scrolled ? "bg-bg/80 backdrop-blur-md shadow-sm border-border" : "bg-bg border-transparent"
+        scrolled 
+          ? "bg-bg/95 dark:bg-stone-900/95 backdrop-blur-md shadow-sm border-border/80 dark:border-stone-800" 
+          : "bg-bg/80 dark:bg-stone-900/80 backdrop-blur-sm border-transparent"
       )}
     >
-      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="container mx-auto px-4 sm:px-6 h-16 sm:h-18 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
           <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-1.5"
           >
-            <span className="text-2xl font-serif font-extrabold text-[#7a4d32] tracking-tight">
+            <span className="text-2xl sm:text-3xl font-serif font-black text-dark dark:text-[#faf7f4] tracking-tight group-hover:text-primary transition-colors">
               Perfect Pick
             </span>
+            <span className="w-2 h-2 rounded-full bg-primary inline-block" />
           </motion.div>
         </Link>
 
@@ -94,8 +91,8 @@ const isAdmin = user?.isAdmin === true;
           <Link 
             to="/" 
             className={cn(
-              "text-sm font-medium transition-colors hover:text-primary",
-              location.pathname === '/' ? "text-primary" : "text-medium"
+              "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary",
+              location.pathname === '/' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
             Home
@@ -103,66 +100,65 @@ const isAdmin = user?.isAdmin === true;
           <Link 
             to="/new-arrivals" 
             className={cn(
-              "text-sm font-medium transition-colors hover:text-primary flex items-center gap-1",
-              location.pathname === '/new-arrivals' ? "text-primary" : "text-medium"
+              "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary flex items-center gap-1.5",
+              location.pathname === '/new-arrivals' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
-            <Sparkles size={14} /> New Arrivals
+            <Sparkles size={14} className="text-primary" /> New Arrivals
           </Link>
           <Link 
             to="/trending" 
             className={cn(
-              "text-sm font-medium transition-colors hover:text-primary flex items-center gap-1",
-              location.pathname === '/trending' ? "text-primary" : "text-medium"
+              "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary flex items-center gap-1.5",
+              location.pathname === '/trending' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
-            <Flame size={14} /> Trending
+            <Flame size={14} className="text-amber-500" /> Trending
           </Link>
-          <div className="relative group">
-            <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
-              Shop <ChevronDown size={14} />
-            </button>
-            <div className="absolute top-full left-0 w-48 bg-white dark:bg-zinc-900 shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
 
-              <Link to="/products" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">All Products</Link>
-              <div className="h-px bg-border/10 my-1 mx-2" />
-              {categories.length > 0 ? (
-                categories.map(category => (
-                  <Link 
-                    key={category} 
-                    to={`/products?category=${category}`} 
-                    className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary capitalize"
-                  >
-                    {category}
-                  </Link>
-                ))
-              ) : (
-                <>
-                  <Link to="/products?category=Bags" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Bags</Link>
-                  <Link to="/products?category=Shoes" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shoes</Link>
-                  <Link to="/products?category=Jewelry" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Jewelry</Link>
-                </>
-              )}
+          {/* Shop Dropdown */}
+          <div className="relative group">
+            <button className="text-sm font-bold text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-1 cursor-pointer py-2">
+              Shop <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
+            </button>
+            <div className="absolute top-full left-0 w-52 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
+              <Link 
+                to="/products" 
+                className="block px-4 py-2.5 text-sm font-bold text-dark dark:text-stone-100 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors"
+              >
+                All Collections
+              </Link>
+              <div className="h-px bg-border/40 dark:bg-stone-800 my-1 mx-2" />
+              {categories.map((cat) => (
+                <Link 
+                  key={cat} 
+                  to={`/products?category=${cat.toLowerCase()}`} 
+                  className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary capitalize transition-colors"
+                >
+                  {cat}
+                </Link>
+              ))}
             </div>
           </div>
 
+          {/* Support Dropdown */}
           <div className="relative group">
-            <button className="text-sm font-medium text-medium hover:text-primary transition-colors flex items-center gap-1 cursor-default">
-              Support <ChevronDown size={14} />
+            <button className="text-sm font-bold text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-1 cursor-pointer py-2">
+              Support <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
             </button>
-            <div className="absolute top-full left-0 w-48 bg-white dark:bg-zinc-900 shadow-xl rounded-xl py-2 hidden group-hover:block z-50 border border-border/10">
-
-              <Link to="/shipping" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Shipping Policy</Link>
-              <Link to="/refund" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Refunds & Returns</Link>
-              <Link to="/about" className="block px-4 py-2 text-sm hover:bg-surface text-medium hover:text-primary">Contact Us</Link>
+            <div className="absolute top-full left-0 w-52 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
+              <Link to="/shipping" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">Shipping & Delivery</Link>
+              <Link to="/refund" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">Refunds & Returns</Link>
+              <Link to="/about" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">Contact & Story</Link>
+              <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-stone-800/80 transition-colors">WhatsApp Support</a>
             </div>
           </div>
 
           <Link 
             to="/about" 
             className={cn(
-              "text-sm font-medium transition-colors hover:text-primary",
-              location.pathname === '/about' ? "text-primary" : "text-medium"
+              "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary",
+              location.pathname === '/about' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
             About
@@ -170,30 +166,29 @@ const isAdmin = user?.isAdmin === true;
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-1 sm:gap-3">
           <DarkModeToggle />
           
           {user ? (
-
             <>
               {isAdmin && (
-                <Link to="/admin" className="hidden sm:block">
-                  <Button variant="ghost" size="icon" className="text-medium hover:text-primary">
+                <Link to="/admin" className="hidden sm:block" title="Admin Dashboard">
+                  <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                     <LayoutDashboard size={20} />
                   </Button>
                 </Link>
               )}
               
-              <Link to="/wishlist" className="relative group">
-                <Button variant="ghost" size="icon" className="text-medium hover:text-primary">
-                  <Heart size={20} className={wishlistCount > 0 ? "fill-red-500 text-red-500" : ""} />
+              <Link to="/wishlist" className="relative group" title="Wishlist">
+                <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+                  <Heart size={20} className={wishlistedCount > 0 ? "fill-red-500 text-red-500" : ""} />
                   <AnimatePresence>
                     {wishlistCount > 0 && (
                       <motion.span 
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center"
+                        className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm"
                       >
                         {wishlistCount}
                       </motion.span>
@@ -202,8 +197,8 @@ const isAdmin = user?.isAdmin === true;
                 </Button>
               </Link>
 
-              <Link to="/cart" className="relative group">
-                <Button variant="ghost" size="icon" className="text-medium hover:text-primary">
+              <Link to="/cart" className="relative group" title="Shopping Bag">
+                <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <ShoppingBag size={20} />
                   <AnimatePresence>
                     {cartCount > 0 && (
@@ -211,7 +206,7 @@ const isAdmin = user?.isAdmin === true;
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="absolute -top-1 -right-1 bg-[#7a4d32] text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center"
+                        className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm"
                       >
                         {cartCount}
                       </motion.span>
@@ -220,8 +215,8 @@ const isAdmin = user?.isAdmin === true;
                 </Button>
               </Link>
 
-              <Link to="/profile">
-                <Button variant="ghost" size="icon" className="text-medium hover:text-primary">
+              <Link to="/profile" title="Account">
+                <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <User size={20} />
                 </Button>
               </Link>
@@ -230,18 +225,23 @@ const isAdmin = user?.isAdmin === true;
                 variant="ghost" 
                 size="icon" 
                 onClick={logout}
-                className="text-medium hover:text-primary"
+                title="Logout"
+                className="text-medium dark:text-stone-200 hover:text-red-500 dark:hover:text-red-400 hover:bg-surface dark:hover:bg-stone-800"
               >
-                <LogOut size={20} />
+                <LogOut size={19} />
               </Button>
             </>
           ) : (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <Button variant="ghost" className="text-medium hidden sm:flex">Login</Button>
+                <Button variant="ghost" className="text-medium dark:text-stone-200 hover:text-primary hidden sm:flex text-sm font-bold">
+                  Login
+                </Button>
               </Link>
               <Link to="/register">
-                <Button className="btn-primary">Register</Button>
+                <Button className="btn-primary text-xs sm:text-sm px-4 py-2">
+                  Register
+                </Button>
               </Link>
             </div>
           )}
@@ -250,8 +250,9 @@ const isAdmin = user?.isAdmin === true;
           <Button 
             variant="ghost" 
             size="icon" 
-            className="md:hidden text-medium"
+            className="md:hidden text-medium dark:text-stone-200"
             onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle navigation menu"
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
@@ -265,60 +266,65 @@ const isAdmin = user?.isAdmin === true;
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="md:hidden bg-bg dark:bg-bg-dark border-t overflow-hidden"
+            className="md:hidden bg-card dark:bg-stone-900 border-t border-border/40 dark:border-stone-800 overflow-hidden shadow-2xl"
           >
-
-            <div className="flex flex-col p-4 gap-4">
-              <Link to="/" className="py-2 text-base hover:text-primary font-medium" onClick={() => setIsOpen(false)}>Home</Link>
-              <Link to="/new-arrivals" className="py-2 text-base hover:text-primary font-medium flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                <Sparkles size={16} /> New Arrivals
+            <div className="flex flex-col p-5 gap-3">
+              <Link to="/" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary" onClick={() => setIsOpen(false)}>
+                Home
               </Link>
-              <Link to="/trending" className="py-2 text-base hover:text-primary font-medium flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                <Flame size={16} /> Trending
+              <Link to="/new-arrivals" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <Sparkles size={16} className="text-primary" /> New Arrivals
+              </Link>
+              <Link to="/trending" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                <Flame size={16} className="text-amber-500" /> Trending
               </Link>
               
-              <div className="pl-4 border-l-2 border-border/10 space-y-2">
-                <p className="text-xs uppercase text-muted-foreground font-black tracking-widest mb-2">Shop Categories</p>
-                <Link to="/products" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>All Collections</Link>
-                {categories.length > 0 ? (
-                  categories.map(category => (
-                    <Link 
-                      key={category} 
-                      to={`/products?category=${category}`} 
-                      className="block py-2 text-base hover:text-primary capitalize" 
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {category}
-                    </Link>
-                  ))
-                ) : (
-                  <>
-                    <Link to="/products?category=Bags" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Bags</Link>
-                    <Link to="/products?category=Shoes" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Shoes</Link>
-                    <Link to="/products?category=Jewelry" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Jewelry</Link>
-                  </>
-                )}
+              <div className="pl-3 border-l-2 border-primary/30 space-y-1.5 my-1">
+                <p className="text-[10px] uppercase text-primary font-black tracking-widest mb-1.5">Shop Categories</p>
+                <Link to="/products" className="block py-1.5 text-sm font-bold text-dark dark:text-stone-200 hover:text-primary" onClick={() => setIsOpen(false)}>
+                  All Collections
+                </Link>
+                {categories.map(cat => (
+                  <Link 
+                    key={cat} 
+                    to={`/products?category=${cat.toLowerCase()}`} 
+                    className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize" 
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {cat}
+                  </Link>
+                ))}
               </div>
 
-              <div className="pl-4 border-l-2 border-border/10 space-y-2">
-                <p className="text-xs uppercase text-muted-foreground font-black tracking-widest mb-2">Support</p>
-                <Link to="/shipping" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Shipping Policy</Link>
-                <Link to="/refund" className="block py-2 text-base hover:text-primary" onClick={() => setIsOpen(false)}>Refund & Returns</Link>
+              <div className="pl-3 border-l-2 border-stone-300 dark:border-stone-700 space-y-1.5 my-1">
+                <p className="text-[10px] uppercase text-muted-foreground font-black tracking-widest mb-1.5">Customer Support</p>
+                <Link to="/shipping" className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary" onClick={() => setIsOpen(false)}>Shipping & Delivery</Link>
+                <Link to="/refund" className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary" onClick={() => setIsOpen(false)}>Refund & Returns</Link>
+                <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="block py-1 text-sm text-emerald-600 dark:text-emerald-400 font-bold" onClick={() => setIsOpen(false)}>
+                  WhatsApp: +254 787 251 690
+                </a>
               </div>
 
-              <Link to="/about" className="py-2 text-base hover:text-primary font-medium" onClick={() => setIsOpen(false)}>About</Link>
+              <Link to="/about" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary" onClick={() => setIsOpen(false)}>
+                About Us
+              </Link>
               
-              <div className="h-px bg-border/10 my-2" />
+              <div className="h-px bg-border/40 dark:bg-stone-800 my-2" />
               
               {user && isAdmin && (
-                <Link to="/admin" className="text-lg font-medium py-2 text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                  <LayoutDashboard size={20} /> Dashboard
+                <Link to="/admin" className="text-base font-bold py-2 text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
+                  <LayoutDashboard size={18} /> Admin Dashboard
                 </Link>
               )}
               {!user && (
-                <Link to="/login" className="text-lg font-medium py-2" onClick={() => setIsOpen(false)}>
-                  Login
-                </Link>
+                <div className="flex gap-3 pt-2">
+                  <Link to="/login" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button variant="outline" className="w-full btn-outline">Login</Button>
+                  </Link>
+                  <Link to="/register" className="flex-1" onClick={() => setIsOpen(false)}>
+                    <Button className="w-full btn-primary">Register</Button>
+                  </Link>
+                </div>
               )}
             </div>
           </motion.div>
