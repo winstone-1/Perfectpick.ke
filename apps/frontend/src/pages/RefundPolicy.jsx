@@ -10,7 +10,8 @@ import {
   AlertCircle,
   CheckCircle2,
   XCircle,
-  Wallet
+  Wallet,
+  MessageCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -28,47 +29,47 @@ const RefundPolicy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg pb-24">
+    <div className="min-h-screen pb-24">
       {/* Hero Section */}
-      <section className="bg-surface py-16 md:py-24 relative overflow-hidden">
+      <section className="bg-surface/50 dark:bg-stone-900/50 py-16 md:py-24 relative overflow-hidden border-b border-border/40 dark:border-stone-800">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <Link to="/home">
-              <Button variant="ghost" className="mb-8 text-medium hover:text-primary gap-2">
-                <ArrowLeft size={18} /> Back to Home
+              <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-amber-300 gap-2 text-xs uppercase font-bold tracking-wider">
+                <ArrowLeft size={16} /> Back to Home
               </Button>
             </Link>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
+              className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
             >
-              <RotateCcw size={14} /> Returns & Refunds
+              <RotateCcw size={14} /> Returns &amp; Exchanges
             </motion.div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-serif font-black text-dark"
+              className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
             >
-              Refund <span className="text-primary italic">Policy</span>
+              Refund <span className="text-primary dark:text-amber-300 italic">Policy</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-lg text-medium leading-relaxed"
+              className="text-base md:text-lg text-medium dark:text-stone-300 leading-relaxed max-w-2xl mx-auto"
             >
               Your satisfaction is our priority. If you're not completely happy with your 
-              purchase, we're here to help with easy returns and exchanges.
+              purchase, we're here to help with smooth returns and exchanges across Kenya.
             </motion.p>
           </div>
         </div>
         
         {/* Background Elements */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2" />
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 translate-x-1/2" />
+        <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 pointer-events-none" />
       </section>
 
-      <div className="container mx-auto px-4 -mt-12 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 -mt-8 relative z-20">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -77,24 +78,23 @@ const RefundPolicy = () => {
         >
           {/* Returns Window */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <Clock size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <Clock size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Returns Window</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Returns Window</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-4">
-                <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 text-center">
-                  <p className="text-4xl font-serif font-black text-primary mb-2">7 Days</p>
-                  <p className="text-medium font-bold uppercase tracking-widest text-xs">Returns & Exchanges</p>
+              <CardContent className="p-6 sm:p-8 space-y-4">
+                <div className="bg-primary/5 dark:bg-amber-950/40 p-6 rounded-2xl border border-primary/10 text-center">
+                  <p className="text-4xl font-serif font-black text-primary dark:text-amber-300 mb-1">7 Days</p>
+                  <p className="text-medium dark:text-stone-300 font-bold uppercase tracking-widest text-[11px]">Exchange &amp; Return Window</p>
                 </div>
-                <p className="text-medium leading-relaxed">
-                  Items can be returned or exchanged within <span className="font-bold text-dark">7 days</span> of delivery. 
-                  The item must be <span className="font-bold text-dark">unused, unworn</span>, and in its original packaging with all tags intact.
+                <p className="text-xs sm:text-sm text-medium dark:text-stone-300 leading-relaxed">
+                  Items can be returned or exchanged within <span className="font-bold text-dark dark:text-stone-100">7 days</span> of delivery. 
+                  The item must be <span className="font-bold text-dark dark:text-stone-100">unused, unworn</span>, and in its original packaging with all tags intact.
                 </p>
               </CardContent>
             </Card>
@@ -102,48 +102,47 @@ const RefundPolicy = () => {
 
           {/* Eligibility */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <ShieldCheck size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <ShieldCheck size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Eligibility Criteria</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Eligibility Criteria</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-6">
-                <div className="space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-primary">Eligible for Return</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3 text-medium">
-                      <CheckCircle2 className="text-green-600 shrink-0" size={18} />
-                      Wrong item delivered
+              <CardContent className="p-6 sm:p-8 space-y-5">
+                <div className="space-y-3">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-amber-300">Eligible for Exchange / Return</h4>
+                  <ul className="space-y-2.5 text-xs sm:text-sm">
+                    <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
+                      <CheckCircle2 className="text-emerald-600 dark:text-emerald-400 shrink-0" size={16} />
+                      Wrong item or incorrect size delivered
                     </li>
-                    <li className="flex items-center gap-3 text-medium">
-                      <CheckCircle2 className="text-green-600 shrink-0" size={18} />
-                      Item arrived damaged or defective
+                    <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
+                      <CheckCircle2 className="text-emerald-600 dark:text-emerald-400 shrink-0" size={16} />
+                      Item arrived damaged or with a verified defect
                     </li>
-                    <li className="flex items-center gap-3 text-medium">
-                      <CheckCircle2 className="text-green-600 shrink-0" size={18} />
-                      Item significantly different from description
+                    <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
+                      <CheckCircle2 className="text-emerald-600 dark:text-emerald-400 shrink-0" size={16} />
+                      Item significantly differs from description
                     </li>
                   </ul>
                 </div>
-                <div className="pt-4 border-t border-border/30 space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-red-600">Not Eligible</h4>
-                  <ul className="space-y-3">
-                    <li className="flex items-center gap-3 text-medium">
-                      <XCircle className="text-red-500 shrink-0" size={18} />
+                <div className="pt-4 border-t border-border/40 dark:border-stone-800 space-y-3">
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-rose-600 dark:text-rose-400">Non-Returnable Items</h4>
+                  <ul className="space-y-2.5 text-xs sm:text-sm">
+                    <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
+                      <XCircle className="text-rose-500 shrink-0" size={16} />
                       Items worn, washed, or altered
                     </li>
-                    <li className="flex items-center gap-3 text-medium">
-                      <XCircle className="text-red-500 shrink-0" size={18} />
-                      Jewelry & Accessories (hygiene reasons)
+                    <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
+                      <XCircle className="text-rose-500 shrink-0" size={16} />
+                      Earrings and hygiene-sensitive accessories
                     </li>
-                    <li className="flex items-center gap-3 text-medium">
-                      <XCircle className="text-red-500 shrink-0" size={18} />
-                      Sale/Discounted items (Final Sale)
+                    <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
+                      <XCircle className="text-rose-500 shrink-0" size={16} />
+                      Clearance flash sale items marked Final Sale
                     </li>
                   </ul>
                 </div>
@@ -153,34 +152,33 @@ const RefundPolicy = () => {
 
           {/* Exchange Process */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <RotateCcw size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <RotateCcw size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Exchange Process</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Exchange Process</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-4">
-                <div className="relative space-y-8 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-px before:bg-primary/20">
-                  <div className="relative pl-10">
-                    <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">1</div>
-                    <p className="text-medium">Contact us via <span className="font-bold text-dark">WhatsApp or Email</span> within 7 days.</p>
+              <CardContent className="p-6 sm:p-8 space-y-4">
+                <div className="relative space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-px before:bg-primary/20">
+                  <div className="relative pl-8">
+                    <div className="absolute left-0 top-0.5 w-5 h-5 rounded-full bg-primary text-white dark:text-stone-950 text-[10px] font-bold flex items-center justify-center">1</div>
+                    <p className="text-xs sm:text-sm text-medium dark:text-stone-300">Contact us via <span className="font-bold text-dark dark:text-stone-100">WhatsApp or Email</span> within 7 days.</p>
                   </div>
-                  <div className="relative pl-10">
-                    <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">2</div>
-                    <p className="text-medium">Include your <span className="font-bold text-dark">Order Number</span> and clear photos of the item.</p>
+                  <div className="relative pl-8">
+                    <div className="absolute left-0 top-0.5 w-5 h-5 rounded-full bg-primary text-white dark:text-stone-950 text-[10px] font-bold flex items-center justify-center">2</div>
+                    <p className="text-xs sm:text-sm text-medium dark:text-stone-300">Share your <span className="font-bold text-dark dark:text-stone-100">Order Number</span> and clear photos of the item.</p>
                   </div>
-                  <div className="relative pl-10">
-                    <div className="absolute left-0 top-1 w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">3</div>
-                    <p className="text-medium">Our team will arrange <span className="font-bold text-dark">collection and dispatch</span> of the replacement.</p>
+                  <div className="relative pl-8">
+                    <div className="absolute left-0 top-0.5 w-5 h-5 rounded-full bg-primary text-white dark:text-stone-950 text-[10px] font-bold flex items-center justify-center">3</div>
+                    <p className="text-xs sm:text-sm text-medium dark:text-stone-300">Our concierge team will arrange <span className="font-bold text-dark dark:text-stone-100">collection &amp; replacement</span>.</p>
                   </div>
                 </div>
-                <div className="bg-surface p-4 rounded-2xl flex items-center gap-3 mt-4">
-                  <AlertCircle size={18} className="text-primary shrink-0" />
-                  <p className="text-xs text-medium">Exchanges are subject to stock availability.</p>
+                <div className="bg-surface/60 dark:bg-stone-800 p-3.5 rounded-2xl flex items-center gap-2.5 mt-4 border border-stone-200/50 dark:border-stone-700">
+                  <AlertCircle size={16} className="text-primary dark:text-amber-300 shrink-0" />
+                  <p className="text-xs text-medium dark:text-stone-300">Exchanges are subject to current inventory availability.</p>
                 </div>
               </CardContent>
             </Card>
@@ -188,35 +186,34 @@ const RefundPolicy = () => {
 
           {/* Refund Process */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <Wallet size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <Wallet size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Refund Process</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Refund Terms</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-6">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-border/30 pb-4">
-                    <span className="text-medium">Processing Time</span>
-                    <span className="font-bold text-dark">5-7 Business Days</span>
+              <CardContent className="p-6 sm:p-8 space-y-5">
+                <div className="space-y-3.5 text-sm">
+                  <div className="flex justify-between items-center border-b border-border/40 dark:border-stone-800 pb-3">
+                    <span className="text-medium dark:text-stone-300">Processing Time</span>
+                    <span className="font-bold text-dark dark:text-stone-100">3-5 Business Days</span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-border/30 pb-4">
-                    <span className="text-medium">Refund Method</span>
-                    <span className="font-bold text-dark">M-Pesa</span>
+                  <div className="flex justify-between items-center border-b border-border/40 dark:border-stone-800 pb-3">
+                    <span className="text-medium dark:text-stone-300">Refund Channel</span>
+                    <span className="font-bold text-dark dark:text-stone-100">M-Pesa / Original Method</span>
                   </div>
                 </div>
-                <ul className="space-y-4">
-                  <li className="flex gap-4">
+                <ul className="space-y-3 text-xs sm:text-sm">
+                  <li className="flex gap-2.5 items-start">
                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <p className="text-medium text-sm">Refunds are issued to the <span className="font-bold text-dark">M-Pesa number</span> used during purchase.</p>
+                    <p className="text-medium dark:text-stone-300">Refunds are issued directly to the <span className="font-bold text-dark dark:text-stone-100">M-Pesa number</span> used during payment.</p>
                   </li>
-                  <li className="flex gap-4">
+                  <li className="flex gap-2.5 items-start">
                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <p className="text-medium text-sm">Original <span className="font-bold text-dark">delivery fees</span> are non-refundable.</p>
+                    <p className="text-medium dark:text-stone-300">Original courier shipping costs are non-refundable.</p>
                   </li>
                 </ul>
               </CardContent>
@@ -225,23 +222,22 @@ const RefundPolicy = () => {
 
           {/* Contact Section */}
           <motion.div variants={itemVariants} className="md:col-span-2">
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-footer-bg text-white">
-
-              <CardContent className="p-8 md:p-12">
-                <div className="flex flex-col md:flex-row gap-8 items-center justify-between">
-                  <div className="space-y-2 text-center md:text-left">
-                    <h3 className="text-3xl font-serif font-bold">Need help with a return?</h3>
-                    <p className="text-footer-text/70">Reach out to our customer care team anytime.</p>
+            <Card className="border border-stone-800 shadow-2xl rounded-3xl overflow-hidden bg-stone-900 dark:bg-stone-950 text-stone-100">
+              <CardContent className="p-6 sm:p-10">
+                <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
+                  <div className="space-y-1.5 text-center md:text-left">
+                    <h3 className="text-2xl sm:text-3xl font-serif font-black text-stone-100">Need Help with a Return?</h3>
+                    <p className="text-xs sm:text-sm text-stone-400">Our customer care team is available to assist you Monday through Saturday.</p>
                   </div>
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Button asChild className="bg-primary hover:bg-primary-hover text-white rounded-2xl px-8 h-14 font-bold gap-3">
-                      <a href="https://wa.me/254700000000">
-                        <Phone size={20} /> WhatsApp Support
+                  <div className="flex flex-col sm:flex-row gap-3.5 w-full md:w-auto">
+                    <Button asChild className="bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl px-6 h-12 font-bold gap-2 text-xs uppercase tracking-wider cursor-pointer shadow-md">
+                      <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer">
+                        <MessageCircle size={18} /> WhatsApp Support
                       </a>
                     </Button>
-                    <Button asChild variant="outline" className="border-white/20 text-white hover:bg-white/10 rounded-2xl px-8 h-14 font-bold gap-3">
-                      <a href="mailto:perfectpicknairobi@gmail.com">
-                        <Mail size={20} /> Email Support
+                    <Button asChild variant="outline" className="border-stone-700 text-stone-200 hover:bg-stone-800 rounded-2xl px-6 h-12 font-bold gap-2 text-xs uppercase tracking-wider cursor-pointer">
+                      <a href="mailto:perfectpick26@gmail.com">
+                        <Mail size={18} /> Email Support
                       </a>
                     </Button>
                   </div>

@@ -7,9 +7,10 @@ import {
   Mail, 
   ArrowLeft, 
   ShieldCheck, 
-  Phone,
+  Phone, 
   Info,
-  PackageCheck
+  PackageCheck,
+  MessageCircle
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -27,34 +28,34 @@ const ShippingPolicy = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg pb-24">
+    <div className="min-h-screen pb-24">
       {/* Hero Section */}
-      <section className="bg-surface py-16 md:py-24 relative overflow-hidden">
+      <section className="bg-surface/50 dark:bg-stone-900/50 py-16 md:py-24 relative overflow-hidden border-b border-border/40 dark:border-stone-800">
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <Link to="/home">
-              <Button variant="ghost" className="mb-8 text-medium hover:text-primary gap-2">
-                <ArrowLeft size={18} /> Back to Home
+              <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-amber-300 gap-2 text-xs uppercase font-bold tracking-wider">
+                <ArrowLeft size={16} /> Back to Home
               </Button>
             </Link>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
+              className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
             >
-              <Truck size={14} /> Logistics & Delivery
+              <Truck size={14} /> Logistics &amp; Delivery
             </motion.div>
             <motion.h1 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-6xl font-serif font-black text-dark"
+              className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
             >
-              Shipping <span className="text-primary italic">Policy</span>
+              Shipping <span className="text-primary dark:text-amber-300 italic">Policy</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-lg text-medium leading-relaxed"
+              className="text-base md:text-lg text-medium dark:text-stone-300 leading-relaxed max-w-2xl mx-auto"
             >
               Fast, reliable, and secure delivery to your doorstep across Kenya. 
               We ensure your luxury picks reach you in perfect condition.
@@ -63,11 +64,11 @@ const ShippingPolicy = () => {
         </div>
         
         {/* Background Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
       </section>
 
-      <div className="container mx-auto px-4 -mt-12 relative z-20">
+      <div className="container mx-auto px-4 sm:px-6 -mt-8 relative z-20">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
@@ -76,45 +77,44 @@ const ShippingPolicy = () => {
         >
           {/* Delivery Zones & Timeframes */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <MapPin size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <MapPin size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Delivery Zones & Timeframes</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Delivery Zones &amp; Timeframes</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-6">
+              <CardContent className="p-6 sm:p-8 space-y-6">
                 <div className="space-y-4">
-                  <div className="flex justify-between items-start border-b border-border/30 pb-4">
+                  <div className="flex justify-between items-start border-b border-border/40 dark:border-stone-800 pb-4">
                     <div>
-                      <h4 className="font-bold text-dark">Nairobi CBD & Westlands</h4>
-                      <p className="text-sm text-muted-foreground">Order before 12PM for priority service</p>
+                      <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Nairobi CBD &amp; Westlands</h4>
+                      <p className="text-xs text-muted-foreground dark:text-stone-400">Order before 12PM for priority same-day dispatch</p>
                     </div>
-                    <span className="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full whitespace-nowrap">Same Day</span>
+                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">Same Day</span>
                   </div>
-                  <div className="flex justify-between items-start border-b border-border/30 pb-4">
+                  <div className="flex justify-between items-start border-b border-border/40 dark:border-stone-800 pb-4">
                     <div>
-                      <h4 className="font-bold text-dark">Nairobi Estates</h4>
-                      <p className="text-sm text-muted-foreground">Kilimani, Karen, Langata, Kasarani, etc.</p>
+                      <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Nairobi Estates</h4>
+                      <p className="text-xs text-muted-foreground dark:text-stone-400">Kilimani, Karen, Langata, Kasarani, Lavington, etc.</p>
                     </div>
-                    <span className="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full whitespace-nowrap">1-2 Days</span>
+                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">1-2 Days</span>
                   </div>
-                  <div className="flex justify-between items-start border-b border-border/30 pb-4">
+                  <div className="flex justify-between items-start border-b border-border/40 dark:border-stone-800 pb-4">
                     <div>
-                      <h4 className="font-bold text-dark">Greater Nairobi</h4>
-                      <p className="text-sm text-muted-foreground">Kiambu, Machakos, Thika</p>
+                      <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Greater Nairobi</h4>
+                      <p className="text-xs text-muted-foreground dark:text-stone-400">Kiambu, Ruiru, Machakos, Thika</p>
                     </div>
-                    <span className="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full whitespace-nowrap">2-3 Days</span>
+                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">2-3 Days</span>
                   </div>
                   <div className="flex justify-between items-start">
                     <div>
-                      <h4 className="font-bold text-dark">Rest of Kenya</h4>
-                      <p className="text-sm text-muted-foreground">Via reliable courier partners</p>
+                      <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Rest of Kenya</h4>
+                      <p className="text-xs text-muted-foreground dark:text-stone-400">Doorstep or parcel courier delivery</p>
                     </div>
-                    <span className="text-primary font-bold text-sm bg-primary/10 px-3 py-1 rounded-full whitespace-nowrap">3-5 Days</span>
+                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">2-4 Days</span>
                   </div>
                 </div>
               </CardContent>
@@ -123,40 +123,39 @@ const ShippingPolicy = () => {
 
           {/* Delivery Costs */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <PackageCheck size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <PackageCheck size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Delivery Costs</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Delivery Rates</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-6">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center border-b border-border/30 pb-4">
-                    <span className="text-medium">Nairobi CBD</span>
-                    <span className="font-bold text-dark">KES 200</span>
+              <CardContent className="p-6 sm:p-8 space-y-5">
+                <div className="space-y-3.5 text-sm">
+                  <div className="flex justify-between items-center border-b border-border/40 dark:border-stone-800 pb-3">
+                    <span className="text-medium dark:text-stone-300">Nairobi CBD</span>
+                    <span className="font-bold text-dark dark:text-stone-100">KES 200</span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-border/30 pb-4">
-                    <span className="text-medium">Nairobi Estates</span>
-                    <span className="font-bold text-dark">KES 300</span>
+                  <div className="flex justify-between items-center border-b border-border/40 dark:border-stone-800 pb-3">
+                    <span className="text-medium dark:text-stone-300">Nairobi Estates</span>
+                    <span className="font-bold text-dark dark:text-stone-100">KES 300</span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-border/30 pb-4">
-                    <span className="text-medium">Greater Nairobi</span>
-                    <span className="font-bold text-dark">KES 500</span>
+                  <div className="flex justify-between items-center border-b border-border/40 dark:border-stone-800 pb-3">
+                    <span className="text-medium dark:text-stone-300">Greater Nairobi</span>
+                    <span className="font-bold text-dark dark:text-stone-100">KES 500</span>
                   </div>
-                  <div className="flex justify-between items-center border-b border-border/30 pb-4">
-                    <span className="text-medium">Rest of Kenya</span>
-                    <span className="font-bold text-dark">KES 700</span>
+                  <div className="flex justify-between items-center border-b border-border/40 dark:border-stone-800 pb-3">
+                    <span className="text-medium dark:text-stone-300">Rest of Kenya</span>
+                    <span className="font-bold text-dark dark:text-stone-100">KES 600 - 800</span>
                   </div>
-                  <div className="bg-primary/5 p-4 rounded-2xl flex items-center justify-between border border-primary/20">
-                    <div className="flex items-center gap-3">
-                      <ShieldCheck className="text-primary" size={20} />
-                      <span className="font-serif font-bold text-dark">Orders above KES 5,000</span>
+                  <div className="bg-primary/5 dark:bg-amber-950/40 p-4 rounded-2xl flex items-center justify-between border border-primary/20">
+                    <div className="flex items-center gap-2.5">
+                      <ShieldCheck className="text-primary dark:text-amber-300" size={20} />
+                      <span className="font-serif font-bold text-dark dark:text-stone-100 text-xs sm:text-sm">Standard Orders in Nairobi</span>
                     </div>
-                    <span className="text-primary font-black">FREE</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase tracking-wider">FREE</span>
                   </div>
                 </div>
               </CardContent>
@@ -165,33 +164,32 @@ const ShippingPolicy = () => {
 
           {/* Order Processing */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <Clock size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <Clock size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Order Processing</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Order Processing</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-4">
-                <ul className="space-y-4">
-                  <li className="flex gap-4">
+              <CardContent className="p-6 sm:p-8 space-y-4">
+                <ul className="space-y-3.5 text-xs sm:text-sm">
+                  <li className="flex gap-3 items-start">
                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <p className="text-medium leading-relaxed">Orders placed <span className="font-bold text-dark">before 12PM</span> are processed the same day.</p>
+                    <p className="text-medium dark:text-stone-300 leading-relaxed">Orders placed <span className="font-bold text-dark dark:text-stone-100">before 12PM</span> are packaged and dispatched same day.</p>
                   </li>
-                  <li className="flex gap-4">
+                  <li className="flex gap-3 items-start">
                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <p className="text-medium leading-relaxed">Orders after 12PM are processed the <span className="font-bold text-dark">next business day</span>.</p>
+                    <p className="text-medium dark:text-stone-300 leading-relaxed">Orders after 12PM are processed the <span className="font-bold text-dark dark:text-stone-100">next business morning</span>.</p>
                   </li>
-                  <li className="flex gap-4">
+                  <li className="flex gap-3 items-start">
                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <p className="text-medium leading-relaxed">You will receive a confirmation SMS/email once your order is dispatched.</p>
+                    <p className="text-medium dark:text-stone-300 leading-relaxed">You will receive instant SMS/WhatsApp confirmation once dispatched.</p>
                   </li>
-                  <li className="flex gap-4">
+                  <li className="flex gap-3 items-start">
                     <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                    <p className="text-medium leading-relaxed">Business days are <span className="font-bold text-dark">Monday–Saturday</span>, excluding public holidays.</p>
+                    <p className="text-medium dark:text-stone-300 leading-relaxed">Operating days are <span className="font-bold text-dark dark:text-stone-100">Monday–Saturday</span>.</p>
                   </li>
                 </ul>
               </CardContent>
@@ -200,71 +198,34 @@ const ShippingPolicy = () => {
 
           {/* Tracking */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden h-full bg-card">
-
-              <CardHeader className="bg-surface/50 border-b border-border/50 p-6">
+            <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_20px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden h-full bg-card text-card-foreground">
+              <CardHeader className="bg-surface/50 dark:bg-stone-900/60 border-b border-border/40 dark:border-stone-800 p-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-primary text-white rounded-xl flex items-center justify-center">
-                    <Info size={22} />
+                  <div className="w-10 h-10 bg-primary text-white dark:text-stone-950 rounded-xl flex items-center justify-center font-bold">
+                    <Info size={20} />
                   </div>
-                  <CardTitle className="text-xl font-serif font-bold text-dark">Tracking & Support</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl font-serif font-black text-dark dark:text-stone-100">Tracking &amp; Direct Inquiries</CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="p-8 space-y-6">
-                <p className="text-medium leading-relaxed">
-                  Stay updated on your order's journey. Once dispatched, you'll receive a tracking update via SMS or WhatsApp.
+              <CardContent className="p-6 sm:p-8 space-y-6">
+                <p className="text-xs sm:text-sm text-medium dark:text-stone-300 leading-relaxed">
+                  Stay updated on your parcel. Our concierge team is on standby via WhatsApp and Email.
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <a href="mailto:perfectpicknairobi@gmail.com" className="flex items-center gap-3 p-4 bg-muted/50 rounded-2xl hover:bg-primary/10 transition-colors group">
-
-                    <Mail className="text-primary group-hover:scale-110 transition-transform" size={20} />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <a href="mailto:perfectpick26@gmail.com" className="flex items-center gap-3 p-3.5 bg-surface dark:bg-stone-800 rounded-2xl border border-stone-200/50 dark:border-stone-700 hover:border-primary/40 transition-colors group">
+                    <Mail className="text-primary dark:text-amber-300 group-hover:scale-110 transition-transform shrink-0" size={18} />
                     <div className="overflow-hidden">
-                      <p className="text-xs text-muted-foreground uppercase font-black">Email Us</p>
-                      <p className="text-sm font-bold text-dark truncate">perfectpicknairobi@gmail.com</p>
+                      <p className="text-[10px] text-muted-foreground dark:text-stone-400 uppercase font-black">Email Us</p>
+                      <p className="text-xs font-bold text-dark dark:text-stone-100 truncate">perfectpick26@gmail.com</p>
                     </div>
                   </a>
-                  <a href="https://wa.me/254700000000" className="flex items-center gap-3 p-4 bg-muted/50 rounded-2xl hover:bg-primary/10 transition-colors group">
-
-                    <Phone className="text-primary group-hover:scale-110 transition-transform" size={20} />
+                  <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3.5 bg-surface dark:bg-stone-800 rounded-2xl border border-stone-200/50 dark:border-stone-700 hover:border-primary/40 transition-colors group">
+                    <MessageCircle className="text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform shrink-0" size={18} />
                     <div>
-                      <p className="text-xs text-muted-foreground uppercase font-black">WhatsApp</p>
-                      <p className="text-sm font-bold text-dark">+254 700 000 000</p>
+                      <p className="text-[10px] text-muted-foreground dark:text-stone-400 uppercase font-black">WhatsApp</p>
+                      <p className="text-xs font-bold text-dark dark:text-stone-100">+254 787 251 690</p>
                     </div>
                   </a>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Important Notes */}
-          <motion.div variants={itemVariants} className="md:col-span-2">
-            <Card className="border-none shadow-xl rounded-3xl overflow-hidden bg-primary text-white">
-              <CardContent className="p-8 md:p-12">
-                <div className="flex flex-col md:flex-row gap-8 items-center">
-                  <div className="w-20 h-20 bg-footer-bg/20 rounded-3xl flex items-center justify-center shrink-0">
-
-                    <Info size={40} />
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="text-2xl font-serif font-bold">Important Notes</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="space-y-2">
-                        <p className="text-white/90 text-sm leading-relaxed">
-                          Delivery times may vary slightly during peak seasons (holidays or major sales events).
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-white/90 text-sm leading-relaxed">
-                          Perfect Pick is not responsible for delays caused by incorrect or incomplete addresses.
-                        </p>
-                      </div>
-                      <div className="space-y-2">
-                        <p className="text-white/90 text-sm leading-relaxed">
-                          Please ensure someone is available to receive the delivery at the provided address.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -276,3 +237,4 @@ const ShippingPolicy = () => {
 };
 
 export default ShippingPolicy;
+
