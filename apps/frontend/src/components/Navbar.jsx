@@ -24,11 +24,13 @@ import DarkModeToggle from './DarkModeToggle';
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
   const { user, logout } = useAuth();
   const { cartCount } = useCart();
   const { wishlist } = useWishlist();
   const location = useLocation();
   const [categories, setCategories] = useState([]);
+  const accountRef = React.useRef(null);
 
   const wishlistCount = wishlist.length;
 
@@ -59,6 +61,23 @@ const Navbar = () => {
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (accountRef.current && !accountRef.current.contains(e.target)) {
+        setAccountOpen(false);
+      }
+    };
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setAccountOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
 
   const isAdmin = user?.isAdmin === true || user?.role === 'admin' || user?.role === 'manager';
 
@@ -215,21 +234,85 @@ const Navbar = () => {
                 </Button>
               </Link>
 
-              <Link to="/profile" title="Account">
+              <div className="relative hidden sm:block" ref={accountRef}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setAccountOpen(!accountOpen)}
+                  aria-label="Account menu"
+                  aria-haspopup="menu"
+                  aria-expanded={accountOpen}
+                  className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800"
+                >
+                  <User size={20} />
+                </Button>
+                {accountOpen && (
+                  <div
+                    role="menu"
+                    aria-label="Account menu"
+                    className="absolute right-0 top-full mt-2 w-60 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 z-50 border border-stone-200/80 dark:border-stone-800"
+                  >
+                    <div className="px-4 py-3 border-b border-border/40 dark:border-stone-800">
+                      <p className="text-sm font-bold text-dark dark:text-stone-100 truncate">{user?.name || 'Account'}</p>
+                      <p className="text-xs text-muted-foreground dark:text-stone-400 truncate">{user?.email}</p>
+                    </div>
+                    <Link
+                      to="/profile"
+                      role="menuitem"
+                      tabIndex={0}
+                      onClick={() => setAccountOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
+                    >
+                      <User size={16} /> Profile
+                    </Link>
+                    <Link
+                      to="/orders"
+                      role="menuitem"
+                      tabIndex={0}
+                      onClick={() => setAccountOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
+                    >
+                      <ShoppingBag size={16} /> Orders
+                    </Link>
+                    <Link
+                      to="/wishlist"
+                      role="menuitem"
+                      tabIndex={0}
+                      onClick={() => setAccountOpen(false)}
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
+                    >
+                      <Heart size={16} /> Wishlist
+                    </Link>
+                    {isAdmin && (
+                      <Link
+                        to="/admin"
+                        role="menuitem"
+                        tabIndex={0}
+                        onClick={() => setAccountOpen(false)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
+                      >
+                        <LayoutDashboard size={16} /> Dashboard
+                      </Link>
+                    )}
+                    <div className="h-px bg-border/40 dark:bg-stone-800 my-1 mx-2" />
+                    <button
+                      role="menuitem"
+                      tabIndex={0}
+                      onClick={() => { setAccountOpen(false); logout(); }}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
+                    >
+                      <LogOut size={16} /> Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Mobile account button - also moved to dropdown, keep icon for small screens but hidden on sm+ is above */}
+              <Link to="/profile" title="Account" className="sm:hidden">
                 <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <User size={20} />
                 </Button>
               </Link>
-
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                onClick={logout}
-                title="Logout"
-                className="text-medium dark:text-stone-200 hover:text-red-500 dark:hover:text-red-400 hover:bg-surface dark:hover:bg-stone-800"
-              >
-                <LogOut size={19} />
-              </Button>
             </>
           ) : (
             <div className="flex items-center gap-2">
@@ -315,6 +398,18 @@ const Navbar = () => {
                 <Link to="/admin" className="text-base font-bold py-2 text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
                   <LayoutDashboard size={18} /> Admin Dashboard
                 </Link>
+              )}
+              {user && (
+                <div className="pt-3 mt-3 border-t border-border/40 dark:border-stone-800">
+                  <button
+                    onClick={() => { setIsOpen(false); logout(); }}
+                    className="w-full flex items-center gap-2 py-2.5 px-3 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
+                    aria-label="Sign out"
+                  >
+                    <LogOut size={16} /> Sign out
+                  </button>
+                  <p className="text-[10px] text-muted-foreground dark:text-stone-500 mt-1 px-3 truncate">Signed in as {user?.email}</p>
+                </div>
               )}
               {!user && (
                 <div className="flex gap-3 pt-2">
