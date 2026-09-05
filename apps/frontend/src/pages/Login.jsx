@@ -66,39 +66,38 @@ const Login = () => {
         transition={{ duration: 0.3 }}
         className="w-full max-w-md"
       >
-        <Card className="border-none shadow-2xl overflow-hidden rounded-3xl">
-          <CardHeader className="bg-surface pt-10 pb-8 text-center space-y-2">
-            <h1 className="text-3xl font-serif font-black text-dark">Welcome Back</h1>
-            <p className="text-muted-foreground text-sm">Sign in to access your picks</p>
+        <Card className="border border-stone-200/70 dark:border-stone-800 shadow-2xl overflow-hidden rounded-3xl bg-card text-card-foreground">
+          <CardHeader className="bg-surface/50 dark:bg-stone-900/60 pt-10 pb-8 text-center space-y-1.5 border-b border-border/40 dark:border-stone-800">
+            <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Welcome Back</h1>
+            <p className="text-muted-foreground dark:text-stone-400 text-xs uppercase tracking-widest font-black">Sign in to your account</p>
           </CardHeader>
           
-          <CardContent className="p-8 space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Email Address</label>
+          <CardContent className="p-6 sm:p-8 space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
                   <Input 
                     type="email" 
                     placeholder="name@example.com" 
-                    className="pl-10 h-12 rounded-xl focus:ring-primary"
+                    className="pl-10 h-12 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400 font-medium"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-bold uppercase tracking-widest text-[#c08050]">Password</label>
-                  <Link to="#" className="text-xs font-semibold text-primary hover:underline">Forgot password?</Link>
+                  <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Password</label>
                 </div>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
                   <Input 
                     type="password" 
                     placeholder="••••••••" 
-                    className="pl-10 h-12 rounded-xl focus:ring-primary"
+                    className="pl-10 h-12 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
@@ -107,41 +106,41 @@ const Login = () => {
 
               <Button 
                 type="submit" 
-                className="w-full btn-primary h-12 rounded-xl text-md"
+                className="w-full btn-primary h-12 rounded-2xl text-sm font-black shadow-md cursor-pointer"
                 disabled={loading || googleLoading}
               >
                 {loading ? (
-                  <Loader2 className="animate-spin mr-2" size={20} />
+                  <Loader2 className="animate-spin mr-2" size={18} />
                 ) : (
-                  <>Sign In <ArrowRight className="ml-2" size={18} /></>
+                  <>Sign In <ArrowRight className="ml-2" size={16} /></>
                 )}
               </Button>
             </form>
 
-            <div className="relative py-4">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-4 text-xs font-bold text-muted-foreground uppercase tracking-widest">or</span>
+            <div className="relative py-2">
+              <Separator className="bg-border/40 dark:bg-stone-800" />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[11px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest">or</span>
             </div>
 
             <Button 
               type="button" 
               variant="outline"
-              className="w-full h-12 rounded-xl text-md border-border/20 hover:bg-surface transition-all gap-3"
+              className="w-full h-12 rounded-2xl text-xs font-bold uppercase tracking-wider border-stone-200 dark:border-stone-700 hover:bg-surface dark:hover:bg-stone-800 text-dark dark:text-stone-100 transition-all gap-2.5 cursor-pointer shadow-xs"
               onClick={handleGoogleLogin}
               disabled={loading || googleLoading}
             >
               {googleLoading ? (
-                <Loader2 className="animate-spin" size={20} />
+                <Loader2 className="animate-spin" size={18} />
               ) : (
-                <><FaGoogle className="text-red-500" /> Continue with Google</>
+                <><FaGoogle className="text-red-500 text-base" /> Continue with Google</>
               )}
             </Button>
           </CardContent>
 
-          <CardFooter className="bg-bg/50 p-6 text-center border-t border-border/10">
-            <p className="text-sm text-muted-foreground w-full">
+          <CardFooter className="bg-surface/30 dark:bg-stone-900/40 p-6 text-center border-t border-border/40 dark:border-stone-800">
+            <p className="text-xs text-muted-foreground dark:text-stone-400 w-full font-medium">
               Don't have an account? {' '}
-              <Link to="/register" className="font-bold text-primary hover:underline transition-all">
+              <Link to="/register" className="font-bold text-primary dark:text-amber-300 hover:underline transition-all">
                 Create Account
               </Link>
             </p>
