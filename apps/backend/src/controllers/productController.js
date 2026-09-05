@@ -175,7 +175,7 @@ export const getFeaturedProducts = async (req, res) => {
 // @access  Public
 export const getCategories = async (req, res) => {
     try {
-        const categories = await Product.distinct('category');
+        const categories = Product.schema.path('category').enumValues;
         res.json({ success: true, data: categories });
     } catch (error) {
         console.error(`Error in getCategories: ${error.message}`);

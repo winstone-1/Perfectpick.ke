@@ -17,12 +17,17 @@ import {
 } from '../components/ui/select';
 import { cn } from '../lib/utils';
 
-const DEFAULT_CATEGORIES = ['All', 'Bags', 'Shoes', 'Jewelry', 'Gifts', 'Accessories', 'Clothes'];
+const FALLBACK_CATEGORIES = ['All', 'Bags', 'Shoes', 'Jewelry', 'Gifts', 'Accessories', 'Clothes'];
+
+const formatCategoryLabel = (value) => {
+  if (value === 'All') return 'All';
+  return value.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+};
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [categories, setCategories] = useState(['All']);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
   const gridRef = useRef(null);
@@ -34,7 +39,7 @@ const Products = () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (activeCategory !== 'All') params.append('category', activeCategory.toLowerCase());
+      if (activeCategory !== 'All') params.append('category', activeCategory);
       if (searchTerm) params.append('search', searchTerm);
       if (sort) params.append('sort', sort);
 
@@ -52,11 +57,13 @@ const Products = () => {
       try {
         const { data } = await api.get('/products/categories');
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          const formatted = data.data.map(c => c.charAt(0).toUpperCase() + c.slice(1));
-          setCategories(['All', ...Array.from(new Set(formatted))]);
+          setCategories(['All', ...data.data]);
+        } else {
+          setCategories(FALLBACK_CATEGORIES);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);
+        setCategories(FALLBACK_CATEGORIES);
       }
     };
     fetchCategories();
@@ -144,10 +151,10 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Category Pills — Reference 3 / Purr'Coffee Inspired Pill Nav */}
+      {/* Category Pills — dynamic from backend */}
       <div className="flex flex-wrap gap-2 sm:gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((cat) => {
-          const isSelected = activeCategory.toLowerCase() === cat.toLowerCase();
+          const isSelected = activeCategory === cat;
           return (
             <button
               key={cat}
@@ -159,7 +166,7 @@ const Products = () => {
                   : "bg-card dark:bg-stone-900 text-dark dark:text-stone-200 border border-stone-200/80 dark:border-stone-800 hover:border-primary/50 hover:bg-surface dark:hover:bg-stone-800"
               )}
             >
-              {cat}
+              {formatCategoryLabel(cat)}
             </button>
           );
         })}

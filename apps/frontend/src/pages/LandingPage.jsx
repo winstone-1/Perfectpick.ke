@@ -9,7 +9,7 @@ import api from '../api/axios';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 
-const CATEGORIES = [
+const FALLBACK_CATEGORIES = [
   { label: 'Bags',        Icon: GiHandBag,  value: 'bags'        },
   { label: 'Shoes',       Icon: GiHighHeel,    value: 'shoes'       },
   { label: 'Jewelry',     Icon: GiNecklace, value: 'jewelry'     },
@@ -17,6 +17,18 @@ const CATEGORIES = [
   { label: 'Accessories', Icon: FaUserTie,  value: 'accessories' },
   { label: 'Clothes',     Icon: FaShirt,    value: 'clothes'     },
 ];
+
+const formatCategoryLabel = (value) => value.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+const getIconForCategory = (value) => {
+  const map = {
+    bags: GiHandBag, shoes: GiHighHeel, jewelry: GiNecklace, gifts: GiPresent, accessories: FaUserTie, clothes: FaShirt,
+    handbags: GiHandBag, earrings: GiNecklace, hairclips: GiPresent, keyrings: GiPresent, 'phone-charms': GiPresent,
+    'beauty-accessories': FaUserTie, 'gift-boxes': GiPresent, mugs: GiPresent, fans: GiPresent, 'body-mists': GiNecklace,
+    oils: GiNecklace, ponchos: FaShirt, sweaters: FaShirt, cardigans: FaShirt, watches: GiNecklace, rings: GiNecklace,
+  };
+  return map[value] || ShoppingBag;
+};
 
 const TRUST = [
   { Icon: Truck,       title: 'Fast Nairobi Delivery', desc: 'Same-day and next-day delivery across Nairobi.', link: '/shipping' },
@@ -36,6 +48,7 @@ const LandingPage = () => {
   const [direction, setDirection]       = useState(1);
   const [banners, setBanners]           = useState([]);
   const [bannerIndex, setBannerIndex]   = useState(0);
+  const [categories, setCategories]     = useState(FALLBACK_CATEGORIES);
 
   const videoRef       = useRef(null);
   const videoInterval  = useRef(null);
@@ -92,6 +105,25 @@ const LandingPage = () => {
     bannerInterval.current = setInterval(() => setBannerIndex(i => (i + 1) % banners.length), 5000);
     return () => clearInterval(bannerInterval.current);
   }, [banners]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get('/products/categories');
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          const mapped = data.data.map(value => ({
+            label: formatCategoryLabel(value),
+            value,
+            Icon: getIconForCategory(value),
+          }));
+          setCategories(mapped);
+        }
+      } catch {
+        // keep fallback
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const goToBanner = (idx) => { setBannerIndex(idx); clearInterval(bannerInterval.current); };
 
@@ -332,7 +364,7 @@ const LandingPage = () => {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
-          {CATEGORIES.map(({ label, Icon, value }, i) => (
+          {categories.map(({ label, Icon, value }, i) => (
             <motion.div key={value} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="landing-category">
               <button
                 onClick={() => navigate('/register')}

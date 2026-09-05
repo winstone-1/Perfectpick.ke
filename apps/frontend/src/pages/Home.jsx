@@ -28,7 +28,7 @@ const Home = () => {
     fetchFeatured();
   }, []);
 
-  const categories = [
+  const FALLBACK_CATEGORIES = [
     { name: 'Bags',        Icon: FaBagShopping, desc: 'Luxury leather & designer pieces',    href: '/products?category=bags'        },
     { name: 'Shoes',       Icon: FaShoePrints,  desc: 'Elegance in every step',              href: '/products?category=shoes'       },
     { name: 'Jewelry',     Icon: FaGem,         desc: 'Timeless sparkle for every occasion', href: '/products?category=jewelry'     },
@@ -36,6 +36,53 @@ const Home = () => {
     { name: 'Accessories', Icon: FaUserTie,     desc: 'The finishing touch',                 href: '/products?category=accessories' },
     { name: 'Clothes',     Icon: FaShirt,       desc: 'Curated knitwear & fashion',          href: '/products?category=clothes'     },
   ];
+
+  const formatCategoryLabel = (value) => value.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+  const getCategoryMeta = (value) => {
+    const map = {
+      bags: { Icon: FaBagShopping, desc: 'Luxury leather & designer pieces' },
+      shoes: { Icon: FaShoePrints, desc: 'Elegance in every step' },
+      jewelry: { Icon: FaGem, desc: 'Timeless sparkle for every occasion' },
+      gifts: { Icon: FaGift, desc: 'Perfectly wrapped thoughts' },
+      accessories: { Icon: FaUserTie, desc: 'The finishing touch' },
+      clothes: { Icon: FaShirt, desc: 'Curated knitwear & fashion' },
+      handbags: { Icon: FaBagShopping, desc: 'Chic handbags for every occasion' },
+      earrings: { Icon: FaGem, desc: 'Elegant earrings to shine' },
+      hairclips: { Icon: FaGem, desc: 'Stylish hair accessories' },
+      keyrings: { Icon: FaGift, desc: 'Charming keyrings' },
+      'phone-charms': { Icon: FaGift, desc: 'Trendy phone charms' },
+      'beauty-accessories': { Icon: FaGem, desc: 'Beauty essentials' },
+      'gift-boxes': { Icon: FaGift, desc: 'Curated gift boxes' },
+      mugs: { Icon: FaGift, desc: 'Cozy mugs' },
+      fans: { Icon: FaGift, desc: 'Elegant fans' },
+      'body-mists': { Icon: FaGem, desc: 'Refreshing body mists' },
+      oils: { Icon: FaGem, desc: 'Luxury oils' },
+      ponchos: { Icon: FaShirt, desc: 'Cozy ponchos' },
+      sweaters: { Icon: FaShirt, desc: 'Warm sweaters' },
+      cardigans: { Icon: FaShirt, desc: 'Stylish cardigans' },
+      watches: { Icon: FaGem, desc: 'Timeless watches' },
+      rings: { Icon: FaGem, desc: 'Elegant rings' },
+    };
+    const meta = map[value] || { Icon: ShoppingBag, desc: 'Curated collection' };
+    return { name: formatCategoryLabel(value), Icon: meta.Icon, desc: meta.desc, href: `/products?category=${value}` };
+  };
+
+  const [categories, setCategories] = useState(FALLBACK_CATEGORIES);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await api.get('/products/categories');
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setCategories(data.data.map(value => getCategoryMeta(value)));
+        }
+      } catch {
+        // keep fallback for loading/error
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const stats = [
     { label: 'Curated Products', value: '500+' },
