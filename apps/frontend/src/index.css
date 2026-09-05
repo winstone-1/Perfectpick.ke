@@ -1,85 +1,87 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap');
 @import "tailwindcss";
 
-
 @theme {
-
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
 
   --color-primary: #c08050;
-  --color-primary-hover: #9a6340;
+  --color-primary-hover: #a86b3e;
   --color-dark: #3d271a;
   --color-medium: #5c3a26;
-  --color-muted: #9a6340;
+  --color-muted: #7d573f;
   --color-bg: #fdf8f3;
   --color-surface: #f9eede;
-  --color-border: color-mix(in srgb, #e8c49a 40%, transparent);
+  --color-border: color-mix(in srgb, #e8c49a 45%, transparent);
   --color-footer-bg: #3d271a;
   --color-footer-text: #f3dcc0;
 
   --color-bg-dark: #121212;
-  --color-surface-dark: #1e1e1e;
-  --color-border-dark: #2a2a2a;
+  --color-surface-dark: #1c1917;
+  --color-border-dark: #2e2825;
 
-  --radius-lg: 12px;
-  --radius-md: 8px;
-  --radius-sm: 4px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
-
   :root {
-    --background: var(--color-bg);
-    --foreground: var(--color-dark);
-    --card: 0 0% 100%;
-    --card-foreground: var(--color-dark);
-    --popover: 0 0% 100%;
-    --popover-foreground: var(--color-dark);
-    --primary: 34 45% 53%; /* #c08050 approximated to HSL */
-    --primary-foreground: 34 100% 95%;
-    --secondary: 35 45% 93%; /* #f9eede */
-    --secondary-foreground: 34 45% 20%;
-    --muted: 35 45% 93%;
-    --muted-foreground: 34 25% 45%;
-    --accent: 35 45% 93%;
-    --accent-foreground: 34 45% 20%;
+    --background: #fdf8f3;
+    --foreground: #3d271a;
+    --card: #ffffff;
+    --card-foreground: #3d271a;
+    --popover: #ffffff;
+    --popover-foreground: #3d271a;
+    --primary: 32 46% 53%; /* #c08050 */
+    --primary-foreground: 32 100% 98%;
+    --secondary: 35 50% 94%; /* #f9eede */
+    --secondary-foreground: 32 45% 18%;
+    --muted: 35 40% 92%;
+    --muted-foreground: 28 20% 40%;
+    --accent: 35 50% 94%;
+    --accent-foreground: 32 45% 18%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 34 50% 85%;
-    --input: 34 50% 85%;
-    --ring: 34 45% 53%;
-    --radius: 0.75rem;
+    --border: 32 30% 86%;
+    --input: 32 30% 86%;
+    --ring: 32 46% 53%;
+    --radius: 0.875rem;
   }
 
   .dark {
-    --background: var(--color-bg-dark);
-    --foreground: #ffffff;
-    --card: 240 10% 12%;
-    --card-foreground: #ffffff;
-    --popover: 240 10% 12%;
-    --popover-foreground: #ffffff;
-    --secondary: 240 10% 18%;
-    --secondary-foreground: #ffffff;
-    --muted: 240 10% 18%;
-    --muted-foreground: 240 5% 75%;
-    --accent: 240 10% 18%;
-    --accent-foreground: #ffffff;
-    --border: 240 10% 25%;
-    --input: 240 10% 25%;
-    
-    --color-bg: var(--color-bg-dark);
-    --color-surface: var(--color-surface-dark);
-    --color-border: var(--color-border-dark);
-    --color-dark: #ffffff;
-    --color-medium: #f3dcc0;
+    --background: #121212;
+    --foreground: #faf7f4;
+    --card: #1c1917;
+    --card-foreground: #faf7f4;
+    --popover: #1c1917;
+    --popover-foreground: #faf7f4;
+    --secondary: #24201d;
+    --secondary-foreground: #faf7f4;
+    --muted: #24201d;
+    --muted-foreground: #cfc4bc;
+    --accent: #292421;
+    --accent-foreground: #faf7f4;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+    --border: #2e2825;
+    --input: #2e2825;
+    --ring: #d8915e;
+
+    --color-bg: #121212;
+    --color-surface: #1c1917;
+    --color-border: #2e2825;
+    --color-dark: #faf7f4;
+    --color-medium: #e7ded7;
+    --color-muted: #cfc4bc;
+    --color-primary: #d8915e;
+    --color-primary-hover: #e6a272;
   }
 
-
   * {
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-200;
     border-color: var(--color-border);
   }
 
@@ -87,7 +89,7 @@
     background-color: var(--background);
     color: var(--foreground);
     font-family: var(--font-sans);
-    @apply transition-colors duration-300;
+    @apply transition-colors duration-200 antialiased selection:bg-primary/20 selection:text-primary;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -97,13 +99,17 @@
 
 /* Custom Utilities */
 @utility btn-primary {
-  @apply bg-primary text-white hover:bg-primary-hover transition-all duration-300 rounded-md px-4 py-2 inline-flex items-center justify-center font-medium active:scale-95;
+  @apply bg-primary text-white hover:bg-primary-hover transition-all duration-300 rounded-xl px-5 py-2.5 inline-flex items-center justify-center font-bold tracking-wide active:scale-98 shadow-sm hover:shadow-md cursor-pointer;
 }
 
 @utility btn-outline {
-  @apply border border-primary text-primary hover:bg-surface transition-all duration-300 rounded-md px-4 py-2 inline-flex items-center justify-center font-medium active:scale-95;
+  @apply border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary transition-all duration-300 rounded-xl px-5 py-2.5 inline-flex items-center justify-center font-bold tracking-wide active:scale-98 cursor-pointer;
 }
 
 @utility glass {
-  @apply bg-white/40 backdrop-blur-md border border-white/20;
+  @apply bg-white/70 dark:bg-stone-900/70 backdrop-blur-md border border-white/30 dark:border-stone-800/60;
+}
+
+@utility card-luxury {
+  @apply bg-card text-card-foreground rounded-3xl border border-stone-200/70 dark:border-stone-800/80 shadow-[0_8px_30px_rgb(61,39,26,0.04)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.35)] transition-all duration-300;
 }
