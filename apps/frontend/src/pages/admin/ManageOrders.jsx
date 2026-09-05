@@ -60,12 +60,12 @@ const ManageOrders = () => {
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'pending': return 'bg-amber-100 text-amber-700 border-amber-200';
-      case 'processing': return 'bg-blue-100 text-blue-700 border-blue-200';
-      case 'shipped': return 'bg-purple-100 text-purple-700 border-purple-200';
-      case 'delivered': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-      case 'cancelled': return 'bg-red-100 text-red-700 border-red-200';
-      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+      case 'pending': return 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/70 dark:text-amber-300 dark:border-amber-800/80';
+      case 'processing': return 'bg-sky-100 text-sky-900 border-sky-300 dark:bg-sky-950/70 dark:text-sky-300 dark:border-sky-800/80';
+      case 'shipped': return 'bg-purple-100 text-purple-900 border-purple-300 dark:bg-purple-950/70 dark:text-purple-300 dark:border-purple-800/80';
+      case 'delivered': return 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-950/70 dark:text-emerald-300 dark:border-emerald-800/80';
+      case 'cancelled': return 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-950/70 dark:text-rose-300 dark:border-rose-800/80';
+      default: return 'bg-stone-100 text-stone-800 border-stone-300 dark:bg-stone-800 dark:text-stone-200 dark:border-stone-700';
     }
   };
 
@@ -73,14 +73,14 @@ const ManageOrders = () => {
 
   return (
     <div className="container mx-auto px-4 py-12 lg:py-20 space-y-12">
-      <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group">
+      <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-colors group">
         <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         Back to Dashboard
       </Link>
 
       <div className="space-y-1">
-        <h1 className="text-4xl font-serif font-black text-dark">Manage Orders</h1>
-        <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Total: {orders.length} Orders</p>
+        <h1 className="text-4xl font-serif font-black text-stone-900 dark:text-stone-50">Manage Orders</h1>
+        <p className="text-stone-500 dark:text-stone-400 font-bold uppercase tracking-widest text-[10px]">Total: {orders.length} Orders</p>
       </div>
 
       <div className="space-y-6">
@@ -93,15 +93,15 @@ const ManageOrders = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <div className="bg-white rounded-[2.5rem] shadow-sm border border-border/10 overflow-hidden hover:shadow-md transition-all duration-300">
+              <div className="bg-card text-card-foreground rounded-[2rem] shadow-sm border border-stone-200/80 dark:border-stone-800 overflow-hidden hover:shadow-md transition-all duration-300">
                 <div className="p-8 md:p-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
                   {/* Order Info */}
                   <div className="flex-1 space-y-4">
                     <div className="flex flex-wrap items-center gap-4">
-                      <span className="font-mono text-xs font-bold text-muted-foreground uppercase tracking-widest px-3 py-1 bg-surface rounded-full">
+                      <span className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-widest px-3.5 py-1 bg-stone-100 dark:bg-stone-800/80 rounded-full border border-stone-200/60 dark:border-stone-700/60">
                         #{order._id.toUpperCase()}
                       </span>
-                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
                         <Clock size={14} />
                         {new Date(order.createdAt).toLocaleString()}
                       </span>
@@ -109,31 +109,31 @@ const ManageOrders = () => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary flex-shrink-0">
+                        <div className="w-10 h-10 bg-stone-100 dark:bg-stone-800 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
                           <User size={18} />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-black text-dark truncate">{order.shippingAddress.fullName}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold truncate">{order.shippingAddress.phone}</p>
+                          <p className="text-sm font-black text-stone-900 dark:text-stone-100 truncate">{order.shippingAddress?.fullName || 'Customer'}</p>
+                          <p className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-widest font-bold truncate">{order.shippingAddress?.phone || 'No phone'}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-surface rounded-xl flex items-center justify-center text-primary flex-shrink-0">
+                        <div className="w-10 h-10 bg-stone-100 dark:bg-stone-800 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
                           <Mail size={18} />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-dark truncate">{order.user?.email || 'Guest User'}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Customer Contact</p>
+                          <p className="text-sm font-bold text-stone-900 dark:text-stone-100 truncate">{order.user?.email || 'Guest User'}</p>
+                          <p className="text-[10px] text-stone-500 dark:text-stone-400 uppercase tracking-widest font-bold">Customer Contact</p>
                         </div>
                       </div>
                     </div>
                   </div>
 
                   {/* Summary & Status */}
-                  <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 pl-0 lg:pl-12 lg:border-l border-border/10">
+                  <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12 pl-0 lg:pl-12 lg:border-l border-stone-200 dark:border-stone-800">
                     <div className="text-center md:text-right space-y-1">
-                      <p className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground">Amount Paid</p>
-                      <p className="text-2xl font-serif font-black text-primary">{PriceDisplay(order.totalPrice ?? order.totalAmount)}</p>
+                      <p className="text-[10px] font-black uppercase tracking-wider text-stone-500 dark:text-stone-400">Amount Paid</p>
+                      <p className="text-2xl font-serif font-black text-primary dark:text-primary-light">{PriceDisplay(order.totalPrice ?? order.totalAmount)}</p>
                     </div>
 
                     <div className="space-y-4 w-full md:w-auto">
@@ -153,10 +153,10 @@ const ManageOrders = () => {
                         value={order.status} 
                         onValueChange={(val) => handleStatusChange(order._id, val)}
                       >
-                        <SelectTrigger className="w-full md:w-[180px] h-11 rounded-xl bg-surface border-transparent focus:ring-primary font-bold text-xs uppercase tracking-widest">
+                        <SelectTrigger className="w-full md:w-[180px] h-11 rounded-xl bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:ring-primary font-bold text-xs uppercase tracking-widest">
                           <SelectValue placeholder="Change Status" />
                         </SelectTrigger>
-                        <SelectContent className="rounded-xl border-none shadow-2xl">
+                        <SelectContent className="rounded-xl bg-card text-card-foreground border border-stone-200 dark:border-stone-800 shadow-2xl">
                           <SelectItem value="pending">Pending</SelectItem>
                           <SelectItem value="processing">Processing</SelectItem>
                           <SelectItem value="shipped">Shipped</SelectItem>
@@ -167,7 +167,7 @@ const ManageOrders = () => {
                     </div>
 
                     <Link to={`/orders/${order._id}`} className="hidden md:block" title="View order">
-                      <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full hover:bg-surface text-muted-foreground hover:text-primary transition-all">
+                      <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-all">
                         <ExternalLink size={20} />
                       </Button>
                     </Link>
@@ -177,7 +177,7 @@ const ManageOrders = () => {
             </motion.div>
           ))
         ) : (
-          <div className="py-32 flex flex-col items-center justify-center text-center opacity-40 italic">
+          <div className="py-32 flex flex-col items-center justify-center text-center text-stone-400 dark:text-stone-600 italic">
             <ShoppingBag size={64} className="mb-4" />
             <p>No orders have been placed yet.</p>
           </div>

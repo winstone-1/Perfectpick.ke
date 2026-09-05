@@ -190,15 +190,15 @@ const ManageProducts = () => {
 
   return (
     <div className="container mx-auto px-4 py-12 lg:py-20 space-y-12">
-      <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors group">
+      <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-colors group">
         <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         Back to Dashboard
       </Link>
 
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-4xl font-serif font-black text-dark">Manage Products</h1>
-          <p className="text-muted-foreground font-bold uppercase tracking-widest text-[10px]">Total: {products.length} Products</p>
+          <h1 className="text-4xl font-serif font-black text-stone-900 dark:text-stone-50">Manage Products</h1>
+          <p className="text-stone-500 dark:text-stone-400 font-bold uppercase tracking-widest text-[10px]">Total: {products.length} Products</p>
         </div>
 
         <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
@@ -208,29 +208,29 @@ const ManageProducts = () => {
             </Button>
           </DialogTrigger>
 
-          <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] rounded-[2.5rem] border-none shadow-2xl p-0">
-            <div className="sticky top-0 z-10 bg-surface px-10 py-6 border-b border-border/10 flex justify-between items-center">
-              <DialogTitle className="font-serif font-black text-2xl text-dark">
+          <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] rounded-[2.5rem] bg-card text-card-foreground border border-stone-200 dark:border-stone-800 shadow-2xl p-0">
+            <div className="sticky top-0 z-10 bg-stone-50 dark:bg-stone-900 px-10 py-6 border-b border-stone-200 dark:border-stone-800 flex justify-between items-center">
+              <DialogTitle className="font-serif font-black text-2xl text-stone-900 dark:text-stone-100">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </DialogTitle>
-              <button onClick={() => setIsDialogOpen(false)} className="h-8 w-8 rounded-full hover:bg-white/50 flex items-center justify-center transition-colors">
+              <button onClick={() => setIsDialogOpen(false)} className="h-8 w-8 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-white">
+            <form onSubmit={handleSubmit} className="p-10 space-y-8 bg-card text-card-foreground">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* LEFT COLUMN */}
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Product Name *</label>
-                    <Input placeholder="e.g. Vintage Leather Tote" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-12 rounded-xl" />
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Product Name *</label>
+                    <Input placeholder="e.g. Vintage Leather Tote" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="h-12 rounded-xl bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100" />
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Category *</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Category *</label>
                     <select
-                      className="w-full h-12 rounded-xl border border-border/20 px-4 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full h-12 rounded-xl border border-stone-200 dark:border-stone-700 px-4 text-sm font-medium bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-primary"
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     >
@@ -241,8 +241,8 @@ const ManageProducts = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Base Price (KES) *</label>
-                    <Input type="number" placeholder="5000" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-12 rounded-xl" />
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Base Price (KES) *</label>
+                    <Input type="number" placeholder="5000" value={formData.price} onChange={(e) => setFormData({ ...formData, price: e.target.value })} className="h-12 rounded-xl bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100" />
                   </div>
 
                   {/* Product Images */}
@@ -317,9 +317,9 @@ const ManageProducts = () => {
                 {/* RIGHT COLUMN */}
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary">Description</label>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Description</label>
                     <textarea
-                      className="w-full h-40 rounded-xl border border-border/20 p-4 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                      className="w-full h-40 rounded-xl border border-stone-200 dark:border-stone-700 p-4 text-sm font-medium bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                       placeholder="Tell the story of this piece..."
                       value={formData.description}
                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -327,29 +327,29 @@ const ManageProducts = () => {
                   </div>
 
                   {/* Featured toggle */}
-                  <div className="flex items-center gap-3 p-4 bg-surface rounded-2xl border border-border/5">
+                  <div className="flex items-center gap-3 p-4 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
                     <input
                       type="checkbox"
                       id="featured"
                       checked={formData.featured}
                       onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                      className="h-5 w-5 rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
+                      className="h-5 w-5 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                     />
-                    <label htmlFor="featured" className="text-sm font-bold text-dark cursor-pointer select-none">
+                    <label htmlFor="featured" className="text-sm font-bold text-stone-900 dark:text-stone-100 cursor-pointer select-none">
                       Feature on homepage
-                      <span className="block text-[10px] text-muted-foreground font-normal uppercase tracking-tight">Show in hero carousel and new arrivals</span>
+                      <span className="block text-[10px] text-stone-500 dark:text-stone-400 font-normal uppercase tracking-tight">Show in hero carousel and new arrivals</span>
                     </label>
                   </div>
 
                   {/* Discount Section */}
-                  <div className="space-y-4 p-5 bg-surface rounded-2xl border border-border/5">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                  <div className="space-y-4 p-5 bg-stone-50 dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light flex items-center gap-2">
                       <Tag size={12} /> Sale / Discount Banner
                     </label>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Discount %</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-stone-600 dark:text-stone-400">Discount %</label>
                         <Input
                           type="number"
                           min="0"
@@ -357,25 +357,25 @@ const ManageProducts = () => {
                           placeholder="e.g. 20"
                           value={formData.discount}
                           onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
-                          className="h-11 rounded-xl"
+                          className="h-11 rounded-xl bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Sale Label</label>
+                        <label className="text-[10px] font-bold uppercase tracking-widest text-stone-600 dark:text-stone-400">Sale Label</label>
                         <Input
                           placeholder="e.g. Weekend Sale"
                           value={formData.discountLabel}
                           onChange={(e) => setFormData({ ...formData, discountLabel: e.target.value })}
-                          className="h-11 rounded-xl"
+                          className="h-11 rounded-xl bg-white dark:bg-stone-950 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100"
                         />
                       </div>
                     </div>
 
                     {/* Banner image */}
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Banner Image</label>
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-stone-600 dark:text-stone-400">Banner Image</label>
                       {(bannerFile || formData.discountBanner) ? (
-                        <div className="relative rounded-xl overflow-hidden border border-border/10 group">
+                        <div className="relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-700 group">
                           <img
                             src={bannerFile ? URL.createObjectURL(bannerFile) : formData.discountBanner}
                             className="w-full h-32 object-cover"
@@ -392,9 +392,9 @@ const ManageProducts = () => {
                           </button>
                         </div>
                       ) : (
-                        <label className="flex items-center gap-3 p-4 border-2 border-dashed border-border/20 rounded-xl cursor-pointer hover:bg-white transition-all">
-                          <ImageIcon size={16} className="text-muted-foreground" />
-                          <span className="text-xs font-bold text-muted-foreground">Upload sale banner image (1200×600 ideal)</span>
+                        <label className="flex items-center gap-3 p-4 border-2 border-dashed border-stone-200 dark:border-stone-700 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-stone-800 transition-all">
+                          <ImageIcon size={16} className="text-stone-500 dark:text-stone-400" />
+                          <span className="text-xs font-bold text-stone-600 dark:text-stone-300">Upload sale banner image (1200×600 ideal)</span>
                           <input
                             type="file"
                             className="hidden"
@@ -403,7 +403,7 @@ const ManageProducts = () => {
                           />
                         </label>
                       )}
-                      <p className="text-[9px] text-muted-foreground italic">Shows as one of 3 sale banners on the landing page.</p>
+                      <p className="text-[9px] text-stone-500 dark:text-stone-400 italic">Shows as one of 3 sale banners on the landing page.</p>
                     </div>
                   </div>
                 </div>
@@ -412,17 +412,17 @@ const ManageProducts = () => {
               {/* Variants */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-primary">Variants & Stock</label>
-                  <Button type="button" variant="ghost" size="sm" onClick={handleAddVariant} className="text-primary hover:text-primary-hover font-bold">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Variants & Stock</label>
+                  <Button type="button" variant="ghost" size="sm" onClick={handleAddVariant} className="text-primary hover:text-primary dark:hover:text-primary-light font-bold">
                     <Plus size={16} className="mr-1" /> Add Variant
                   </Button>
                 </div>
                 <div className="space-y-3">
                   {formData.variants.map((v, i) => (
                     <div key={i} className="flex gap-4 items-center">
-                      <Input placeholder="Name (e.g. Small / Brown)" value={v.name} onChange={(e) => handleVariantChange(i, 'name', e.target.value)} className="h-11 rounded-xl" />
-                      <Input type="number" placeholder="Stock" value={v.stock} onChange={(e) => handleVariantChange(i, 'stock', e.target.value)} className="w-32 h-11 rounded-xl" />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveVariant(i)} className="text-red-500 hover:text-red-600 hover:bg-red-50" disabled={formData.variants.length === 1}>
+                      <Input placeholder="Name (e.g. Small / Brown)" value={v.name} onChange={(e) => handleVariantChange(i, 'name', e.target.value)} className="h-11 rounded-xl bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100" />
+                      <Input type="number" placeholder="Stock" value={v.stock} onChange={(e) => handleVariantChange(i, 'stock', e.target.value)} className="w-32 h-11 rounded-xl bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100" />
+                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveVariant(i)} className="text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50" disabled={formData.variants.length === 1}>
                         <Trash2 size={18} />
                       </Button>
                     </div>
@@ -445,9 +445,9 @@ const ManageProducts = () => {
         {loading ? (
           Array(5).fill(0).map((_, i) => <Skeleton key={i} className="h-24 w-full rounded-2xl" />)
         ) : products.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto bg-card rounded-[2rem] border border-stone-200/80 dark:border-stone-800 p-4 shadow-sm">
             <table className="w-full text-left">
-              <thead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground border-b border-border/10">
+              <thead className="text-[10px] font-black uppercase tracking-widest text-stone-500 dark:text-stone-400 border-b border-stone-200 dark:border-stone-800">
                 <tr>
                   <th className="pb-4 pl-4">Product</th>
                   <th className="pb-4">Category</th>
@@ -457,7 +457,7 @@ const ManageProducts = () => {
                   <th className="pb-4 pr-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border/10">
+              <tbody className="divide-y divide-stone-200/70 dark:divide-stone-800">
                 {products.map((product) => {
                   const firstImage = product.images?.[0] || product.image;
                   const totalStock = (product.variants || []).reduce((a, b) => a + b.stock, 0);
@@ -466,54 +466,54 @@ const ManageProducts = () => {
                       key={product._id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="group hover:bg-white/50 transition-colors"
+                      className="group hover:bg-stone-50/80 dark:hover:bg-stone-900/60 transition-colors"
                     >
                       <td className="py-6 pl-4">
                         <div className="flex items-center gap-4">
-                          <div className="h-14 w-14 bg-surface rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
+                          <div className="h-14 w-14 bg-stone-100 dark:bg-stone-800 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
                             {firstImage
                               ? <img src={firstImage} className="h-full w-full object-cover" />
-                              : <ImageIcon size={20} className="text-medium opacity-20" />
+                              : <ImageIcon size={20} className="text-stone-400 opacity-40" />
                             }
                           </div>
                           <div className="flex flex-col">
-                            <span className="font-serif font-bold text-dark">{product.name}</span>
+                            <span className="font-serif font-bold text-stone-900 dark:text-stone-100">{product.name}</span>
                             <div className="flex items-center gap-2 mt-0.5">
-                              {product.featured && <span className="text-[9px] bg-primary/10 text-primary font-bold px-2 py-0.5 rounded-full uppercase">Featured</span>}
-                              {product.videos?.length > 0 && <span className="text-[9px] bg-blue-50 text-blue-600 font-bold px-2 py-0.5 rounded-full uppercase flex items-center gap-1"><Video size={8} /> {product.videos.length} video{product.videos.length > 1 ? 's' : ''}</span>}
+                              {product.featured && <span className="text-[9px] bg-primary/10 text-primary dark:text-primary-light font-bold px-2 py-0.5 rounded-full uppercase">Featured</span>}
+                              {product.videos?.length > 0 && <span className="text-[9px] bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-bold px-2 py-0.5 rounded-full uppercase flex items-center gap-1"><Video size={8} /> {product.videos.length} video{product.videos.length > 1 ? 's' : ''}</span>}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="py-6">
-                        <Badge variant="outline" className="rounded-full bg-white border-border/10 uppercase tracking-widest text-[9px] font-bold">
+                        <Badge variant="outline" className="rounded-full bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-stone-200 dark:border-stone-700 uppercase tracking-widest text-[9px] font-bold">
                           {product.category}
                         </Badge>
                       </td>
-                      <td className="py-6 font-bold text-dark">{PriceDisplay(product.price)}</td>
+                      <td className="py-6 font-bold text-stone-900 dark:text-stone-100">{PriceDisplay(product.price)}</td>
                       <td className="py-6">
                         {product.discount > 0 ? (
-                          <span className="text-[10px] bg-red-50 text-red-600 font-black px-2 py-1 rounded-lg">
+                          <span className="text-[10px] bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 font-black px-2 py-1 rounded-lg">
                             -{product.discount}%
                           </span>
                         ) : (
-                          <span className="text-[10px] text-muted-foreground">—</span>
+                          <span className="text-[10px] text-stone-400 dark:text-stone-500">—</span>
                         )}
                       </td>
                       <td className="py-6">
                         <span className={cn(
                           "font-bold text-sm px-3 py-1 rounded-lg",
-                          totalStock < 5 ? "bg-red-50 text-red-600" : "bg-emerald-50 text-emerald-600"
+                          totalStock < 5 ? "bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300" : "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300"
                         )}>
                           {totalStock} Units
                         </span>
                       </td>
                       <td className="py-6 pr-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" className="hover:bg-white rounded-xl" onClick={() => handleEdit(product)}>
+                          <Button variant="ghost" size="icon" className="hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-stone-700 dark:text-stone-300" onClick={() => handleEdit(product)}>
                             <Pencil size={18} />
                           </Button>
-                          <Button variant="ghost" size="icon" className="text-red-500 hover:bg-red-50 rounded-xl" onClick={() => handleDelete(product._id)}>
+                          <Button variant="ghost" size="icon" className="text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl" onClick={() => handleDelete(product._id)}>
                             <Trash2 size={18} />
                           </Button>
                         </div>
@@ -525,7 +525,7 @@ const ManageProducts = () => {
             </table>
           </div>
         ) : (
-          <div className="py-32 flex flex-col items-center justify-center text-center opacity-40 italic">
+          <div className="py-32 flex flex-col items-center justify-center text-center text-stone-400 dark:text-stone-600 italic">
             <Package size={64} className="mb-4" />
             <p>Your collection is currently empty.</p>
           </div>
