@@ -13,9 +13,9 @@ const TrendingNow = () => {
   const [loading, setLoading] = useState(true);
 
   const tabs = [
-    { id: 'viewCount', label: 'Most Viewed', icon: <Eye size={18} /> },
-    { id: 'wishlistCount', label: 'Most Wished', icon: <Heart size={18} /> },
-    { id: 'salesCount', label: 'Best Selling', icon: <TrendingUp size={18} /> },
+    { id: 'viewCount', label: 'Most Viewed', icon: <Eye size={16} /> },
+    { id: 'wishlistCount', label: 'Most Wished', icon: <Heart size={16} /> },
+    { id: 'salesCount', label: 'Best Selling', icon: <TrendingUp size={16} /> },
   ];
 
   useEffect(() => {
@@ -36,32 +36,32 @@ const TrendingNow = () => {
   }, [activeTab]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="bg-surface py-12 md:py-20 px-4 md:px-8 border-b border-border/10">
+      <section className="bg-surface/50 dark:bg-stone-900/50 py-12 md:py-20 px-4 md:px-8 border-b border-border/40 dark:border-stone-800">
         <div className="container mx-auto text-center space-y-4 md:space-y-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 bg-red-500/10 text-red-600 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest"
+            className="inline-flex items-center gap-2 bg-rose-500/10 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-rose-500/20"
           >
-            <Flame size={14} className="fill-red-600" /> High Demand
+            <Flame size={14} className="fill-rose-600 dark:fill-rose-400" /> High Demand
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-serif font-black text-[#1a1a1a]"
+            className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
           >
-            Trending <span className="text-primary italic">Now</span>
+            Trending <span className="text-primary dark:text-amber-300 italic">Now</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-sm md:text-base text-medium max-w-2xl mx-auto leading-relaxed px-4"
+            className="text-sm md:text-base text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed px-4"
           >
-            What Nairobi is loving right now. Updated daily based on customer activity, 
-            purchases, and social buzz.
+            What Nairobi is loving right now. Updated regularly based on customer views, 
+            wishlist additions, and verified orders.
           </motion.p>
         </div>
       </section>
@@ -70,16 +70,16 @@ const TrendingNow = () => {
       <section className="container mx-auto py-8 md:py-12 px-4 md:px-8 space-y-8">
         {/* Custom Tabs */}
         <div className="flex justify-center">
-          <div className="flex bg-surface p-1 rounded-2xl w-full md:w-auto overflow-x-auto no-scrollbar scroll-smooth">
+          <div className="flex bg-surface dark:bg-stone-800 p-1.5 rounded-full border border-stone-200/80 dark:border-stone-700 w-full md:w-auto overflow-x-auto no-scrollbar shadow-xs">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap",
+                  "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
                   activeTab === tab.id 
-                    ? "bg-white text-primary shadow-sm ring-1 ring-border/5" 
-                    : "text-medium hover:text-dark hover:bg-white/50"
+                    ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md" 
+                    : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
                 )}
               >
                 {tab.icon}
@@ -107,11 +107,11 @@ const TrendingNow = () => {
                 <motion.div
                   layout
                   key={`${activeTab}-${product._id}`}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="relative"
+                  transition={{ duration: 0.35, delay: index * 0.04 }}
+                  className="relative group flex flex-col"
                 >
                   <ProductCard product={product} />
                   
@@ -119,59 +119,29 @@ const TrendingNow = () => {
                   {index < 3 && (
                     <div className="absolute top-3 left-3 pointer-events-none">
                       <div className={cn(
-                        "flex items-center gap-1.5 px-3 py-1.5 rounded-full shadow-lg border-none text-[10px] font-black uppercase tracking-widest text-white",
-                        index === 0 ? "bg-primary" : "bg-dark"
+                        "flex items-center gap-1.5 px-3 py-1 rounded-full shadow-lg border-none text-[10px] font-black uppercase tracking-widest text-white",
+                        index === 0 ? "bg-primary dark:bg-amber-600" : "bg-stone-900/90 dark:bg-stone-800"
                       )}>
                         <Trophy size={12} className={index === 0 ? "fill-white" : ""} />
                         #{index + 1} Trending
                       </div>
                     </div>
                   )}
-
-                  {/* Dynamic Stat Badge */}
-                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Badge variant="secondary" className="bg-white/90 backdrop-blur-md text-dark border-none">
-                      {activeTab === 'viewCount' && `${product.viewCount || 0} views`}
-                      {activeTab === 'wishlistCount' && `${product.wishlistCount || 0} wishes`}
-                      {activeTab === 'salesCount' && `${product.salesCount || 0} sold`}
-                    </Badge>
-                  </div>
                 </motion.div>
               ))}
             </AnimatePresence>
           </div>
         ) : (
           <div className="py-20 text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface text-medium">
-              <TrendingUp size={40} />
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface dark:bg-stone-800 text-medium dark:text-stone-400">
+              <TrendingUp size={36} />
             </div>
-            <h3 className="text-xl font-serif font-bold text-dark">Nothing trending yet</h3>
-            <p className="text-muted-foreground max-w-xs mx-auto">
-              Our data is currently being updated. Check back in a few moments.
+            <h3 className="text-xl font-serif font-black text-dark dark:text-stone-100">Nothing trending yet</h3>
+            <p className="text-muted-foreground dark:text-stone-400 max-w-xs mx-auto text-xs">
+              Trending trends are updated regularly. Check back soon for Nairobi's hottest items.
             </p>
           </div>
         )}
-      </section>
-
-      {/* Social Trust Section */}
-      <section className="bg-surface py-12 md:py-20 px-4 md:px-8 border-t border-border/10">
-        <div className="container mx-auto max-w-4xl text-center space-y-8">
-          <div className="space-y-4">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-dark">Join the Movement</h2>
-            <p className="text-medium max-w-xl mx-auto">
-              See how our community is styling their Perfect Picks. Use <span className="font-bold text-primary">#PerfectPickNairobi</span> to be featured.
-            </p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="aspect-square bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                <div className="w-full h-full bg-border/20 flex items-center justify-center">
-                  <ShoppingBag className="text-border/40" size={24} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
       </section>
     </div>
   );
