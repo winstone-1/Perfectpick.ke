@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { ShoppingBag, Package, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
 import api from '../api/axios';
 import { Button } from '../components/ui/button';
@@ -16,6 +17,7 @@ const statusColors = {
 };
 
 const Orders = () => {
+  const { t } = useTranslation();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -71,13 +73,13 @@ const Orders = () => {
           <Package size={52} />
         </motion.div>
         <div className="space-y-2">
-          <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">No orders yet</h1>
+          <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('orders.noOrders')}</h1>
           <p className="text-muted-foreground dark:text-stone-400 text-sm max-w-sm mx-auto">
-            You haven't placed any orders yet. Discover our curated catalog and start shopping!
+            {t('orders.noOrdersDesc')}
           </p>
         </div>
         <Button className="btn-primary h-12 px-8 rounded-full shadow-md" onClick={() => navigate('/products')}>
-          Explore Our Collection
+          {t('orders.exploreCollection')}
           <ArrowRight size={16} className="ml-2" />
         </Button>
       </div>
@@ -88,14 +90,14 @@ const Orders = () => {
     <div className="container mx-auto px-4 sm:px-6 py-10 lg:py-16 max-w-4xl space-y-8">
       <div className="flex items-center justify-between pb-6 border-b border-border/40 dark:border-stone-800">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">My Orders</h1>
+          <h1 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">{t('orders.title')}</h1>
           <p className="text-xs text-muted-foreground dark:text-stone-400 uppercase font-black tracking-widest mt-1">
-            Track and view your recent purchases
+            {t('orders.trackView')}
           </p>
         </div>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-xs font-bold text-dark dark:text-stone-200">
           <ShoppingBag size={14} className="text-primary" />
-          <span>{orders.length} {orders.length === 1 ? 'Order' : 'Orders'}</span>
+          <span>{t('orders.orderCount', { count: orders.length, defaultValue: `${orders.length} Orders` })}</span>
         </div>
       </div>
 
@@ -114,7 +116,7 @@ const Orders = () => {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[11px] font-bold text-muted-foreground dark:text-stone-400 uppercase tracking-widest">
-                        Order
+                        {t('orders.order')}
                       </span>
                       <span className="font-mono font-black text-dark dark:text-stone-100 text-sm">
                         #{order._id?.slice(-6).toUpperCase()}
@@ -126,20 +128,20 @@ const Orders = () => {
                       </span>
                       {order.isPaid && (
                         <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-300/40">
-                          Paid
+                          {t('orders.paid')}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground dark:text-stone-400 font-medium">Placed on {formatDate(order.createdAt)}</p>
+                    <p className="text-xs text-muted-foreground dark:text-stone-400 font-medium">{t('orders.placedOn', { date: formatDate(order.createdAt) })}</p>
                     <p className="text-xs text-medium dark:text-stone-300 font-medium">
-                      {order.items?.length} item{order.items?.length !== 1 ? 's' : ''}
+                      {t('orders.items', { count: order.items?.length, defaultValue: `${order.items?.length} items` })}
                     </p>
                   </div>
 
                   {/* Total + Action */}
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-[10px] uppercase font-bold text-muted-foreground dark:text-stone-400 tracking-wider">Total</p>
+                      <p className="text-[10px] uppercase font-bold text-muted-foreground dark:text-stone-400 tracking-wider">{t('orders.total')}</p>
                       <span className="text-lg font-black text-primary dark:text-amber-300">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                     </div>
                     <Button
@@ -148,7 +150,7 @@ const Orders = () => {
                       className="rounded-xl border-stone-200 dark:border-stone-700 hover:bg-primary hover:text-white dark:hover:bg-primary dark:hover:text-stone-900 transition-colors cursor-pointer"
                       onClick={() => navigate(`/orders/${order._id}`)}
                     >
-                      <span>View</span>
+                      <span>{t('orders.view')}</span>
                       <ChevronRight size={16} className="ml-1" />
                     </Button>
                   </div>
