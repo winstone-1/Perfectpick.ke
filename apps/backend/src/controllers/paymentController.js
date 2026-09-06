@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import Order from '../models/Order.js';
+import Product from '../models/Product.js';
 import { clearUserCart } from './orderController.js';
 
 // Helper to normalize Kenyan phone numbers for Paystack mobile money
@@ -18,6 +19,32 @@ const normalizePhoneNumber = (phone) => {
         return '254' + cleanPhone;
     }
     return cleanPhone;
+};
+
+// Helper: atomically decrement stock for an order at payment confirmation time.
+// Uses findOneAndUpdate with $elemMatch requiring stock >= quantity, then $inc -quantity.
+// If any variant mismatches (insufficient stock / deleted product), rolls back prior decrements.
+export const decrementStockForOrder = async (order) => {
+  const decremented = [];
+  for (const item of order.items) {
+    const updated = await Product.findOneAndUpdate(
+      { _id: item.product, variants: { $elemMatch: { name: item.variant, stock: { $gte: item.quantity } } } },
+      { $inc: { 'variants.$.stock': -item.quantity } },
+      { returnDocument: 'after' }
+    );
+    if (!updated) {
+      // Roll back any prior successful decrements for this order (atomicity across multi-item orders)
+      for (const prev of decremented) {
+        await Product.findOneAndUpdate(
+          { _id: prev.product, 'variants.name': prev.variant },
+          { $inc: { 'variants.$.stock': prev.quantity } }
+        );
+      }
+      return { success: false, failedItem: item };
+    }
+    decremented.push(item);
+  }
+  return { success: true };
 };
 
 // @desc    Initiate Paystack M-Pesa STK Push
@@ -116,16 +143,25 @@ export const getChargeStatus = async (req, res) => {
 
     const charge = response.data;
     if (charge.status && charge.data.status === 'success') {
-      // Payment confirmed — update order
+      // Payment confirmed — atomically decrement stock before marking paid
       const order = await Order.findOne({ 'paymentResult.id': reference });
       if (order && !order.isPaid) {
+        const stockResult = await decrementStockForOrder(order);
+        if (!stockResult.success) {
+          console.error(`[CHARGE-POLL] Insufficient stock for order ${order._id} variant ${stockResult.failedItem.variant}`);
+          return res.status(409).json({
+            success: false,
+            status: 'failed',
+            message: `Insufficient stock for ${stockResult.failedItem.variant} — payment cannot be completed`,
+          });
+        }
         order.isPaid = true;
         order.paidAt = Date.now();
         order.status = 'processing';
         order.paymentResult.status = 'success';
         await order.save();
         await clearUserCart(order.user);
-        console.log(`[CHARGE-POLL] Order ${order._id} paid, cart cleared`);
+        console.log(`[CHARGE-POLL] Order ${order._id} paid, stock decremented, cart cleared`);
       }
       return res.json({ success: true, status: 'success', data: charge.data });
     }
@@ -169,6 +205,15 @@ export const verifyPayment = async (req, res) => {
       const order = await Order.findOne({ 'paymentResult.id': reference });
 
       if (order && !order.isPaid) {
+        const stockResult = await decrementStockForOrder(order);
+        if (!stockResult.success) {
+          console.error(`[VERIFY] Insufficient stock for order ${order._id} variant ${stockResult.failedItem.variant}`);
+          return res.status(409).json({
+            success: false,
+            status: 'failed',
+            message: `Insufficient stock for ${stockResult.failedItem.variant} — payment cannot be completed. Stock was insufficient at confirmation time.`,
+          });
+        }
         order.isPaid = true;
         order.paidAt = Date.now();
         order.status = 'processing';
@@ -177,7 +222,7 @@ export const verifyPayment = async (req, res) => {
 
         // ✅ Clear cart now that payment is confirmed
         await clearUserCart(order.user);
-        console.log(`[VERIFY] Order ${order._id} paid, cart cleared`);
+        console.log(`[VERIFY] Order ${order._id} paid, stock decremented, cart cleared`);
       }
 
       return res.json({
@@ -230,6 +275,12 @@ export const handlePaystackWebhook = async (req, res) => {
 
       const order = await Order.findOne({ 'paymentResult.id': reference });
       if (order && !order.isPaid) {
+        const stockResult = await decrementStockForOrder(order);
+        if (!stockResult.success) {
+          console.error(`[WEBHOOK] Insufficient stock for order ${order._id} variant ${stockResult.failedItem.variant} — not marking paid`);
+          // Do not mark as paid; return 409 so Paystack may retry after restock, but log clearly
+          return res.status(409).send(`Insufficient stock for ${stockResult.failedItem.variant}`);
+        }
         order.isPaid = true;
         order.paidAt = Date.now();
         order.status = 'processing';
@@ -238,7 +289,7 @@ export const handlePaystackWebhook = async (req, res) => {
 
         // ✅ Clear cart on webhook confirmation too
         await clearUserCart(order.user);
-        console.log(`[WEBHOOK] Order ${order._id} paid, cart cleared`);
+        console.log(`[WEBHOOK] Order ${order._id} paid, stock decremented, cart cleared`);
       }
     }
 

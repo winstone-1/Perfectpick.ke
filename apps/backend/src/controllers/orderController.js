@@ -46,9 +46,8 @@ export const addOrderItems = async (req, res, next) => {
                 });
             }
 
-            // Deduct stock
-            variantObj.stock -= item.quantity;
-            await product.save();
+            // Stock is NOT decremented here (Option A: decrement on payment confirmation only).
+            // This is an informational availability check only.
 
             orderItems.push({
                 product: item.product._id,
