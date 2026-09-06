@@ -3,23 +3,38 @@ import crypto from 'crypto';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { clearUserCart } from './orderController.js';
+import { handleIdempotencyCheck, saveIdempotencyResponse } from '../middleware/idempotency.js';
 
 // Helper to normalize Kenyan phone numbers for Paystack mobile money
-// Paystack expects 254XXXXXXXXX format (no '+' prefix)
-const normalizePhoneNumber = (phone) => {
-    let cleanPhone = phone.replace(/\D/g, '');
+// Paystack expects 254XXXXXXXXX format (12 digits, no '+' prefix)
+// Handles: 0712345678, +254712345678, 254712345678, 712345678 + spaces/dashes
+export const normalizePhoneNumber = (phone) => {
+    if (!phone || typeof phone !== 'string') return '';
+    let digits = phone.replace(/\D/g, '');
 
-    if (cleanPhone.startsWith('254')) {
-        return cleanPhone;
+    // Common typo: 2540712345678 (254 + 0 + 9 digits) => strip the 0
+    if (digits.startsWith('2540') && digits.length === 13) {
+        digits = '254' + digits.slice(4);
     }
-    if (cleanPhone.startsWith('0')) {
-        return '254' + cleanPhone.slice(1);
+
+    if (digits.startsWith('254') && digits.length === 12) {
+        return digits;
     }
-    if (cleanPhone.length === 9) {
-        return '254' + cleanPhone;
+    if (digits.startsWith('0') && digits.length === 10) {
+        return '254' + digits.slice(1);
     }
-    return cleanPhone;
+    if (digits.length === 9) {
+        return '254' + digits;
+    }
+    // Fallback for already-254 but unexpected length — return as-is for caller validation
+    if (digits.startsWith('254')) {
+        return digits;
+    }
+    return digits;
 };
+
+// Validate final normalized form: 254 + 9 digits (total 12), Kenyan mobile starts 2547/2541
+export const isValidKenyanPhone = (normalized) => /^254(7|1)\d{8}$/.test(normalized);
 
 // Helper: atomically decrement stock for an order at payment confirmation time.
 // Uses findOneAndUpdate with $elemMatch requiring stock >= quantity, then $inc -quantity.
@@ -51,6 +66,13 @@ export const decrementStockForOrder = async (order) => {
 // @route   POST /api/payments/mpesa
 // @access  Private
 export const initiateMpesaPayment = async (req, res) => {
+  // Idempotency for payment initiation — same key returns same Paystack reference, prevents double STK on double-click
+  const idemCheck = await handleIdempotencyCheck(req, res, 'POST /api/payments/mpesa');
+  if (idemCheck.isDuplicate) {
+    return res.status(idemCheck.responseStatus).json(idemCheck.responseBody);
+  }
+  const idempotencyKey = idemCheck.key;
+
   try {
     if (!process.env.PAYSTACK_SECRET_KEY) {
       return res.status(500).json({ success: false, message: 'Paystack not configured — missing PAYSTACK_SECRET_KEY' });
@@ -65,6 +87,12 @@ export const initiateMpesaPayment = async (req, res) => {
     }
 
     const normalizedPhone = normalizePhoneNumber(phone);
+    if (!isValidKenyanPhone(normalizedPhone)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid M-Pesa phone number. Use 0712345678, 254712345678, or +254712345678 format.',
+      });
+    }
 
     const paystackData = {
       amount: Math.round(amount * 100), // Paystack expects kobo/cents
@@ -96,12 +124,14 @@ export const initiateMpesaPayment = async (req, res) => {
         },
       });
 
-      return res.json({
+      const body = {
         success: true,
         reference: response.data.data.reference,
         status: response.data.data.status,
         message: response.data.data.display_text || 'STK Push initiated. Check your phone.',
-      });
+      };
+      await saveIdempotencyResponse(idempotencyKey, req.user._id, 'POST /api/payments/mpesa', 200, body);
+      return res.json(body);
     } else {
       return res.status(400).json({
         success: false,

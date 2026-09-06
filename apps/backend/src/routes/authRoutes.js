@@ -8,13 +8,14 @@ import {
 } from '../controllers/authController.js';
 import { protect } from '../middleware/protect.js';
 import { uploadSingle } from '../middleware/uploadMiddleware.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
 import User from '../models/User.js';
 
 const router = express.Router();
 
-router.post('/register', registerUser);
-router.post('/login', loginUser);
-router.post('/firebase', firebaseLogin);
+router.post('/register', authLimiter, registerUser);
+router.post('/login', authLimiter, loginUser);
+router.post('/firebase', authLimiter, firebaseLogin);
 router.route('/profile')
     .get(protect, getUserProfile)
     .put(protect, updateUserProfile);

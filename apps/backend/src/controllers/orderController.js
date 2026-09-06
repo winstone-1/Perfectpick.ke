@@ -1,10 +1,18 @@
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
+import { handleIdempotencyCheck, saveIdempotencyResponse } from '../middleware/idempotency.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
 export const addOrderItems = async (req, res, next) => {
+    // Idempotency: check before any side effects (prevents double-click duplicate orders)
+    const idemCheck = await handleIdempotencyCheck(req, res, 'POST /api/orders');
+    if (idemCheck.isDuplicate) {
+        return res.status(idemCheck.responseStatus).json(idemCheck.responseBody);
+    }
+    const idempotencyKey = idemCheck.key;
+
     try {
         const { shippingAddress } = req.body;
 
@@ -75,7 +83,11 @@ export const addOrderItems = async (req, res, next) => {
         // ✅ Cart is NOT cleared here — only cleared after payment is confirmed
         // This allows retries if STK push fails without losing the cart
 
-        res.status(201).json({ success: true, order: createdOrder });
+        const responseBody = { success: true, order: createdOrder };
+        const responseStatus = 201;
+        // Persist idempotency response (24h TTL) so retry with same key returns same order
+        await saveIdempotencyResponse(idempotencyKey, req.user._id, 'POST /api/orders', responseStatus, responseBody);
+        res.status(responseStatus).json(responseBody);
     } catch (error) {
         next(error);
     }
