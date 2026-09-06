@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { 
   ShoppingBag, 
   ChevronLeft, 
@@ -25,6 +26,7 @@ import { cn } from '../lib/utils';
 import { toast } from 'sonner';
 
 const ProductDetail = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -58,11 +60,11 @@ const ProductDetail = () => {
       );
     } catch (error) {
       console.error('Failed to fetch product:', error);
-      toast.error('Failed to load product details');
+      toast.error(t('productDetail.failedToLoad'));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     fetchProduct();
@@ -73,46 +75,45 @@ const ProductDetail = () => {
 
   const handleWishlist = () => {
     if (!user) {
-      toast.error('Please login to add to wishlist');
+      toast.error(t('productDetail.pleaseLoginWishlist'));
       return navigate('/login');
     }
     if (wishlisted) {
       removeFromWishlist(product._id);
-      toast.success('Removed from wishlist');
+      toast.success(t('productDetail.removedFromWishlist'));
     } else {
       addToWishlist(product);
-      toast.success('Added to wishlist');
+      toast.success(t('productDetail.addedToWishlist'));
     }
   };
 
   const handleAddToCart = async () => {
     if (!user) {
-      toast.error('Please login to add items to cart');
+      toast.error(t('productDetail.pleaseLoginCart'));
       return navigate('/login');
     }
     
     if (!selectedVariant) {
-      toast.error('Please select a variant');
+      toast.error(t('productDetail.selectVariant'));
       return;
     }
     
     if (selectedVariant.stock === 0) {
-      toast.error('This variant is out of stock');
+      toast.error(t('productDetail.variantOutOfStock'));
       return;
     }
     
     if (quantity > selectedVariant.stock) {
-      toast.error(`Only ${selectedVariant.stock} items available`);
+      toast.error(t('productDetail.onlyAvailable', { count: selectedVariant.stock }));
       return;
     }
     
     setAddingToCart(true);
     try {
       await addToCart(product._id, selectedVariant.name, quantity);
-      // Success toast is handled in CartContext
     } catch (error) {
       console.error('Add to cart error:', error);
-      toast.error(error.response?.data?.message || 'Failed to add to cart');
+      toast.error(error.response?.data?.message || t('common.error'));
     } finally {
       setAddingToCart(false);
     }
@@ -144,9 +145,9 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="container mx-auto px-4 py-32 text-center space-y-4">
-        <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Product not found</h1>
+        <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('productDetail.productNotFound')}</h1>
         <Link to="/products">
-          <Button className="btn-primary">Back to products</Button>
+          <Button className="btn-primary">{t('productDetail.backToProductsBtn')}</Button>
         </Link>
       </div>
     );
@@ -172,7 +173,7 @@ const ProductDetail = () => {
         className="inline-flex items-center gap-2 text-sm font-bold text-medium dark:text-stone-300 hover:text-primary dark:hover:text-primary transition-colors group"
       >
         <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-        Back to all products
+        {t('productDetail.backToProducts')}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-start">
@@ -241,7 +242,7 @@ const ProductDetail = () => {
         >
           <div className="space-y-3">
             <Badge className="bg-primary/15 text-primary dark:text-amber-300 border-none uppercase tracking-widest font-black px-3.5 py-1 rounded-full text-[10px]">
-              {product.category || 'Luxury Pick'}
+              {product.category || t('productDetail.luxuryPick')}
             </Badge>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-black text-dark dark:text-stone-100 leading-tight">
               {product.name}
@@ -250,15 +251,15 @@ const ProductDetail = () => {
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground dark:text-stone-400">Description</h3>
-            <p className="text-medium dark:text-stone-300 leading-relaxed text-sm md:text-base">{product.description || 'Curated luxury fashion item from Nairobi.'}</p>
+            <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground dark:text-stone-400">{t('productDetail.description')}</h3>
+            <p className="text-medium dark:text-stone-300 leading-relaxed text-sm md:text-base">{product.description || t('productDetail.curatedLuxury')}</p>
           </div>
 
           {/* Variants */}
           {product.variants?.length > 0 && (
             <div className="space-y-3">
               <h3 className="text-xs font-black uppercase tracking-wider text-muted-foreground dark:text-stone-400">
-                Option: <span className="text-dark dark:text-stone-100 font-bold ml-1">{selectedVariant?.name || 'None'}</span>
+                {t('productDetail.option')}: <span className="text-dark dark:text-stone-100 font-bold ml-1">{selectedVariant?.name || t('productDetail.none')}</span>
               </h3>
               <div className="flex flex-wrap gap-2.5">
                 {product.variants.map((variant) => (
@@ -287,8 +288,8 @@ const ProductDetail = () => {
                   selectedVariant.stock < 5 ? "text-amber-600 dark:text-amber-400" : "text-emerald-600 dark:text-emerald-400"
                 )}>
                   {selectedVariant.stock > 0 
-                    ? `In Stock (${selectedVariant.stock} available)` 
-                    : "Out of stock"}
+                    ? t('productDetail.inStock', { count: selectedVariant.stock })
+                    : t('productDetail.outOfStock')}
                 </p>
               )}
             </div>
@@ -329,7 +330,7 @@ const ProductDetail = () => {
                 ) : (
                   <ShoppingBag className="mr-2" size={20} />
                 )}
-                {addingToCart ? 'Adding to Bag...' : 'Add to Cart'}
+                {addingToCart ? t('productDetail.addingToCart') : t('productDetail.addToCart')}
               </Button>
             </div>
 
@@ -341,22 +342,22 @@ const ProductDetail = () => {
               className="w-full h-12 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center gap-2.5 transition-all shadow-sm active:scale-98"
             >
               <FaWhatsapp size={18} />
-              <span>Inquire / Order on WhatsApp</span>
+              <span>{t('productDetail.whatsappInquire')}</span>
             </a>
 
             {/* Trust Pillars */}
             <div className="grid grid-cols-3 gap-3 border-t border-border/20 dark:border-stone-800 pt-6 mt-4">
               <div className="flex flex-col items-center text-center space-y-1.5 p-3 rounded-2xl bg-surface/50 dark:bg-stone-900/60 border border-stone-200/40 dark:border-stone-800">
                 <div className="p-2 bg-primary/10 text-primary rounded-xl"><Truck size={18} /></div>
-                <span className="text-[10px] uppercase font-bold tracking-tight text-dark dark:text-stone-200">Fast Nairobi Delivery</span>
+                <span className="text-[10px] uppercase font-bold tracking-tight text-dark dark:text-stone-200">{t('productDetail.fastDelivery')}</span>
               </div>
               <div className="flex flex-col items-center text-center space-y-1.5 p-3 rounded-2xl bg-surface/50 dark:bg-stone-900/60 border border-stone-200/40 dark:border-stone-800">
                 <div className="p-2 bg-primary/10 text-primary rounded-xl"><ShieldCheck size={18} /></div>
-                <span className="text-[10px] uppercase font-bold tracking-tight text-dark dark:text-stone-200">100% Authentic</span>
+                <span className="text-[10px] uppercase font-bold tracking-tight text-dark dark:text-stone-200">{t('productDetail.authentic')}</span>
               </div>
               <div className="flex flex-col items-center text-center space-y-1.5 p-3 rounded-2xl bg-surface/50 dark:bg-stone-900/60 border border-stone-200/40 dark:border-stone-800">
                 <div className="p-2 bg-primary/10 text-primary rounded-xl"><RotateCcw size={18} /></div>
-                <span className="text-[10px] uppercase font-bold tracking-tight text-dark dark:text-stone-200">7-Day Return</span>
+                <span className="text-[10px] uppercase font-bold tracking-tight text-dark dark:text-stone-200">{t('productDetail.sevenDayReturn')}</span>
               </div>
             </div>
           </div>
@@ -367,8 +368,8 @@ const ProductDetail = () => {
       {relatedProducts.length > 0 && (
         <section className="space-y-8 pt-8 border-t border-border/30 dark:border-stone-800">
           <div className="text-center space-y-1.5">
-            <h2 className="text-3xl font-serif font-black text-dark dark:text-stone-100">You Might Also Love</h2>
-            <p className="text-sm text-muted-foreground dark:text-stone-400">Curated pieces to complete your style</p>
+            <h2 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('productDetail.youMightAlsoLove')}</h2>
+            <p className="text-sm text-muted-foreground dark:text-stone-400">{t('productDetail.curatedToComplete')}</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map(p => (
