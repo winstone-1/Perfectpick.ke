@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { Search, SlidersHorizontal, PackageOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import { Input } from '../components/ui/input';
@@ -29,6 +30,7 @@ const flattenGroupedCategories = (groups) => {
 };
 
 const Products = () => {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(['All']);
@@ -77,11 +79,10 @@ const fetchCategories = async () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       fetchProducts();
-    }, 400); // Debounce search
+    }, 400);
     return () => clearTimeout(timer);
   }, [fetchProducts]);
 
-  // GSAP polish — subtle stagger for product grid, respects reduced motion
   useLayoutEffect(() => {
     if (loading || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const ctx = gsap.context(() => {
@@ -119,18 +120,18 @@ const fetchCategories = async () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-4 border-b border-border/40 dark:border-stone-800">
         <div className="space-y-4 max-w-xl w-full">
           <div>
-            <span className="text-xs uppercase tracking-[0.25em] font-black text-primary">Curated Nairobi Catalog</span>
+            <span className="text-xs uppercase tracking-[0.25em] font-black text-primary">{t('products.curatedCatalog')}</span>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-dark dark:text-stone-100 tracking-tight mt-1">
-              Our Collection
+              {t('products.title')}
             </h1>
           </div>
           <p className="text-sm text-medium dark:text-stone-300 font-medium leading-relaxed">
-            Handpicked bags, shoes, jewelry, and luxury gifts. Explore timeless pieces curated for modern elegance.
+            {t('products.desc')}
           </p>
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={18} />
             <Input 
-              placeholder="Search bags, shoes, jewelry, gifts..."
+              placeholder={t('products.searchPlaceholder')}
               className="pl-11 h-12 bg-card dark:bg-stone-900 rounded-2xl border-stone-200/80 dark:border-stone-700 shadow-sm focus:ring-primary font-medium text-sm text-dark dark:text-stone-100 placeholder:text-muted-foreground dark:placeholder:text-stone-400"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -141,22 +142,22 @@ const fetchCategories = async () => {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">
             <SlidersHorizontal size={16} />
-            <span>Sort:</span>
+            <span>{t('products.sort')}</span>
           </div>
           <Select value={sort} onValueChange={handleSortChange}>
             <SelectTrigger className="w-[180px] bg-card dark:bg-stone-900 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100 rounded-xl h-11 text-xs font-bold">
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder={t('products.sortBy')} />
             </SelectTrigger>
             <SelectContent className="bg-card dark:bg-stone-900 border border-stone-200 dark:border-stone-800 text-dark dark:text-stone-100 rounded-xl shadow-xl">
-              <SelectItem value="newest">Newest First</SelectItem>
-              <SelectItem value="price-low">Price: Low to High</SelectItem>
-              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="newest">{t('products.newestFirst')}</SelectItem>
+              <SelectItem value="price-low">{t('products.priceLowHigh')}</SelectItem>
+              <SelectItem value="price-high">{t('products.priceHighLow')}</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      {/* Category Pills — dynamic from backend */}
+      {/* Category Pills */}
       <div className="flex flex-wrap gap-2 sm:gap-2.5 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((cat) => {
           const isSelected = activeCategory === cat;
@@ -204,8 +205,8 @@ const fetchCategories = async () => {
                 <PackageOpen size={40} />
               </div>
               <div className="space-y-1">
-                <h3 className="text-2xl font-serif font-black text-dark dark:text-stone-100">No Products Found</h3>
-                <p className="text-sm max-w-sm mx-auto">We couldn't find any items matching your filter criteria.</p>
+                <h3 className="text-2xl font-serif font-black text-dark dark:text-stone-100">{t('products.noProductsFound')}</h3>
+                <p className="text-sm max-w-sm mx-auto">{t('products.noProductsDesc')}</p>
               </div>
               <Button 
                 variant="outline" 
@@ -215,7 +216,7 @@ const fetchCategories = async () => {
                   setSearchParams({});
                 }}
               >
-                Clear All Filters
+                {t('products.clearFilters')}
               </Button>
             </motion.div>
           )}
@@ -226,4 +227,3 @@ const fetchCategories = async () => {
 };
 
 export default Products;
-
