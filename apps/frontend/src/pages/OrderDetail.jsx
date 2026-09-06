@@ -93,7 +93,7 @@ const OrderDetail = () => {
             </Badge>
           </div>
           <p className="text-muted-foreground dark:text-stone-400 font-mono text-xs uppercase tracking-wider">
-            Order #{order._id?.toUpperCase()}
+            Order #{order._id?.slice(-8).toUpperCase()}
           </p>
         </div>
         <div className="flex items-center gap-2 text-muted-foreground dark:text-stone-400 text-xs font-medium">

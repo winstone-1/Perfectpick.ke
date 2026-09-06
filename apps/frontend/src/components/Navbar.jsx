@@ -35,27 +35,38 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const { wishlist } = useWishlist();
   const location = useLocation();
-  const [categories, setCategories] = useState([]);
+  const [categoryGroups, setCategoryGroups] = useState([]);
   const accountRef = React.useRef(null);
 
   const wishlistCount = wishlist.length;
 
-useEffect(() => {
+  useEffect(() => {
     const fetchCategories = async () => {
-        try {
-            const { data } = await api.get('/products/category-groups');
-            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-                const flat = data.data.flatMap(g => g.categories);
-                setCategories(flat);
-            } else {
-                setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
-            }
-        } catch (error) {
-            setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
+      try {
+        const { data } = await api.get('/products/category-groups');
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          setCategoryGroups(data.data); // [{parent, categories:[]}]
+        } else {
+          setCategoryGroups([
+            { parent: 'Fashion', categories: ['bags', 'shoes', 'accessories', 'clothes'] },
+            { parent: 'Jewelry & Watches', categories: ['jewelry', 'earrings', 'rings', 'watches'] },
+            { parent: 'Beauty', categories: ['beauty-accessories', 'body-mists', 'oils'] },
+            { parent: 'Gifts & Home', categories: ['gifts', 'gift-boxes', 'mugs'] },
+            { parent: 'Apparel', categories: ['ponchos', 'sweaters', 'cardigans'] },
+          ]);
         }
+      } catch (error) {
+        setCategoryGroups([
+          { parent: 'Fashion', categories: ['bags', 'shoes', 'accessories', 'clothes'] },
+          { parent: 'Jewelry & Watches', categories: ['jewelry', 'earrings', 'rings', 'watches'] },
+          { parent: 'Beauty', categories: ['beauty-accessories', 'body-mists', 'oils'] },
+          { parent: 'Gifts & Home', categories: ['gifts', 'gift-boxes', 'mugs'] },
+          { parent: 'Apparel', categories: ['ponchos', 'sweaters', 'cardigans'] },
+        ]);
+      }
     };
     fetchCategories();
-}, []);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -149,30 +160,42 @@ useEffect(() => {
             <Flame size={14} className="text-amber-500" /> Trending
           </Link>
 
-          {/* Shop Dropdown */}
+          {/* Shop Dropdown — two-level grouped */}
           <div className="relative group">
             <button className="text-sm font-bold text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-1 cursor-pointer py-2">
               Shop <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
             </button>
-            <div className="absolute top-full left-0 w-52 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
-              <Link 
-                to="/products" 
-                className="block px-4 py-2.5 text-sm font-bold text-dark dark:text-stone-100 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors"
+            <div className="absolute top-full left-0 w-[280px] bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
+              <Link
+                to="/products"
+                className="block px-4 py-2.5 text-sm font-black text-dark dark:text-stone-100 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors"
               >
                 All Collections
               </Link>
-              <div className="h-px bg-border/40 dark:bg-stone-800 my-1 mx-2" />
-              {categories.map((cat) => (
-                <Link 
-                  key={cat} 
-                  to={`/products?category=${cat.toLowerCase()}`} 
-                  className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary capitalize transition-colors"
-                >
-                  {cat}
-                </Link>
-              ))}
+              <div className="h-px bg-border/40 dark:bg-stone-800 mx-3 my-1.5" />
+              <div className="grid grid-cols-1 divide-y divide-border/20 dark:divide-stone-800/60">
+                {categoryGroups.map((group) => (
+                  <div key={group.parent} className="px-4 py-2">
+                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary dark:text-amber-400 mb-1.5">
+                      {group.parent}
+                    </p>
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                      {group.categories.map((cat) => (
+                        <Link
+                          key={cat}
+                          to={`/products?category=${cat}`}
+                          className="py-1 text-[12px] font-medium text-medium dark:text-stone-300 hover:text-primary dark:hover:text-primary capitalize transition-colors truncate"
+                        >
+                          {cat.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
+
 
           {/* Support Dropdown */}
           <div className="relative group">
@@ -376,22 +399,30 @@ useEffect(() => {
                 <Flame size={16} className="text-amber-500" /> Trending
               </Link>
               
-              <div className="pl-3 border-l-2 border-primary/30 space-y-1.5 my-1">
-                <p className="text-[10px] uppercase text-primary font-black tracking-widest mb-1.5">Shop Categories</p>
-                <Link to="/products" className="block py-1.5 text-sm font-bold text-dark dark:text-stone-200 hover:text-primary" onClick={() => setIsOpen(false)}>
+              <div className="border-l-2 border-primary/30 pl-3 space-y-2.5 my-1">
+                <p className="text-[10px] uppercase text-primary font-black tracking-widest mb-2">Shop Categories</p>
+                <Link to="/products" className="block py-1 text-sm font-black text-dark dark:text-stone-200 hover:text-primary" onClick={() => setIsOpen(false)}>
                   All Collections
                 </Link>
-                {categories.map(cat => (
-                  <Link 
-                    key={cat} 
-                    to={`/products?category=${cat.toLowerCase()}`} 
-                    className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize" 
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {cat}
-                  </Link>
+                {categoryGroups.map((group) => (
+                  <div key={group.parent}>
+                    <p className="text-[10px] uppercase font-black tracking-wider text-muted-foreground dark:text-stone-400 mt-2 mb-1">{group.parent}</p>
+                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
+                      {group.categories.map(cat => (
+                        <Link
+                          key={cat}
+                          to={`/products?category=${cat}`}
+                          className="py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize transition-colors"
+                          onClick={() => setIsOpen(false)}
+                        >
+                          {cat.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
+
 
               <div className="pl-3 border-l-2 border-stone-300 dark:border-stone-700 space-y-1.5 my-1">
                 <p className="text-[10px] uppercase text-muted-foreground font-black tracking-widest mb-1.5">Customer Support</p>

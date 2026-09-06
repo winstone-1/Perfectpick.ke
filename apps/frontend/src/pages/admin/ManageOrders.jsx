@@ -72,7 +72,7 @@ const ManageOrders = () => {
   const PriceDisplay = (price) => new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(price);
 
   return (
-    <div className="container mx-auto px-4 py-12 lg:py-20 space-y-12">
+    <div className="container mx-auto px-4 sm:px-6 py-12 lg:py-20 space-y-12">
       <Link to="/admin" className="inline-flex items-center gap-2 text-sm text-stone-600 dark:text-stone-400 hover:text-primary dark:hover:text-primary transition-colors group">
         <ChevronLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
         Back to Dashboard
@@ -99,7 +99,7 @@ const ManageOrders = () => {
                   <div className="flex-1 space-y-4">
                     <div className="flex flex-wrap items-center gap-4">
                       <span className="font-mono text-xs font-bold text-stone-700 dark:text-stone-300 uppercase tracking-widest px-3.5 py-1 bg-stone-100 dark:bg-stone-800/80 rounded-full border border-stone-200/60 dark:border-stone-700/60">
-                        #{order._id.toUpperCase()}
+                        #{order._id.slice(-8).toUpperCase()}
                       </span>
                       <span className="flex items-center gap-1.5 text-xs text-stone-500 dark:text-stone-400">
                         <Clock size={14} />

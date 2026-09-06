@@ -53,6 +53,14 @@ const ManageProducts = () => {
     variants: [{ name: 'Default', stock: 10 }],
   });
 
+  const [categoryGroups, setCategoryGroups] = useState([
+    { parent: 'Fashion', categories: ['bags', 'shoes', 'handbags', 'clothes', 'accessories'] },
+    { parent: 'Jewelry & Watches', categories: ['jewelry', 'earrings', 'hairclips', 'keyrings', 'rings', 'watches', 'phone-charms'] },
+    { parent: 'Beauty', categories: ['beauty-accessories', 'body-mists', 'oils'] },
+    { parent: 'Gifts & Home', categories: ['gifts', 'gift-boxes', 'mugs', 'fans'] },
+    { parent: 'Apparel', categories: ['ponchos', 'sweaters', 'cardigans'] },
+  ]);
+
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -66,6 +74,14 @@ const ManageProducts = () => {
   };
 
   useEffect(() => { fetchProducts(); }, []);
+
+  useEffect(() => {
+    api.get('/products/category-groups').then(({ data }) => {
+      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+        setCategoryGroups(data.data);
+      }
+    }).catch(() => {});
+  }, []);
 
   const resetForm = () => {
     setFormData({
@@ -247,8 +263,14 @@ const ManageProducts = () => {
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     >
-                      {['bags','shoes','jewelry','gifts','accessories','clothes'].map(c => (
-                        <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                      {categoryGroups.map(group => (
+                        <optgroup key={group.parent} label={group.parent}>
+                          {group.categories.map(c => (
+                            <option key={c} value={c}>
+                              {c.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                            </option>
+                          ))}
+                        </optgroup>
                       ))}
                     </select>
                   </div>

@@ -148,15 +148,23 @@ useEffect(() => {
 
       {/* Stats Bar */}
       <section className="container mx-auto px-4 sm:px-6 -mt-16 md:-mt-20 relative z-20">
-        <div className="bg-stone-900 dark:bg-stone-950 text-stone-100 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col md:flex-row justify-around items-center gap-6 border border-stone-800">
+        <div className="bg-stone-900 dark:bg-stone-950 text-stone-100 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col md:flex-row justify-around items-center gap-4 md:gap-0 border border-stone-800">
           {stats.map((stat, i) => (
-            <div key={i} className="text-center md:border-r last:border-0 border-stone-800 pr-0 md:pr-10 w-full md:w-auto last:pr-0">
-              <div className="text-3xl font-serif font-black text-amber-400 flex items-center justify-center gap-2">
-                {stat.value}
-                {stat.Icon && <stat.Icon size={18} className="text-amber-400" />}
+            <React.Fragment key={i}>
+              <div className="text-center px-6">
+                <div className="text-3xl font-serif font-black text-amber-400 flex items-center justify-center gap-2">
+                  {stat.value}
+                  {stat.Icon && <stat.Icon size={18} className="text-amber-400" />}
+                </div>
+                <div className="text-xs text-stone-400 uppercase tracking-widest font-black mt-0.5">{stat.label}</div>
               </div>
-              <div className="text-xs text-stone-400 uppercase tracking-widest font-black mt-0.5">{stat.label}</div>
-            </div>
+              {i < stats.length - 1 && (
+                <>
+                  <div className="hidden md:block h-12 w-px bg-stone-800" />
+                  <div className="md:hidden w-full h-px bg-stone-800" />
+                </>
+              )}
+            </React.Fragment>
           ))}
         </div>
       </section>
