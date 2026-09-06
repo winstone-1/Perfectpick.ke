@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Mail, Lock, User, Loader2, ArrowRight } from 'lucide-react';
 import { FaGoogle } from 'react-icons/fa6';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +13,7 @@ import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
 
 const Register = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,25 +35,25 @@ const Register = () => {
     const { name, email, password, confirmPassword } = formData;
 
     if (!name || !email || !password || !confirmPassword) {
-      return toast.error('Please fill in all fields');
+      return toast.error(t('register.fillAllFields'));
     }
 
     if (password.length < 6) {
-      return toast.error('Password must be at least 6 characters');
+      return toast.error(t('register.passwordMin'));
     }
 
     if (password !== confirmPassword) {
-      return toast.error('Passwords do not match');
+      return toast.error(t('register.passwordsMismatch'));
     }
 
     setLoading(true);
     try {
       const { data } = await api.post('/auth/register', { name, email, password });
-      login(data.data); // Backend response contains user in 'data' field
-      toast.success('Account created successfully! Welcome.');
+      login(data.data);
+      toast.success(t('register.accountCreated'));
       navigate('/');
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      toast.error(error.response?.data?.message || t('register.registrationFailed'));
     } finally {
       setLoading(false);
     }
@@ -62,13 +64,13 @@ const Register = () => {
     try {
       const result = await loginWithGoogle();
       if (result.success) {
-        toast.success('Account created with Google!');
+        toast.success(t('register.googleSuccess'));
         navigate('/');
       } else {
-        toast.error(result.error || 'Google sign-up failed');
+        toast.error(result.error || t('register.googleFailed'));
       }
     } catch (error) {
-      toast.error('An unexpected error occurred');
+      toast.error(t('register.unexpectedError'));
     } finally {
       setGoogleLoading(false);
     }
@@ -84,19 +86,19 @@ const Register = () => {
       >
         <Card className="border border-stone-200/70 dark:border-stone-800 shadow-2xl overflow-hidden rounded-3xl bg-card text-card-foreground">
           <CardHeader className="bg-surface/50 dark:bg-stone-900/60 pt-10 pb-8 text-center space-y-1.5 border-b border-border/40 dark:border-stone-800">
-            <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Create Account</h1>
-            <p className="text-muted-foreground dark:text-stone-400 text-xs uppercase tracking-widest font-black">Join our luxury shopping community</p>
+            <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('register.createAccount')}</h1>
+            <p className="text-muted-foreground dark:text-stone-400 text-xs uppercase tracking-widest font-black">{t('register.joinCommunity')}</p>
           </CardHeader>
           
           <CardContent className="p-6 sm:p-8 space-y-5">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Full Name</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.fullName')}</label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
                   <Input 
                     name="name"
-                    placeholder="John Doe" 
+                    placeholder={t('register.fullNamePlaceholder')} 
                     className="pl-10 h-11 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400 font-medium text-sm"
                     value={formData.name}
                     onChange={handleChange}
@@ -105,13 +107,13 @@ const Register = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Email Address</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.emailAddress')}</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
                   <Input 
                     name="email"
                     type="email" 
-                    placeholder="name@example.com" 
+                    placeholder={t('register.emailPlaceholder')} 
                     className="pl-10 h-11 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400 font-medium text-sm"
                     value={formData.email}
                     onChange={handleChange}
@@ -120,7 +122,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Password</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.password')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
                   <Input 
@@ -135,7 +137,7 @@ const Register = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Confirm Password</label>
+                <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.confirmPassword')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
                   <Input 
@@ -157,14 +159,14 @@ const Register = () => {
                 {loading ? (
                   <Loader2 className="animate-spin mr-2" size={18} />
                 ) : (
-                  <>Create Account <ArrowRight className="ml-2" size={16} /></>
+                  <>{t('register.createAccountBtn')} <ArrowRight className="ml-2" size={16} /></>
                 )}
               </Button>
             </form>
 
             <div className="relative py-2">
               <Separator className="bg-border/40 dark:bg-stone-800" />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[11px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest">or</span>
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[11px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest">{t('register.or')}</span>
             </div>
 
             <Button 
@@ -177,16 +179,16 @@ const Register = () => {
               {googleLoading ? (
                 <Loader2 className="animate-spin" size={18} />
               ) : (
-                <><FaGoogle className="text-red-500 text-base" /> Continue with Google</>
+                <><FaGoogle className="text-red-500 text-base" /> {t('register.continueGoogle')}</>
               )}
             </Button>
           </CardContent>
 
           <CardFooter className="bg-surface/30 dark:bg-stone-900/40 p-6 text-center border-t border-border/40 dark:border-stone-800">
             <p className="text-xs text-muted-foreground dark:text-stone-400 w-full font-medium">
-              Already have an account? {' '}
+              {t('register.hasAccount')}{' '}
               <Link to="/login" className="font-bold text-primary dark:text-amber-300 hover:underline transition-all">
-                Sign In
+                {t('register.signIn')}
               </Link>
             </p>
           </CardFooter>
