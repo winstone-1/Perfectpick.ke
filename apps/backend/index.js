@@ -15,6 +15,7 @@ import orderRoutes from './src/routes/orderRoutes.js';
 import adminRoutes from './src/routes/adminRoutes.js';
 import mpesaRoutes from './src/routes/mpesaRoutes.js';
 import paymentRoutes from './src/routes/paymentRoutes.js';
+import chatRoutes from './src/routes/chatRoutes.js';
 
 connectDB();
 
@@ -54,6 +55,7 @@ app.use(express.urlencoded({ extended: true }));
 if (!process.env.PAYSTACK_SECRET_KEY) console.warn('[SECURITY] PAYSTACK_SECRET_KEY not set — Paystack payments will fail');
 if (!process.env.JWT_SECRET) console.warn('[SECURITY] JWT_SECRET not set — auth will fail');
 if (!process.env.MONGODB_URI && !process.env.MONGO_URI) console.warn('[SECURITY] MONGODB_URI not set — DB not connected');
+if (!process.env.GROQ_API_KEY) console.warn('[SECURITY] GROQ_API_KEY not set — Pia chat will use WhatsApp fallback');
 
 // DEBUG routes — only in non-production
 if (process.env.NODE_ENV !== 'production') {
@@ -79,6 +81,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/mpesa', mpesaRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/chat', chatRoutes);
 
 // Root Route
 app.get('/', (req, res) => {

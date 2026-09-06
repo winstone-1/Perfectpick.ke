@@ -36,3 +36,12 @@ export const paymentPollLimiter = rateLimit({
   legacyHeaders: false,
   message: { success: false, message: 'Too many status checks. Please wait.' },
 });
+
+// Chat (Pia / Groq): most abusable route (costs real API quota) — 15/min per IP, anonymous allowed
+export const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: 'Too many chat requests. Please wait a minute and try again.' },
+});
