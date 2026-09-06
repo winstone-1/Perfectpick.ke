@@ -1,11 +1,13 @@
 ﻿import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { MessageCircle, X, Send, Package, ArrowRight, Sparkles, Minus } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import { Input } from "./ui/input";
 
 const ChatWidget = () => {
+  const { t } = useTranslation();
   const [state, setState] = useState("closed");
   const [message, setMessage] = useState("");
   const isOpen = state === "open";
@@ -32,50 +34,50 @@ const ChatWidget = () => {
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-dark" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-bold text-base text-[#faf7f4] leading-none">Pia</h3>
-                  <p className="text-[11px] text-footer-text/70 mt-1 flex items-center gap-1"><Sparkles size={10} className="text-amber-300" /> Perfect Pick Assistant</p>
+                  <h3 className="font-serif font-bold text-base text-[#faf7f4] leading-none">{t('chatWidget.assistantName')}</h3>
+                  <p className="text-[11px] text-footer-text/70 mt-1 flex items-center gap-1"><Sparkles size={10} className="text-amber-300" /> {t('chatWidget.assistantTitle')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-0.5">
-                <button onClick={minimise} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label="Minimise chat"><Minus size={15} /></button>
-                <button onClick={close} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label="Close chat"><X size={15} /></button>
+                <button onClick={minimise} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label={t('chatWidget.minimiseChat')}><Minus size={15} /></button>
+                <button onClick={close} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label={t('common.close')}><X size={15} /></button>
               </div>
             </div>
             <div className="p-4 space-y-4">
               <div className="bg-surface dark:bg-stone-900/80 p-3.5 rounded-2xl border border-stone-200/60 dark:border-stone-800 text-xs text-medium dark:text-stone-300 leading-relaxed">
-                Hi! I'm Pia. How can I help with your order or styling today?
+                {t('chatWidget.greeting')}
               </div>
               <div className="space-y-2">
                 <a href="https://wa.me/254787251690?text=Hi%20PerfectPick%2C%20I%20have%20a%20question" target="_blank" rel="noopener noreferrer"
                   className="w-full p-2.5 rounded-xl border border-emerald-500/30 bg-emerald-50/60 dark:bg-emerald-950/40 hover:bg-emerald-100/60 dark:hover:bg-emerald-900/50 transition-all flex items-center justify-between group">
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center"><FaWhatsapp size={14} /></div>
-                    <div className="text-left"><p className="text-xs font-bold text-emerald-900 dark:text-emerald-300 leading-none">Chat on WhatsApp</p><p className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 mt-0.5">+254 787 251 690</p></div>
+                    <div className="text-left"><p className="text-xs font-bold text-emerald-900 dark:text-emerald-300 leading-none">{t('chatWidget.chatOnWhatsApp')}</p><p className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 mt-0.5">+254 787 251 690</p></div>
                   </div>
                   <ArrowRight size={14} className="text-emerald-600 dark:text-emerald-400 group-hover:translate-x-0.5 transition-transform" />
                 </a>
                 <Link to="/orders" onClick={close} className="w-full p-2.5 rounded-xl border border-stone-200/70 dark:border-stone-800 bg-surface/50 dark:bg-stone-900/50 hover:bg-surface dark:hover:bg-stone-800/80 transition-all flex items-center justify-between group">
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-lg bg-primary/15 text-primary flex items-center justify-center"><Package size={14} /></div>
-                    <span className="text-xs font-bold text-dark dark:text-stone-200">Track My Order</span>
+                    <span className="text-xs font-bold text-dark dark:text-stone-200">{t('chatWidget.trackMyOrder')}</span>
                   </div>
                   <ArrowRight size={14} className="text-primary group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>
               <form onSubmit={send} className="relative pt-1">
-                <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Type a message..."
+                <Input value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t('chatWidget.typeMessage')}
                   className="h-10 pr-10 rounded-xl bg-surface dark:bg-stone-900 border-stone-200/70 dark:border-stone-700 text-xs" />
-                <button type="submit" disabled={!message.trim()} className="absolute right-2 top-[13px] text-primary hover:text-primary-hover disabled:opacity-40 transition-colors p-1" aria-label="Send message"><Send size={15} /></button>
+                <button type="submit" disabled={!message.trim()} className="absolute right-2 top-[13px] text-primary hover:text-primary-hover disabled:opacity-40 transition-colors p-1" aria-label={t('common.search')}><Send size={15} /></button>
               </form>
             </div>
             <div className="px-4 py-2.5 bg-surface/60 dark:bg-stone-950/60 text-center border-t border-stone-200/40 dark:border-stone-800/60">
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground dark:text-stone-400 font-bold">Perfect Pick Nairobi • Mon-Sat 8:30AM-7:30PM</p>
+              <p className="text-[9px] uppercase tracking-widest text-muted-foreground dark:text-stone-400 font-bold">{t('chatWidget.footer')}</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
       <motion.button whileHover={{scale:1.08}} whileTap={{scale:0.94}} onClick={toggle}
-        aria-label={isOpen ? "Minimise Pia chat" : isMinimised ? "Open Pia chat" : "Chat with Pia"}
+        aria-label={isOpen ? t('chatWidget.minimiseChat') : isMinimised ? t('chatWidget.openChat') : t('chatWidget.chatWithPia')}
         aria-expanded={isOpen}
         className="relative w-12 h-12 rounded-full bg-primary hover:bg-primary-hover text-white shadow-[0_8px_25px_rgba(192,128,80,0.4)] flex items-center justify-center border border-white/20 transition-transform duration-200 cursor-pointer">
         <AnimatePresence mode="wait">
