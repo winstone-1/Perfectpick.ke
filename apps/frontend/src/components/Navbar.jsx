@@ -11,8 +11,10 @@ import {
   LayoutDashboard,
   Sparkles,
   Flame,
-  ChevronDown
+  ChevronDown,
+  Globe
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -21,13 +23,12 @@ import { cn } from '../lib/utils';
 import api from '../api/axios';
 import DarkModeToggle from './DarkModeToggle';
 
-// Resolve brand logo from assets automatically.
-// Drop logo.jpg (or .png/.webp) into src/assets/ and rebuild to activate.
 const logoModules = import.meta.glob('../assets/logo.{jpg,jpeg,png,webp}', { eager: true });
 const logoEntry   = Object.values(logoModules)[0];
 const logoSrc     = logoEntry?.default ?? null;
 
 const Navbar = () => {
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -35,38 +36,32 @@ const Navbar = () => {
   const { cartCount } = useCart();
   const { wishlist } = useWishlist();
   const location = useLocation();
-  const [categoryGroups, setCategoryGroups] = useState([]);
+  const [categories, setCategories] = useState([]);
   const accountRef = React.useRef(null);
 
   const wishlistCount = wishlist.length;
 
-  useEffect(() => {
+  const changeLang = (lng) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('pp-lang', lng);
+  };
+
+useEffect(() => {
     const fetchCategories = async () => {
-      try {
-        const { data } = await api.get('/products/category-groups');
-        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
-          setCategoryGroups(data.data); // [{parent, categories:[]}]
-        } else {
-          setCategoryGroups([
-            { parent: 'Fashion', categories: ['bags', 'shoes', 'accessories', 'clothes'] },
-            { parent: 'Jewelry & Watches', categories: ['jewelry', 'earrings', 'rings', 'watches'] },
-            { parent: 'Beauty', categories: ['beauty-accessories', 'body-mists', 'oils'] },
-            { parent: 'Gifts & Home', categories: ['gifts', 'gift-boxes', 'mugs'] },
-            { parent: 'Apparel', categories: ['ponchos', 'sweaters', 'cardigans'] },
-          ]);
+        try {
+            const { data } = await api.get('/products/category-groups');
+            if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+                const flat = data.data.flatMap(g => g.categories);
+                setCategories(flat);
+            } else {
+                setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
+            }
+        } catch (error) {
+            setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
         }
-      } catch (error) {
-        setCategoryGroups([
-          { parent: 'Fashion', categories: ['bags', 'shoes', 'accessories', 'clothes'] },
-          { parent: 'Jewelry & Watches', categories: ['jewelry', 'earrings', 'rings', 'watches'] },
-          { parent: 'Beauty', categories: ['beauty-accessories', 'body-mists', 'oils'] },
-          { parent: 'Gifts & Home', categories: ['gifts', 'gift-boxes', 'mugs'] },
-          { parent: 'Apparel', categories: ['ponchos', 'sweaters', 'cardigans'] },
-        ]);
-      }
     };
     fetchCategories();
-  }, []);
+}, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -139,7 +134,7 @@ const Navbar = () => {
               location.pathname === '/' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
-            Home
+            {t('nav.home')}
           </Link>
           <Link 
             to="/new-arrivals" 
@@ -148,7 +143,7 @@ const Navbar = () => {
               location.pathname === '/new-arrivals' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
-            <Sparkles size={14} className="text-primary" /> New Arrivals
+            <Sparkles size={14} className="text-primary" /> {t('nav.newArrivals')}
           </Link>
           <Link 
             to="/trending" 
@@ -157,56 +152,44 @@ const Navbar = () => {
               location.pathname === '/trending' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
-            <Flame size={14} className="text-amber-500" /> Trending
+            <Flame size={14} className="text-amber-500" /> {t('nav.trending')}
           </Link>
 
-          {/* Shop Dropdown — two-level grouped */}
+          {/* Shop Dropdown */}
           <div className="relative group">
             <button className="text-sm font-bold text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-1 cursor-pointer py-2">
-              Shop <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
+              {t('nav.shop')} <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
             </button>
-            <div className="absolute top-full left-0 w-[280px] bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
-              <Link
-                to="/products"
-                className="block px-4 py-2.5 text-sm font-black text-dark dark:text-stone-100 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors"
+            <div className="absolute top-full left-0 w-52 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
+              <Link 
+                to="/products" 
+                className="block px-4 py-2.5 text-sm font-bold text-dark dark:text-stone-100 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors"
               >
-                All Collections
+                {t('nav.allCollections')}
               </Link>
-              <div className="h-px bg-border/40 dark:bg-stone-800 mx-3 my-1.5" />
-              <div className="grid grid-cols-1 divide-y divide-border/20 dark:divide-stone-800/60">
-                {categoryGroups.map((group) => (
-                  <div key={group.parent} className="px-4 py-2">
-                    <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary dark:text-amber-400 mb-1.5">
-                      {group.parent}
-                    </p>
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                      {group.categories.map((cat) => (
-                        <Link
-                          key={cat}
-                          to={`/products?category=${cat}`}
-                          className="py-1 text-[12px] font-medium text-medium dark:text-stone-300 hover:text-primary dark:hover:text-primary capitalize transition-colors truncate"
-                        >
-                          {cat.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <div className="h-px bg-border/40 dark:bg-stone-800 my-1 mx-2" />
+              {categories.map((cat) => (
+                <Link 
+                  key={cat} 
+                  to={`/products?category=${cat.toLowerCase()}`} 
+                  className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary capitalize transition-colors"
+                >
+                  {cat}
+                </Link>
+              ))}
             </div>
           </div>
-
 
           {/* Support Dropdown */}
           <div className="relative group">
             <button className="text-sm font-bold text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary transition-colors flex items-center gap-1 cursor-pointer py-2">
-              Support <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
+              {t('nav.support')} <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
             </button>
             <div className="absolute top-full left-0 w-52 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
-              <Link to="/shipping" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">Shipping & Delivery</Link>
-              <Link to="/refund" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">Refunds & Returns</Link>
-              <Link to="/about" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">Contact & Story</Link>
-              <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-stone-800/80 transition-colors">WhatsApp Support</a>
+              <Link to="/shipping" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">{t('nav.shippingDelivery')}</Link>
+              <Link to="/refund" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">{t('nav.refundsReturns')}</Link>
+              <Link to="/about" className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors">{t('nav.contactStory')}</Link>
+              <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="block px-4 py-2 text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-stone-800/80 transition-colors">{t('nav.whatsappSupport')}</a>
             </div>
           </div>
 
@@ -217,25 +200,56 @@ const Navbar = () => {
               location.pathname === '/about' ? "text-primary" : "text-medium dark:text-stone-200"
             )}
           >
-            About
+            {t('nav.about')}
           </Link>
         </div>
 
         {/* Actions */}
         <div className="flex items-center gap-1 sm:gap-3">
+          {/* Language Switcher */}
+          <div className="relative group">
+            <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+              <Globe size={18} />
+            </Button>
+            <div className="absolute right-0 top-full mt-2 w-28 bg-card dark:bg-stone-900 shadow-2xl rounded-xl py-1 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
+              <button
+                onClick={() => changeLang('en')}
+                className={cn(
+                  "w-full px-3 py-2 text-xs font-bold text-left transition-colors",
+                  i18n.language?.startsWith('en')
+                    ? "text-primary bg-primary/5"
+                    : "text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800"
+                )}
+              >
+                English
+              </button>
+              <button
+                onClick={() => changeLang('sw')}
+                className={cn(
+                  "w-full px-3 py-2 text-xs font-bold text-left transition-colors",
+                  i18n.language?.startsWith('sw')
+                    ? "text-primary bg-primary/5"
+                    : "text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800"
+                )}
+              >
+                Kiswahili
+              </button>
+            </div>
+          </div>
+
           <DarkModeToggle />
           
           {user ? (
             <>
               {isAdmin && (
-                <Link to="/admin" className="hidden sm:block" title="Admin Dashboard">
+                <Link to="/admin" className="hidden sm:block" title={t('nav.adminDashboard')}>
                   <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                     <LayoutDashboard size={20} />
                   </Button>
                 </Link>
               )}
               
-              <Link to="/wishlist" className="relative group" title="Wishlist">
+              <Link to="/wishlist" className="relative group" title={t('nav.wishlist')}>
                 <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <Heart size={20} className={wishlistCount > 0 ? "fill-red-500 text-red-500" : ""} />
                   <AnimatePresence>
@@ -253,7 +267,7 @@ const Navbar = () => {
                 </Button>
               </Link>
 
-              <Link to="/cart" className="relative group" title="Shopping Bag">
+              <Link to="/cart" className="relative group" title={t('nav.shoppingBag', 'Shopping Bag')}>
                 <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <ShoppingBag size={20} />
                   <AnimatePresence>
@@ -276,7 +290,7 @@ const Navbar = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setAccountOpen(!accountOpen)}
-                  aria-label="Account menu"
+                  aria-label={t('nav.accountMenu')}
                   aria-haspopup="menu"
                   aria-expanded={accountOpen}
                   className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800"
@@ -286,11 +300,11 @@ const Navbar = () => {
                 {accountOpen && (
                   <div
                     role="menu"
-                    aria-label="Account menu"
+                    aria-label={t('nav.accountMenu')}
                     className="absolute right-0 top-full mt-2 w-60 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 z-50 border border-stone-200/80 dark:border-stone-800"
                   >
                     <div className="px-4 py-3 border-b border-border/40 dark:border-stone-800">
-                      <p className="text-sm font-bold text-dark dark:text-stone-100 truncate">{user?.name || 'Account'}</p>
+                      <p className="text-sm font-bold text-dark dark:text-stone-100 truncate">{user?.name || t('nav.account')}</p>
                       <p className="text-xs text-muted-foreground dark:text-stone-400 truncate">{user?.email}</p>
                     </div>
                     <Link
@@ -300,7 +314,7 @@ const Navbar = () => {
                       onClick={() => setAccountOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
                     >
-                      <User size={16} /> Profile
+                      <User size={16} /> {t('nav.profile')}
                     </Link>
                     <Link
                       to="/orders"
@@ -309,7 +323,7 @@ const Navbar = () => {
                       onClick={() => setAccountOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
                     >
-                      <ShoppingBag size={16} /> Orders
+                      <ShoppingBag size={16} /> {t('nav.orders')}
                     </Link>
                     <Link
                       to="/wishlist"
@@ -318,7 +332,7 @@ const Navbar = () => {
                       onClick={() => setAccountOpen(false)}
                       className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
                     >
-                      <Heart size={16} /> Wishlist
+                      <Heart size={16} /> {t('nav.wishlist')}
                     </Link>
                     {isAdmin && (
                       <Link
@@ -328,7 +342,7 @@ const Navbar = () => {
                         onClick={() => setAccountOpen(false)}
                         className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-dark dark:text-stone-200 hover:bg-surface dark:hover:bg-stone-800 hover:text-primary dark:hover:text-primary transition-colors"
                       >
-                        <LayoutDashboard size={16} /> Dashboard
+                        <LayoutDashboard size={16} /> {t('nav.adminDashboard')}
                       </Link>
                     )}
                     <div className="h-px bg-border/40 dark:bg-stone-800 my-1 mx-2" />
@@ -338,14 +352,13 @@ const Navbar = () => {
                       onClick={() => { setAccountOpen(false); logout(); }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
                     >
-                      <LogOut size={16} /> Sign out
+                      <LogOut size={16} /> {t('nav.signOut')}
                     </button>
                   </div>
                 )}
               </div>
 
-              {/* Mobile account button - also moved to dropdown, keep icon for small screens but hidden on sm+ is above */}
-              <Link to="/profile" title="Account" className="sm:hidden">
+              <Link to="/profile" title={t('nav.account')} className="sm:hidden">
                 <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <User size={20} />
                 </Button>
@@ -355,12 +368,12 @@ const Navbar = () => {
             <div className="flex items-center gap-2">
               <Link to="/login">
                 <Button variant="ghost" className="text-medium dark:text-stone-200 hover:text-primary hidden sm:flex text-sm font-bold">
-                  Login
+                  {t('nav.login')}
                 </Button>
               </Link>
               <Link to="/register">
                 <Button className="btn-primary text-xs sm:text-sm px-4 py-2">
-                  Register
+                  {t('nav.register')}
                 </Button>
               </Link>
             </div>
@@ -390,58 +403,76 @@ const Navbar = () => {
           >
             <div className="flex flex-col p-5 gap-3">
               <Link to="/" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary" onClick={() => setIsOpen(false)}>
-                Home
+                {t('nav.home')}
               </Link>
               <Link to="/new-arrivals" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                <Sparkles size={16} className="text-primary" /> New Arrivals
+                <Sparkles size={16} className="text-primary" /> {t('nav.newArrivals')}
               </Link>
               <Link to="/trending" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                <Flame size={16} className="text-amber-500" /> Trending
+                <Flame size={16} className="text-amber-500" /> {t('nav.trending')}
               </Link>
               
-              <div className="border-l-2 border-primary/30 pl-3 space-y-2.5 my-1">
-                <p className="text-[10px] uppercase text-primary font-black tracking-widest mb-2">Shop Categories</p>
-                <Link to="/products" className="block py-1 text-sm font-black text-dark dark:text-stone-200 hover:text-primary" onClick={() => setIsOpen(false)}>
-                  All Collections
+              <div className="pl-3 border-l-2 border-primary/30 space-y-1.5 my-1">
+                <p className="text-[10px] uppercase text-primary font-black tracking-widest mb-1.5">{t('nav.shopCategories')}</p>
+                <Link to="/products" className="block py-1.5 text-sm font-bold text-dark dark:text-stone-200 hover:text-primary" onClick={() => setIsOpen(false)}>
+                  {t('nav.allCollections')}
                 </Link>
-                {categoryGroups.map((group) => (
-                  <div key={group.parent}>
-                    <p className="text-[10px] uppercase font-black tracking-wider text-muted-foreground dark:text-stone-400 mt-2 mb-1">{group.parent}</p>
-                    <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-                      {group.categories.map(cat => (
-                        <Link
-                          key={cat}
-                          to={`/products?category=${cat}`}
-                          className="py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize transition-colors"
-                          onClick={() => setIsOpen(false)}
-                        >
-                          {cat.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
+                {categories.map(cat => (
+                  <Link 
+                    key={cat} 
+                    to={`/products?category=${cat.toLowerCase()}`} 
+                    className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize" 
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {cat}
+                  </Link>
                 ))}
               </div>
 
-
               <div className="pl-3 border-l-2 border-stone-300 dark:border-stone-700 space-y-1.5 my-1">
-                <p className="text-[10px] uppercase text-muted-foreground font-black tracking-widest mb-1.5">Customer Support</p>
-                <Link to="/shipping" className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary" onClick={() => setIsOpen(false)}>Shipping & Delivery</Link>
-                <Link to="/refund" className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary" onClick={() => setIsOpen(false)}>Refund & Returns</Link>
+                <p className="text-[10px] uppercase text-muted-foreground font-black tracking-widest mb-1.5">{t('nav.customerSupport')}</p>
+                <Link to="/shipping" className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary" onClick={() => setIsOpen(false)}>{t('nav.shippingDelivery')}</Link>
+                <Link to="/refund" className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary" onClick={() => setIsOpen(false)}>{t('nav.refundsReturns')}</Link>
                 <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="block py-1 text-sm text-emerald-600 dark:text-emerald-400 font-bold" onClick={() => setIsOpen(false)}>
                   WhatsApp: +254 787 251 690
                 </a>
               </div>
 
               <Link to="/about" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary" onClick={() => setIsOpen(false)}>
-                About Us
+                {t('nav.aboutUs')}
               </Link>
+
+              {/* Mobile language switcher */}
+              <div className="flex gap-2 pt-1">
+                <button
+                  onClick={() => { changeLang('en'); setIsOpen(false); }}
+                  className={cn(
+                    "flex-1 py-2 text-xs font-bold rounded-xl border transition-colors",
+                    i18n.language?.startsWith('en')
+                      ? "bg-primary text-white border-primary"
+                      : "bg-card text-medium border-stone-200 dark:border-stone-700 dark:text-stone-300"
+                  )}
+                >
+                  English
+                </button>
+                <button
+                  onClick={() => { changeLang('sw'); setIsOpen(false); }}
+                  className={cn(
+                    "flex-1 py-2 text-xs font-bold rounded-xl border transition-colors",
+                    i18n.language?.startsWith('sw')
+                      ? "bg-primary text-white border-primary"
+                      : "bg-card text-medium border-stone-200 dark:border-stone-700 dark:text-stone-300"
+                  )}
+                >
+                  Kiswahili
+                </button>
+              </div>
               
               <div className="h-px bg-border/40 dark:bg-stone-800 my-2" />
               
               {user && isAdmin && (
                 <Link to="/admin" className="text-base font-bold py-2 text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
-                  <LayoutDashboard size={18} /> Admin Dashboard
+                  <LayoutDashboard size={18} /> {t('nav.adminDashboard')}
                 </Link>
               )}
               {user && (
@@ -449,20 +480,20 @@ const Navbar = () => {
                   <button
                     onClick={() => { setIsOpen(false); logout(); }}
                     className="w-full flex items-center gap-2 py-2.5 px-3 rounded-xl text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors text-left"
-                    aria-label="Sign out"
+                    aria-label={t('nav.signOut')}
                   >
-                    <LogOut size={16} /> Sign out
+                    <LogOut size={16} /> {t('nav.signOut')}
                   </button>
-                  <p className="text-[10px] text-muted-foreground dark:text-stone-500 mt-1 px-3 truncate">Signed in as {user?.email}</p>
+                  <p className="text-[10px] text-muted-foreground dark:text-stone-500 mt-1 px-3 truncate">{t('nav.signedInAs')} {user?.email}</p>
                 </div>
               )}
               {!user && (
                 <div className="flex gap-3 pt-2">
                   <Link to="/login" className="flex-1" onClick={() => setIsOpen(false)}>
-                    <Button variant="outline" className="w-full btn-outline">Login</Button>
+                    <Button variant="outline" className="w-full btn-outline">{t('nav.login')}</Button>
                   </Link>
                   <Link to="/register" className="flex-1" onClick={() => setIsOpen(false)}>
-                    <Button className="w-full btn-primary">Register</Button>
+                    <Button className="w-full btn-primary">{t('nav.register')}</Button>
                   </Link>
                 </div>
               )}
