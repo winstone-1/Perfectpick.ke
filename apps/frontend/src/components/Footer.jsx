@@ -2,8 +2,10 @@
 import { Link } from 'react-router-dom';
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart } from 'lucide-react';
 import { FaInstagram, FaTiktok, FaWhatsapp, FaXTwitter } from 'react-icons/fa6';
+import { useTranslation } from 'react-i18next';
 
 const Footer = () => {
+  const { t } = useTranslation();
   const socials = [
     { name: 'WhatsApp', href: 'https://wa.me/254787251690', icon: FaWhatsapp, handle: '+254 787251690' },
     { name: 'Instagram', href: 'https://www.instagram.com/perfectpick.ke', icon: FaInstagram, handle: 'perfectpick.ke' },
@@ -20,10 +22,10 @@ const Footer = () => {
           <div className="space-y-6">
             <div className="space-y-2">
               <h2 className="text-3xl font-serif font-black text-[#faf7f4] tracking-tight">Perfect Pick</h2>
-              <p className="text-xs uppercase tracking-[0.25em] text-primary font-bold">Nairobi's Curated Luxury</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-primary font-bold">{t('footer.brandTagline')}</p>
             </div>
             <p className="text-footer-text/85 text-sm leading-relaxed max-w-xs">
-              Handpicked bags, shoes, jewelry & gifts for the modern Nairobi woman. Boutique quality with trusted Kenyan delivery.
+              {t('footer.brandDesc')}
             </p>
             {/* Social Icons */}
             <div className="flex flex-wrap gap-2.5 pt-2">
@@ -45,26 +47,26 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div className="space-y-6">
-            <h3 className="text-lg font-serif font-bold text-[#faf7f4] tracking-wide">Collections</h3>
+            <h3 className="text-lg font-serif font-bold text-[#faf7f4] tracking-wide">{t('footer.collections')}</h3>
             <ul className="space-y-3.5 text-sm text-footer-text/85">
-              <li><Link to="/products" className="hover:text-primary transition-colors">All Products</Link></li>
-              <li><Link to="/new-arrivals" className="hover:text-primary transition-colors">New Arrivals</Link></li>
-              <li><Link to="/trending" className="hover:text-primary transition-colors">Trending Now</Link></li>
-              <li><Link to="/wishlist" className="hover:text-primary transition-colors">My Wishlist</Link></li>
-              <li><Link to="/profile" className="hover:text-primary transition-colors">My Account</Link></li>
+              <li><Link to="/products" className="hover:text-primary transition-colors">{t('footer.allProducts')}</Link></li>
+              <li><Link to="/new-arrivals" className="hover:text-primary transition-colors">{t('footer.newArrivals')}</Link></li>
+              <li><Link to="/trending" className="hover:text-primary transition-colors">{t('footer.trendingNow')}</Link></li>
+              <li><Link to="/wishlist" className="hover:text-primary transition-colors">{t('footer.myWishlist')}</Link></li>
+              <li><Link to="/profile" className="hover:text-primary transition-colors">{t('footer.myAccount')}</Link></li>
             </ul>
           </div>
 
           {/* Customer Care */}
           <div className="space-y-6">
-            <h3 className="text-lg font-serif font-bold text-[#faf7f4] tracking-wide">Customer Care</h3>
+            <h3 className="text-lg font-serif font-bold text-[#faf7f4] tracking-wide">{t('footer.customerCare')}</h3>
             <ul className="space-y-3.5 text-sm text-footer-text/85">
-              <li><Link to="/shipping" className="hover:text-primary transition-colors">Shipping & Delivery Policy</Link></li>
-              <li><Link to="/refund" className="hover:text-primary transition-colors">Refund & Returns Policy</Link></li>
-              <li><Link to="/about" className="hover:text-primary transition-colors">Our Story & Authenticity</Link></li>
+              <li><Link to="/shipping" className="hover:text-primary transition-colors">{t('footer.shippingPolicy')}</Link></li>
+              <li><Link to="/refund" className="hover:text-primary transition-colors">{t('footer.refundPolicy')}</Link></li>
+              <li><Link to="/about" className="hover:text-primary transition-colors">{t('footer.ourStory')}</Link></li>
               <li>
                 <a href="https://wa.me/254787251690" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors flex items-center gap-1.5">
-                  <span>WhatsApp Support</span>
+                  <span>{t('footer.whatsappSupport')}</span>
                 </a>
               </li>
             </ul>
@@ -72,7 +74,7 @@ const Footer = () => {
 
           {/* Contact Info */}
           <div className="space-y-6">
-            <h3 className="text-lg font-serif font-bold text-[#faf7f4] tracking-wide">Contact Us</h3>
+            <h3 className="text-lg font-serif font-bold text-[#faf7f4] tracking-wide">{t('footer.contactUs')}</h3>
             <ul className="space-y-3.5 text-sm text-footer-text/85">
               <li className="flex items-start gap-3">
                 <MapPin className="text-primary shrink-0 mt-0.5" size={17} />
@@ -88,7 +90,7 @@ const Footer = () => {
               </li>
               <li className="flex items-start gap-3">
                 <Clock className="text-primary shrink-0 mt-0.5" size={17} />
-                <span>Mon - Sat: 8:30 AM - 7:30 PM<br />Sun & Holidays: 10:30 AM - 6:00 PM</span>
+                <span>{t('footer.monSat')}<br />{t('footer.sunHolidays')}</span>
               </li>
             </ul>
           </div>
@@ -96,12 +98,12 @@ const Footer = () => {
 
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-footer-text/70">
           <p className="flex items-center gap-1">
-            © {new Date().getFullYear()} Perfect Pick. Crafted with <Heart size={12} className="text-primary fill-primary inline" /> in Nairobi, Kenya.
+            {t('footer.copyright', { year: new Date().getFullYear() })}
           </p>
           <div className="flex gap-6">
-            <Link to="/about" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/about" className="hover:text-white transition-colors">Terms of Service</Link>
-            <Link to="/shipping" className="hover:text-white transition-colors">Delivery Rates</Link>
+            <Link to="/about" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</Link>
+            <Link to="/about" className="hover:text-white transition-colors">{t('footer.termsOfService')}</Link>
+            <Link to="/shipping" className="hover:text-white transition-colors">{t('footer.deliveryRates')}</Link>
           </div>
         </div>
       </div>
