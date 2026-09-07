@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Flame, Eye, Heart, TrendingUp, ShoppingBag, Trophy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import { Skeleton } from '../components/ui/skeleton';
@@ -8,14 +9,15 @@ import { Badge } from '../components/ui/badge';
 import { cn } from '../lib/utils';
 
 const TrendingNow = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('viewCount'); // 'viewCount', 'wishlistCount', 'salesCount'
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const tabs = [
-    { id: 'viewCount', label: 'Most Viewed', icon: <Eye size={16} /> },
-    { id: 'wishlistCount', label: 'Most Wished', icon: <Heart size={16} /> },
-    { id: 'salesCount', label: 'Best Selling', icon: <TrendingUp size={16} /> },
+    { id: 'viewCount', label: t('trendingNow.mostViewed'), icon: <Eye size={16} /> },
+    { id: 'wishlistCount', label: t('trendingNow.mostWished'), icon: <Heart size={16} /> },
+    { id: 'salesCount', label: t('trendingNow.bestSelling'), icon: <TrendingUp size={16} /> },
   ];
 
   useEffect(() => {
@@ -45,14 +47,14 @@ const TrendingNow = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 bg-rose-500/10 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-rose-500/20"
           >
-            <Flame size={14} className="fill-rose-600 dark:fill-rose-400" /> High Demand
+            <Flame size={14} className="fill-rose-600 dark:fill-rose-400" /> {t('trendingNow.badge')}
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
           >
-            Trending <span className="text-primary dark:text-amber-300 italic">Now</span>
+            {t('trendingNow.title')} <span className="text-primary dark:text-amber-300 italic" />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -60,8 +62,7 @@ const TrendingNow = () => {
             transition={{ delay: 0.2 }}
             className="text-sm md:text-base text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed px-4"
           >
-            What Nairobi is loving right now. Updated regularly based on customer views, 
-            wishlist additions, and verified orders.
+            {t('trendingNow.desc')}
           </motion.p>
         </div>
       </section>
@@ -123,7 +124,9 @@ const TrendingNow = () => {
                         index === 0 ? "bg-primary dark:bg-amber-600" : "bg-stone-900/90 dark:bg-stone-800"
                       )}>
                         <Trophy size={12} className={index === 0 ? "fill-white" : ""} />
-                        #{index + 1} Trending
+                        {index === 0 && t('trendingNow.trending1')}
+                        {index === 1 && t('trendingNow.trending2')}
+                        {index === 2 && t('trendingNow.trending3')}
                       </div>
                     </div>
                   )}
@@ -136,9 +139,9 @@ const TrendingNow = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface dark:bg-stone-800 text-medium dark:text-stone-400">
               <TrendingUp size={36} />
             </div>
-            <h3 className="text-xl font-serif font-black text-dark dark:text-stone-100">Nothing trending yet</h3>
+            <h3 className="text-xl font-serif font-black text-dark dark:text-stone-100">{t('trendingNow.noTrending')}</h3>
             <p className="text-muted-foreground dark:text-stone-400 max-w-xs mx-auto text-xs">
-              Trending trends are updated regularly. Check back soon for Nairobi's hottest items.
+              {t('trendingNow.noTrendingDesc')}
             </p>
           </div>
         )}

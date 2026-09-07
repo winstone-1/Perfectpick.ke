@@ -83,8 +83,7 @@ useEffect(() => {
 
   const stats = [
     { labelKey: 'home.stats.curatedProducts', value: '500+' },
-    { labelKey: 'home.stats.happyCustomers',  value: '1,000+' },
-    { labelKey: 'home.stats.avgRating',       value: '4.9', Icon: FaStar },
+    { labelKey: 'home.stats.happyCustomers',  value: '100+' },
   ];
 
   const features = [
@@ -165,9 +164,8 @@ useEffect(() => {
         <div className="bg-stone-900 dark:bg-stone-950 text-stone-100 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col md:flex-row justify-around items-center gap-6 border border-stone-800">
           {stats.map((stat, i) => (
             <div key={i} className="text-center md:border-r last:border-0 border-stone-800 pr-0 md:pr-10 w-full md:w-auto last:pr-0">
-              <div className="text-3xl font-serif font-black text-amber-400 flex items-center justify-center gap-2">
+              <div className="text-3xl font-serif font-black text-amber-400">
                 {stat.value}
-                {stat.Icon && <stat.Icon size={18} className="text-amber-400" />}
               </div>
               <div className="text-xs text-stone-400 uppercase tracking-widest font-black mt-0.5">{t(stat.labelKey)}</div>
             </div>
@@ -263,9 +261,7 @@ useEffect(() => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {testimonials.map(({ name, key }, i) => (
               <div key={i} className="bg-stone-800/80 p-6 rounded-3xl border border-stone-700/60 text-left space-y-4">
-                <div className="flex text-amber-400 gap-1">
-                  {Array(5).fill(0).map((_, j) => <FaStar key={j} size={14} />)}
-                </div>
+
                 <p className="text-stone-200 text-xs sm:text-sm italic leading-relaxed">"{t(`testimonials.${key}`, { ns: 'translation', defaultValue: testimonialTexts.en[key] })}"</p>
                 <div className="flex items-center gap-3 pt-2">
                   <div className="w-9 h-9 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-xs">

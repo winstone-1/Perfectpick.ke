@@ -78,7 +78,7 @@ const About = () => {
             className="text-base sm:text-lg text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed"
           >
             Perfect Pick was born from a simple belief: everyone deserves a piece of luxury 
-            that makes them feel extraordinary. Since 2018, we've curated the finest 
+            that makes them feel extraordinary. Since 2025, we've curated the finest 
             accessories, knitwear, and lifestyle picks for the modern style enthusiast in Kenya.
           </motion.p>
         </div>

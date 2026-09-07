@@ -2,11 +2,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag, Sparkles, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
 
 const Wishlist = () => {
+  const { t } = useTranslation();
   const { wishlist } = useWishlist();
 
   if (wishlist.length === 0) {
@@ -20,14 +22,14 @@ const Wishlist = () => {
           <Heart size={52} />
         </motion.div>
         <div className="space-y-2">
-          <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">Your wishlist is empty</h1>
+          <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('wishlist.empty')}</h1>
           <p className="text-muted-foreground dark:text-stone-400 text-sm max-w-sm mx-auto">
-            Save your favorite luxury picks here to curate your personal collection and keep track of pieces you love.
+            {t('wishlist.emptyDesc')}
           </p>
         </div>
         <Link to="/products">
           <Button className="btn-primary h-12 px-8 rounded-full shadow-md">
-            Explore Collection
+            {t('wishlist.exploreCollection')}
             <ArrowRight size={16} className="ml-2" />
           </Button>
         </Link>
@@ -39,14 +41,14 @@ const Wishlist = () => {
     <div className="container mx-auto px-4 sm:px-6 py-10 lg:py-16 space-y-10">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-border/40 dark:border-stone-800 gap-4">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">My Wishlist</h1>
+          <h1 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">{t('wishlist.title')}</h1>
           <p className="text-xs text-muted-foreground dark:text-stone-400 uppercase font-black tracking-widest mt-1">
-            Curated picks saved for later
+            {t('wishlist.subtitle')}
           </p>
         </div>
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface dark:bg-stone-800 border border-stone-200/80 dark:border-stone-700 text-xs font-bold text-dark dark:text-stone-200 w-fit">
           <Heart size={14} className="text-red-500 fill-red-500" />
-          <span>{wishlist.length} {wishlist.length === 1 ? 'FAVORITE' : 'FAVORITES'}</span>
+          <span>{wishlist.length} {wishlist.length === 1 ? t('wishlist.favorite_one') : t('wishlist.favorite_other')}</span>
         </div>
       </div>
 

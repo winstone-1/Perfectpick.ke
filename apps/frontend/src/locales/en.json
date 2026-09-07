@@ -83,7 +83,7 @@
     },
     "cta": {
       "title": "Ready to find your next favorite luxury piece?",
-      "desc": "Join 1,000+ satisfied customers and shop our latest verified Nairobi collection today.",
+      "desc": "Join 100+ customers served and shop our latest verified Nairobi collection today.",
       "button": "Shop the Collection"
     },
     "categories": {
@@ -301,6 +301,42 @@
     "textSize": "Text Size",
     "currentSize": "Current: {{size}}",
     "resetDefaults": "Reset to defaults"
+  },
+  "newArrivals": {
+    "badge": "Seasonal Drop",
+    "title": "New Arrivals",
+    "desc": "Be the first to wear the latest trends in Nairobi. Curated luxury pieces straight from our newest drops to your personal wardrobe.",
+    "last7Days": "Last 7 Days",
+    "thisMonth": "This Month",
+    "allRecent": "All Recent",
+    "justInToday": "Just In Today",
+    "addedYesterday": "Added yesterday",
+    "addedDaysAgo": "Added {{days}} days ago",
+    "noArrivals": "No new arrivals found",
+    "noArrivalsDesc": "Check back soon as we continuously drop new arrivals, or select a wider time range.",
+    "seeAllBtn": "See All Recent Arrivals"
+  },
+  "trendingNow": {
+    "badge": "High Demand",
+    "title": "Trending Now",
+    "desc": "What Nairobi is loving right now. Updated regularly based on customer views, wishlist additions, and verified orders.",
+    "mostViewed": "Most Viewed",
+    "mostWished": "Most Wished",
+    "bestSelling": "Best Selling",
+    "trending1": "#1 Trending",
+    "trending2": "#2 Trending",
+    "trending3": "#3 Trending",
+    "noTrending": "Nothing trending yet",
+    "noTrendingDesc": "Trending trends are updated regularly. Check back soon for Nairobi's hottest items."
+  },
+  "wishlist": {
+    "empty": "Your wishlist is empty",
+    "emptyDesc": "Save your favorite luxury picks here to curate your personal collection and keep track of pieces you love.",
+    "exploreCollection": "Explore Collection",
+    "title": "My Wishlist",
+    "subtitle": "Curated picks saved for later",
+    "favorite_one": "FAVORITE",
+    "favorite_other": "FAVORITES"
   },
   "common": {
     "loading": "Loading...",

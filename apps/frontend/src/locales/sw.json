@@ -83,7 +83,7 @@
     },
     "cta": {
       "title": "Uko tayari kupata kipendwa chako kijacho cha utajiri?",
-      "desc": "Jiunge na wateja 1,000+ walioridhika na nunua mkusanyiko wetu mpya wa Nairobi leo.",
+      "desc": "Jiunge na wateja 100+ tuliowasindikia na nunua mkusanyiko wetu mpya wa Nairobi leo.",
       "button": "Nunua Mkusanyiko"
     },
     "categories": {
@@ -300,6 +300,42 @@
     "textSize": "Ukubwa wa Maandishi",
     "currentSize": "Sasa: {{size}}",
     "resetDefaults": "Weka upya chaguo msingi"
+  },
+  "newArrivals": {
+    "badge": "Kufa kwa Kausi",
+    "title": "Mpya Ndani",
+    "desc": "Kuwa wa kwanza kuvaa mitindo ya hivi karibuni Nairobi. Vipengee vya utajiri vilivyochaguliwa moja kwa moja kutoka kushuka kwetu kipya hadi kwenye wardrobo yako ya kibinafsi.",
+    "last7Days": "Siku 7 Zilizopita",
+    "thisMonth": "Mwezi Huu",
+    "allRecent": "Zote za Karibuni",
+    "justInToday": "Imekuja Leo",
+    "addedYesterday": "Imeongezwa jana",
+    "addedDaysAgo": "Imeongezwa siku {{days}} zilizopita",
+    "noArrivals": "Hakuna mpya iliyopatikana",
+    "noArrivalsDesc": "Burudika tena tunapotokufa mpya, au chagua safu pana.",
+    "seeAllBtn": "Tazama Zote za Karibuni"
+  },
+  "trendingNow": {
+    "badge": "Mahitaji Makubwa",
+    "title": "Inayovuma Sasa",
+    "desc": "Kile ambacho Nairobi inapenda sasa. Inasasishwa mara kwa mara kulingana na mwonekano wa mteja, nyongeza ya orodha ya matakwa, na maagizo yaliyothibitishwa.",
+    "mostViewed": "Iliyoonekwa Zaidi",
+    "mostWished": "Iliyotakwa Zaidi",
+    "bestSelling": "Kuuza Vizuri Zaidi",
+    "trending1": "#1 Inayovuma",
+    "trending2": "#2 Inayovuma",
+    "trending3": "#3 Inayovuma",
+    "noTrending": "Hakuna kitu kinachojivuma",
+    "noTrendingDesc": "Vitendo vya jifunza vinasasishwa mara kwa mara. Burudika tena kwa ajili ya bidhaa nene zaidi za Nairobi."
+  },
+  "wishlist": {
+    "empty": "Orodha ya matakwa yako ni tupu",
+    "emptyDesc": "Hifadhi vipendwa vyako vya utajiri hapa ili kutengeneza mkusanyiko wako wa kibinafsi na kusaidia kufuatilia vipengee unavyopenda.",
+    "exploreCollection": "Chunguza Mkusanyiko",
+    "title": "Orodha Yangu ya Matakwa",
+    "subtitle": "Vipengee vilivyochaguliwa kwa baadaye",
+    "favorite_one": "PENDWA",
+    "favorite_other": "PENDWA"
   },
   "common": {
     "loading": "Inapakia...",

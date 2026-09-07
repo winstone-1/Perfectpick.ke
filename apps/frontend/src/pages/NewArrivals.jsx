@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, Clock, Calendar, ShoppingBag, Mail, ChevronRight, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
 import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
@@ -10,6 +11,7 @@ import { Skeleton } from '../components/ui/skeleton';
 import { cn } from '../lib/utils';
 
 const NewArrivals = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('7days'); // '7days', 'month', 'all'
@@ -53,9 +55,9 @@ const NewArrivals = () => {
     const diffTime = Math.abs(now - createdDate);
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays === 0) return "Just In Today";
-    if (diffDays === 1) return "Added yesterday";
-    return `Added ${diffDays} days ago`;
+    if (diffDays === 0) return t('newArrivals.justInToday');
+    if (diffDays === 1) return t('newArrivals.addedYesterday');
+    return t('newArrivals.addedDaysAgo', { days: diffDays });
   };
 
   const isNew = (createdAt) => {
@@ -82,14 +84,14 @@ const NewArrivals = () => {
             animate={{ opacity: 1, scale: 1 }}
             className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
           >
-            <Sparkles size={14} /> Seasonal Drop
+            <Sparkles size={14} /> {t('newArrivals.badge')}
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
           >
-            New <span className="text-primary dark:text-amber-300 italic">Arrivals</span>
+            {t('newArrivals.title')} <span className="text-primary dark:text-amber-300 italic" />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -97,8 +99,7 @@ const NewArrivals = () => {
             transition={{ delay: 0.2 }}
             className="text-sm md:text-base text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed px-4"
           >
-            Be the first to wear the latest trends in Nairobi. Curated luxury pieces 
-            straight from our newest drops to your personal wardrobe.
+            {t('newArrivals.desc')}
           </motion.p>
         </div>
       </section>
@@ -117,7 +118,7 @@ const NewArrivals = () => {
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
-              Last 7 Days
+              {t('newArrivals.last7Days')}
             </button>
             <button
               onClick={() => setFilter('month')}
@@ -128,7 +129,7 @@ const NewArrivals = () => {
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
-              This Month
+              {t('newArrivals.thisMonth')}
             </button>
             <button
               onClick={() => setFilter('all')}
@@ -139,7 +140,7 @@ const NewArrivals = () => {
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
-              All Recent
+              {t('newArrivals.allRecent')}
             </button>
           </div>
         </div>
@@ -183,16 +184,16 @@ const NewArrivals = () => {
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-surface dark:bg-stone-800 text-medium dark:text-stone-400">
               <ShoppingBag size={36} />
             </div>
-            <h3 className="text-xl font-serif font-black text-dark dark:text-stone-100">No new arrivals found</h3>
+            <h3 className="text-xl font-serif font-black text-dark dark:text-stone-100">{t('newArrivals.noArrivals')}</h3>
             <p className="text-muted-foreground dark:text-stone-400 max-w-xs mx-auto text-xs">
-              Check back soon as we continuously drop new arrivals, or select a wider time range.
+              {t('newArrivals.noArrivalsDesc')}
             </p>
             <Button 
               variant="outline" 
               onClick={() => setFilter('all')}
               className="mt-4 border-primary text-primary dark:text-amber-300 hover:bg-primary/10 rounded-2xl"
             >
-              See All Recent Arrivals
+              {t('newArrivals.seeAllBtn')}
             </Button>
           </div>
         )}
