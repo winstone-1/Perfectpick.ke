@@ -7,6 +7,8 @@ import {
     getOrders,
     updateOrderStatus,
     getUsers,
+    updateUserRole,
+    banUser,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/protect.js';
 import { adminOnly, managerOrAdmin } from '../middleware/roles.js';
@@ -78,5 +80,10 @@ router.route('/orders/:id')
 // User management
 router.route('/users')
     .get(adminOnly, getUsers);
+
+// SECURITY: role/ban changes are admin-only (managers excluded) + guarded in controller
+// (admins can't be banned, no self-demotion/self-ban).
+router.put('/users/:id/role', adminOnly, updateUserRole);
+router.put('/users/:id/ban', adminOnly, banUser);
 
 export default router;

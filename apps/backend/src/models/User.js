@@ -39,6 +39,18 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    // Role-based access (isAdmin kept for backwards compat with frontend + JWTs).
+    // New code should prefer `role`; `isAdmin === true` implies admin privileges.
+    role: {
+        type: String,
+        enum: ['customer', 'manager', 'admin'],
+        default: 'customer',
+    },
+    // Banned users are blocked at auth middleware (protect.js). Admins can never be banned.
+    isBanned: {
+        type: Boolean,
+        default: false,
+    },
 }, {
     timestamps: true,
 });

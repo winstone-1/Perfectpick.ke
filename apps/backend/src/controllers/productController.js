@@ -1,5 +1,13 @@
 import Product from '../models/Product.js';
 import { CATEGORY_GROUPS } from '../config/categories.js';
+import { escapeRegExp, isNonEmptyString } from '../middleware/validate.js';
+
+// SECURITY: sort fields are whitelisted — previously any `?sort=` value (e.g.
+// `?sort=-password`) was passed straight to Mongoose .sort(), a NoSQL injection vector.
+const ALLOWED_SORTS = new Set([
+    'price_asc', 'price-low', 'price_desc', 'price-high', 'newest', '-createdAt',
+    '-viewCount', '-salesCount', '-price', 'price', '-createdAt',
+]);
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -13,7 +21,12 @@ export const getProducts = async (req, res) => {
         }
 
         if (search) {
-            query.name = { $regex: search, $options: 'i' };
+            // SECURITY: require a plain string (blocks { $regex } object injection) and
+            // escape regex metacharacters (blocks ReDoS via crafted patterns like "(a+)+$").
+            if (!isNonEmptyString(search, 100)) {
+                return res.status(400).json({ success: false, message: 'Invalid search query' });
+            }
+            query.name = { $regex: escapeRegExp(search.trim()), $options: 'i' };
         }
 
         if (featured === 'true') {
@@ -29,10 +42,15 @@ export const getProducts = async (req, res) => {
         } else if (sort === 'newest' || sort === '-createdAt') {
             productsQuery = productsQuery.sort({ createdAt: -1 });
         } else if (sort) {
-            // support minus prefix like -viewCount, -salesCount
-            const field = sort.startsWith('-') ? sort.slice(1) : sort;
-            const dir = sort.startsWith('-') ? -1 : 1;
-            try { productsQuery = productsQuery.sort({ [field]: dir }); } catch {}
+            // Whitelisted sorts only — unknown values fall back to newest-first.
+            if (!isNonEmptyString(sort, 32) || !ALLOWED_SORTS.has(sort)) {
+                productsQuery = productsQuery.sort({ createdAt: -1 });
+            } else if (sort === '-viewCount' || sort === '-salesCount') {
+                const field = sort.slice(1);
+                productsQuery = productsQuery.sort({ [field]: -1 });
+            } else {
+                productsQuery = productsQuery.sort({ createdAt: -1 });
+            }
         } else {
             productsQuery = productsQuery.sort({ createdAt: -1 });
         }

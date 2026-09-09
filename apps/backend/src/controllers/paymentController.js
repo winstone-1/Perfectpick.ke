@@ -4,6 +4,16 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { clearUserCart } from './orderController.js';
 import { handleIdempotencyCheck, saveIdempotencyResponse } from '../middleware/idempotency.js';
+import { isValidEmail, isValidObjectId, isNonEmptyString } from '../middleware/validate.js';
+
+// SECURITY: poll/verify endpoints mutate order state (mark paid, decrement stock).
+// Only the order owner (or an admin/manager) may trigger that — otherwise any
+// authenticated user who guesses a Paystack reference could flip another user's order.
+const canAccessOrder = (order, user) => {
+  if (!order || !user) return false;
+  if (order.user.toString() === user._id.toString()) return true;
+  return user.isAdmin === true || user.role === 'admin' || user.role === 'manager';
+};
 
 // Helper to normalize Kenyan phone numbers for Paystack mobile money
 // Paystack expects 254XXXXXXXXX format (12 digits, no '+' prefix)
@@ -82,8 +92,30 @@ export const initiateMpesaPayment = async (req, res) => {
     if (!amount || !email || !phone || !orderId) {
       return res.status(400).json({ message: 'Missing required fields' });
     }
+    // SECURITY: strict types block operator injection; orderId must be a real ObjectId.
+    if (!isValidEmail(email) || !isValidObjectId(orderId) || !isNonEmptyString(phone, 32)) {
+      return res.status(400).json({ success: false, message: 'Invalid request fields' });
+    }
     if (isNaN(amount) || Number(amount) <= 0) {
       return res.status(400).json({ message: 'Invalid amount' });
+    }
+
+    // SECURITY (IDOR fix): the order must exist AND belong to the caller.
+    // Previously any authenticated user could attach a Paystack charge to any order id.
+    const targetOrder = await Order.findById(orderId);
+    if (!targetOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+    if (!canAccessOrder(targetOrder, req.user)) {
+      return res.status(403).json({ success: false, message: 'Not authorized for this order' });
+    }
+    if (targetOrder.isPaid) {
+      return res.status(400).json({ success: false, message: 'Order is already paid' });
+    }
+    // SECURITY: amount must match the server-computed order total (tolerance 1 KES for
+    // rounding). Never trust the client-supplied amount for charging decisions.
+    if (Math.abs(Number(amount) - targetOrder.totalPrice) > 1) {
+      return res.status(400).json({ success: false, message: 'Amount does not match order total' });
     }
 
     const normalizedPhone = normalizePhoneNumber(phone);
@@ -161,6 +193,11 @@ export const getChargeStatus = async (req, res) => {
     }
     const { reference } = req.params;
     if (!reference) return res.status(400).json({ success: false, message: 'Missing reference' });
+    // SECURITY: references come from Paystack (alphanumeric + - _); reject anything else
+    // to block path-traversal / SSRF-ish characters in the downstream axios URL.
+    if (!isNonEmptyString(reference, 100) || !/^[A-Za-z0-9_-]+$/.test(reference)) {
+      return res.status(400).json({ success: false, message: 'Invalid reference' });
+    }
 
     const response = await axios.get(
       `https://api.paystack.co/charge/${reference}`,
@@ -175,6 +212,10 @@ export const getChargeStatus = async (req, res) => {
     if (charge.status && charge.data.status === 'success') {
       // Payment confirmed — atomically decrement stock before marking paid
       const order = await Order.findOne({ 'paymentResult.id': reference });
+      // SECURITY (IDOR fix): only the owner/admin may drive another user's order to paid.
+      if (order && !canAccessOrder(order, req.user)) {
+        return res.status(403).json({ success: false, message: 'Not authorized for this order' });
+      }
       if (order && !order.isPaid) {
         const stockResult = await decrementStockForOrder(order);
         if (!stockResult.success) {
@@ -221,6 +262,11 @@ export const verifyPayment = async (req, res) => {
     }
     const { reference } = req.params;
     if (!reference) return res.status(400).json({ success: false, message: 'Missing reference' });
+    // SECURITY: references come from Paystack (alphanumeric + - _); reject anything else
+    // to block path-traversal / SSRF-ish characters in the downstream axios URL.
+    if (!isNonEmptyString(reference, 100) || !/^[A-Za-z0-9_-]+$/.test(reference)) {
+      return res.status(400).json({ success: false, message: 'Invalid reference' });
+    }
 
     const response = await axios.get(
       `https://api.paystack.co/transaction/verify/${reference}`,
@@ -234,6 +280,10 @@ export const verifyPayment = async (req, res) => {
     if (response.data.status && response.data.data.status === 'success') {
       const order = await Order.findOne({ 'paymentResult.id': reference });
 
+      // SECURITY (IDOR fix): only the owner/admin may drive another user's order to paid.
+      if (order && !canAccessOrder(order, req.user)) {
+        return res.status(403).json({ success: false, message: 'Not authorized for this order' });
+      }
       if (order && !order.isPaid) {
         const stockResult = await decrementStockForOrder(order);
         if (!stockResult.success) {
@@ -293,7 +343,12 @@ export const handlePaystackWebhook = async (req, res) => {
       .update(rawBody)
       .digest('hex');
 
-    if (hash !== req.headers['x-paystack-signature']) {
+    // SECURITY: timing-safe comparison — plain !== leaks match position via timing,
+    // letting an attacker forge the webhook signature byte-by-byte.
+    const signature = req.headers['x-paystack-signature'];
+    const hashBuf = Buffer.from(hash, 'utf8');
+    const sigBuf = Buffer.from(String(signature || ''), 'utf8');
+    if (sigBuf.length !== hashBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
       return res.status(401).send('Invalid signature');
     }
 

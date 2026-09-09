@@ -2,6 +2,12 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
 const protect = async (req, res, next) => {
+    // Fail closed if server is misconfigured — never verify against an undefined secret.
+    if (!process.env.JWT_SECRET) {
+        console.error('[SECURITY] JWT_SECRET not set — rejecting authenticated request');
+        return res.status(500).json({ success: false, message: 'Server misconfiguration' });
+    }
+
     let token;
 
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
@@ -11,9 +17,18 @@ const protect = async (req, res, next) => {
         }
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            // SECURITY: decoded.id must be a plain string — a crafted JWT payload
+            // like { "id": { "$gt": "" } } would otherwise become a NoSQL operator.
+            if (!decoded || typeof decoded.id !== 'string') {
+                return res.status(401).json({ success: false, message: 'Not authorized, token failed' });
+            }
             req.user = await User.findById(decoded.id).select('-password');
             if (!req.user) {
                 return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
+            }
+            // SECURITY: banned users lose API access immediately, even with a valid token.
+            if (req.user.isBanned) {
+                return res.status(403).json({ success: false, message: 'Account has been suspended' });
             }
             return next();
         } catch (error) {

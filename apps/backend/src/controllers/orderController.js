@@ -2,6 +2,7 @@ import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
 import Product from '../models/Product.js';
 import { handleIdempotencyCheck, saveIdempotencyResponse } from '../middleware/idempotency.js';
+import { isNonEmptyString, isValidObjectId } from '../middleware/validate.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -15,6 +16,18 @@ export const addOrderItems = async (req, res, next) => {
 
     try {
         const { shippingAddress } = req.body;
+
+        // SECURITY: shippingAddress is persisted to MongoDB — validate shape so a
+        // crafted object (operators, 10MB strings) can't be stored or trigger injection.
+        if (
+            !shippingAddress || typeof shippingAddress !== 'object' || Array.isArray(shippingAddress) ||
+            !isNonEmptyString(shippingAddress.fullName, 120) ||
+            !isNonEmptyString(shippingAddress.phone, 32) ||
+            !isNonEmptyString(shippingAddress.address, 500) ||
+            !isNonEmptyString(shippingAddress.city, 120)
+        ) {
+            return res.status(400).json({ success: false, message: 'Valid shipping address is required' });
+        }
 
         let cart = await Cart.findOne({ user: req.user._id }).populate('items.product');
 
@@ -122,6 +135,10 @@ export const getMyOrders = async (req, res, next) => {
 // @route   GET /api/orders/:id
 export const getOrderById = async (req, res, next) => {
     try {
+        // SECURITY: invalid ObjectIds previously hit CastError → 500 stack leak; return 400.
+        if (!isValidObjectId(req.params.id)) {
+            return res.status(400).json({ success: false, message: 'Invalid order id' });
+        }
         const order = await Order.findById(req.params.id).populate('items.product');
 
         if (order) {

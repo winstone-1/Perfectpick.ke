@@ -1,0 +1,4 @@
+# Cloudflare Pages / Netlify / Render-static SPA fallback.
+# vercel.json only applies on Vercel; this file covers Cloudflare Pages
+# (GitHub integration reads it automatically) and other static hosts.
+/* /index.html 200
