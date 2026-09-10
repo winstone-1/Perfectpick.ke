@@ -1,0 +1,36 @@
+# Cloudflare Pages Configuration for PerfectPick
+# Reference: https://developers.cloudflare.com/pages/configuration/
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Environment variables (set in Cloudflare Dashboard or via Wrangler CLI)
+# Required: VITE_API_URL, VITE_FIREBASE_API_KEY, VITE_FIREBASE_AUTH_DOMAIN, etc.
+
+# Redirects for SPA
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+
+# Security headers (optional - Cloudflare provides this by default)
+# [[headers]]
+#   for = "/*"
+#   [headers.values]
+#     X-Frame-Options = "DENY"
+#     X-XSS-Protection = "1; mode=block"
+#     X-Content-Type-Options = "nosniff"
+#     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Build environment variables (uncomment and set values)
+# [build.environment]
+#   NODE_VERSION = "20"
+#   VITE_API_URL = "https://api.perfectpick.co.ke"
+#   VITE_FIREBASE_API_KEY = "..."
+#   VITE_FIREBASE_AUTH_DOMAIN = "..."
+#   VITE_FIREBASE_PROJECT_ID = "..."
+#   VITE_FIREBASE_STORAGE_BUCKET = "..."
+#   VITE_FIREBASE_MESSAGING_SENDER_ID = "..."
+#   VITE_FIREBASE_APP_ID = "..."
+#   VITE_PAYSTACK_PUBLIC_KEY = "pk_test_..."
