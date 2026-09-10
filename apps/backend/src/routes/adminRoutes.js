@@ -3,6 +3,7 @@ import {
     getStats,
     createUser,
     updateUser,
+    deleteUser,
     createProduct,
     updateProduct,
     deleteProduct,

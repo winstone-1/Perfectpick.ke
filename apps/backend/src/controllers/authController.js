@@ -1,7 +1,7 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import admin from '../config/firebaseAdmin.js';
+import admin, { firebaseInitialised } from '../config/firebaseAdmin.js';
 
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -123,6 +123,16 @@ export const loginUser = async (req, res, next) => {
 // @route   POST /api/auth/firebase
 // @access  Public
 export const firebaseLogin = async (req, res) => {
+    // Guard: if Firebase Admin SDK failed to initialise, return a clear error
+    // rather than crashing with "No Firebase App has been created".
+    if (!firebaseInitialised) {
+        return res.status(503).json({
+            success: false,
+            message: 'Google Sign-In is not available — Firebase is not configured on this server. Please use email/password login.',
+            code: 'FIREBASE_DISABLED',
+        });
+    }
+
     try {
         const { idToken } = req.body;
 
