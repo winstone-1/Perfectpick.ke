@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
@@ -35,8 +35,8 @@ const ProductCard = ({ product }) => {
     minimumFractionDigits: 0,
   }).format(product.price);
 
-  const discountedPrice = product.discount > 0 
-    ? product.price * (1 - product.discount / 100) 
+  const discountedPrice = product.discount > 0
+    ? product.price * (1 - product.discount / 100)
     : null;
 
   return (
@@ -48,8 +48,8 @@ const ProductCard = ({ product }) => {
       transition={{ duration: 0.25 }}
       className="group h-full"
     >
-      <Link 
-        to={`/products/${product._id}`} 
+      <Link
+        to={`/products/${product._id}`}
         className="flex flex-col h-full bg-card dark:bg-stone-900/90 rounded-2xl md:rounded-3xl p-3 border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_32px_rgba(61,39,26,0.08)] dark:hover:border-primary/40 transition-all duration-300"
       >
         {/* Image Container */}
@@ -74,8 +74,8 @@ const ProductCard = ({ product }) => {
               size="icon"
               className={cn(
                 "h-8 w-8 sm:h-9 sm:w-9 rounded-full shadow-md transition-all duration-200 cursor-pointer",
-                wishlisted 
-                  ? "bg-white dark:bg-stone-800 text-red-500" 
+                wishlisted
+                  ? "bg-white dark:bg-stone-800 text-red-500"
                   : "bg-white/90 dark:bg-stone-800/90 text-stone-600 dark:text-stone-300 hover:text-red-500 hover:bg-white dark:hover:bg-stone-800 opacity-90 group-hover:opacity-100"
               )}
               onClick={handleWishlist}

@@ -36,7 +36,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    try { await signOut(auth); } catch {}
+    try { await signOut(auth); } catch { /* ignore Firebase sign-out errors on logout */ }
     localStorage.removeItem('user');
     setUser(null);
   };

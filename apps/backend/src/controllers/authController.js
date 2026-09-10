@@ -56,9 +56,35 @@ export const loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
+        // Sanitize email input
+        const sanitizedEmail = String(email || '').trim().toLowerCase();
+        if (!sanitizedEmail || !password) {
+            return res.status(400).json({ message: 'Please provide email and password' });
+        }
 
+        const user = await User.findOne({ email: sanitizedEmail }).select('+password');
+
+        // Check if user exists and is not banned
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Check banned status
+        const banStatus = user.getBanStatus();
+        if (banStatus.banned) {
+            return res.status(403).json({
+                message: `Account is temporarily locked. Please try again in ${banStatus.remainingMinutes} minute(s).`,
+                code: 'ACCOUNT_LOCKED'
+            });
+        }
+
+        // Check password
         if (user && (await user.matchPassword(password))) {
+            // Reset login attempts on successful login
+            user.loginAttempts = 0;
+            user.lockUntil = undefined;
+            await user.save();
+
             res.json({
                 data: {
                     _id: user._id,
@@ -69,7 +95,24 @@ export const loginUser = async (req, res, next) => {
                 }
             });
         } else {
-            res.status(401).json({ message: 'Invalid email or password' });
+            // Increment login attempts
+            user.loginAttempts = (user.loginAttempts || 0) + 1;
+            
+            // Lock account after 5 failed attempts for 15 minutes
+            if (user.loginAttempts >= 5) {
+                user.lockUntil = Date.now() + 15 * 60000;
+                await user.save();
+                return res.status(403).json({
+                    message: 'Account locked due to too many failed attempts. Try again in 15 minutes.',
+                    code: 'ACCOUNT_LOCKED'
+                });
+            }
+            
+            await user.save();
+            res.status(401).json({ 
+                message: `Invalid email or password. ${5 - user.loginAttempts} attempt(s) remaining.`,
+                attemptsRemaining: 5 - user.loginAttempts
+            });
         }
     } catch (error) {
         next(error);
@@ -116,10 +159,27 @@ export const firebaseLogin = async (req, res) => {
             });
             console.log('New Google user created:', user.email);
         } else {
+            // Update user info if changed
+            let changed = false;
             if (!user.avatar && decodedToken.picture) {
                 user.avatar = decodedToken.picture;
-                await user.save();
+                changed = true;
             }
+            if (user.isEmailVerified !== decodedToken.email_verified) {
+                user.isEmailVerified = decodedToken.email_verified;
+                changed = true;
+            }
+            if (changed) await user.save();
+        }
+
+        // Check banned status
+        const banStatus = user.getBanStatus();
+        if (banStatus.banned) {
+            return res.status(403).json({
+                success: false,
+                message: `Account is temporarily locked. Please try again in ${banStatus.remainingMinutes} minute(s).`,
+                code: 'ACCOUNT_LOCKED'
+            });
         }
 
         const token = jwt.sign(

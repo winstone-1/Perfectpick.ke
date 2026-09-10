@@ -54,24 +54,10 @@ const NewArrivals = () => {
     const createdDate = new Date(createdAt);
     const diffTime = Math.abs(now - createdDate);
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return t('newArrivals.justInToday');
     if (diffDays === 1) return t('newArrivals.addedYesterday');
     return t('newArrivals.addedDaysAgo', { days: diffDays });
-  };
-
-  const isNew = (createdAt) => {
-    const now = new Date();
-    const createdDate = new Date(createdAt);
-    const diffTime = Math.abs(now - createdDate);
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays <= 3;
-  };
-
-  const isJustIn = (createdAt) => {
-    const now = new Date();
-    const createdDate = new Date(createdAt);
-    return now.toDateString() === createdDate.toDateString();
   };
 
   return (
@@ -113,8 +99,8 @@ const NewArrivals = () => {
               onClick={() => setFilter('7days')}
               className={cn(
                 "flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
-                filter === '7days' 
-                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md" 
+                filter === '7days'
+                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md"
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
@@ -124,8 +110,8 @@ const NewArrivals = () => {
               onClick={() => setFilter('month')}
               className={cn(
                 "flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
-                filter === 'month' 
-                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md" 
+                filter === 'month'
+                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md"
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
@@ -135,8 +121,8 @@ const NewArrivals = () => {
               onClick={() => setFilter('all')}
               className={cn(
                 "flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
-                filter === 'all' 
-                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md" 
+                filter === 'all'
+                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md"
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
@@ -170,7 +156,7 @@ const NewArrivals = () => {
                   className="relative group flex flex-col"
                 >
                   <ProductCard product={product} />
-                  
+
                   {/* Added Date Text */}
                   <div className="mt-2 text-[11px] text-muted-foreground dark:text-stone-400 italic px-2">
                     {getAddedText(product.createdAt)}
@@ -188,8 +174,8 @@ const NewArrivals = () => {
             <p className="text-muted-foreground dark:text-stone-400 max-w-xs mx-auto text-xs">
               {t('newArrivals.noArrivalsDesc')}
             </p>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setFilter('all')}
               className="mt-4 border-primary text-primary dark:text-amber-300 hover:bg-primary/10 rounded-2xl"
             >
@@ -210,13 +196,13 @@ const NewArrivals = () => {
               </p>
             </div>
             <div className="space-y-3">
-              <form 
+              <form
                 onSubmit={(e) => { e.preventDefault(); setEmail(''); }}
                 className="flex flex-col sm:flex-row gap-3"
               >
                 <div className="relative flex-1">
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400" size={18} />
-                  <Input 
+                  <Input
                     type="email"
                     placeholder="Enter your email address"
                     value={email}
@@ -225,7 +211,7 @@ const NewArrivals = () => {
                     required
                   />
                 </div>
-                <Button 
+                <Button
                   type="submit"
                   className="btn-primary h-13 px-6 rounded-2xl font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-2 group w-full sm:w-auto shadow-md cursor-pointer"
                 >

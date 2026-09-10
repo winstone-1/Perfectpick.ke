@@ -1,14 +1,13 @@
 import React, { useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Package, 
-  Heart, 
-  Loader2, 
-  ShieldCheck, 
+import { Link } from 'react-router-dom';
+import {
+  User,
+  Mail,
+  Lock,
+  Package,
+  Heart,
+  Loader2,
+  ShieldCheck,
   ChevronRight,
   Camera,
   LogOut,
@@ -22,13 +21,11 @@ import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Separator } from '../components/ui/separator';
 import { toast } from 'sonner';
-import { cn } from '../lib/utils';
 
 const Profile = () => {
   const { user, login, logout } = useAuth();
-  const navigate = useNavigate();
   const avatarInputRef = useRef(null);
-  
+
   const [personalInfo, setPersonalInfo] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -65,7 +62,7 @@ const Profile = () => {
       login({ ...user, avatar: data.data.avatar });
       setAvatarPreview(data.data.avatar);
       toast.success('Profile picture updated');
-    } catch (error) {
+    } catch {
       toast.error('Failed to upload image');
       setAvatarPreview(user?.avatar || null);
     } finally {
@@ -94,9 +91,9 @@ const Profile = () => {
     }
     setUpdatingPassword(true);
     try {
-      await api.put('/auth/profile', { 
+      await api.put('/auth/profile', {
         currentPassword: passwordData.currentPassword,
-        newPassword: passwordData.newPassword 
+        newPassword: passwordData.newPassword
       });
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       toast.success('Password updated successfully');
@@ -127,9 +124,9 @@ const Profile = () => {
                 <div className="relative inline-block">
                   <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 shadow-md mx-auto bg-surface dark:bg-stone-800 flex items-center justify-center">
                     {avatarPreview ? (
-                      <img 
-                        src={avatarPreview} 
-                        alt={user?.name} 
+                      <img
+                        src={avatarPreview}
+                        alt={user?.name}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -145,19 +142,19 @@ const Profile = () => {
                     onChange={handleAvatarChange}
                   />
 
-                  <button 
+                  <button
                     onClick={() => avatarInputRef.current.click()}
                     disabled={uploadingAvatar}
                     className="absolute bottom-0 right-0 p-2 bg-primary text-white dark:text-stone-950 rounded-full border-2 border-card hover:opacity-90 transition-opacity disabled:opacity-50 cursor-pointer shadow-sm"
                     aria-label="Upload profile photo"
                   >
-                    {uploadingAvatar 
-                      ? <Loader2 size={14} className="animate-spin" /> 
+                    {uploadingAvatar
+                      ? <Loader2 size={14} className="animate-spin" />
                       : <Camera size={14} />
                     }
                   </button>
                 </div>
-                
+
                 <div className="space-y-1">
                   <h2 className="text-xl font-serif font-black text-dark dark:text-stone-100">{user?.name}</h2>
                   <p className="text-xs text-muted-foreground dark:text-stone-400 font-mono truncate">{user?.email}</p>
@@ -192,7 +189,7 @@ const Profile = () => {
                     </div>
                     <ChevronRight size={14} className="text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </Link>
-                  <button 
+                  <button
                     onClick={logout}
                     className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-rose-50 dark:hover:bg-rose-950/30 text-muted-foreground hover:text-rose-600 dark:hover:text-rose-400 transition-colors text-xs font-bold cursor-pointer"
                   >
@@ -230,7 +227,7 @@ const Profile = () => {
                       <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Full Name</label>
                       <div className="relative">
                         <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                        <Input 
+                        <Input
                           value={personalInfo.name}
                           onChange={(e) => setPersonalInfo({ ...personalInfo, name: e.target.value })}
                           className="h-12 pl-10 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 font-medium"
@@ -241,7 +238,7 @@ const Profile = () => {
                       <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Email Address</label>
                       <div className="relative">
                         <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                        <Input 
+                        <Input
                           value={personalInfo.email}
                           disabled
                           className="h-12 pl-10 rounded-2xl bg-stone-100 dark:bg-stone-900/60 text-muted-foreground dark:text-stone-400 cursor-not-allowed border-stone-200 dark:border-stone-800 font-medium"
@@ -268,7 +265,7 @@ const Profile = () => {
                     <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Current Password</label>
                     <div className="relative max-w-md">
                       <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                      <Input 
+                      <Input
                         type="password"
                         placeholder="••••••••"
                         className="h-12 pl-10 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100"
@@ -282,7 +279,7 @@ const Profile = () => {
                       <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">New Password</label>
                       <div className="relative">
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                        <Input 
+                        <Input
                           type="password"
                           placeholder="••••••••"
                           className="h-12 pl-10 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100"
@@ -295,7 +292,7 @@ const Profile = () => {
                       <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">Confirm New Password</label>
                       <div className="relative">
                         <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                        <Input 
+                        <Input
                           type="password"
                           placeholder="••••••••"
                           className="h-12 pl-10 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100"

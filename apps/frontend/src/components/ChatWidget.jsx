@@ -1,5 +1,5 @@
 ﻿import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from "react-i18next";
 import { MessageCircle, X, Send, Package, ArrowRight, Sparkles, Minus, Loader2 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa6";
@@ -38,8 +38,7 @@ const ChatWidget = () => {
     setMessage("");
     setLoading(true);
     try {
-      const history = nextMessages.slice(-10).map(m => ({ role: m.role, content: m.content }));
-      // send only history without last user msg? we include history+message per spec; we send history prior + message
+      // send history prior to this message (last 10 turns) plus the new message
       const { data } = await api.post("/chat", { message: text, history: nextMessages.slice(0, -1).slice(-10).map(m => ({ role: m.role, content: m.content })) });
       const reply = data?.reply?.trim() || WHATSAPP_FALLBACK;
       setMessages(prev => [...prev, { role: "assistant", content: reply }]);

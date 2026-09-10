@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
         config.headers.Authorization = `Bearer ${token}`;
       }
     }
-  } catch (_) {
+  } catch {
     // corrupted localStorage — clear it to avoid infinite loop
     localStorage.removeItem('user');
   }

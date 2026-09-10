@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ShoppingBag, 
-  ChevronLeft, 
-  ExternalLink, 
-  Clock, 
-  Mail, 
+import {
+  ShoppingBag,
+  ChevronLeft,
+  ExternalLink,
+  Clock,
+  Mail,
   User,
   Loader2
 } from 'lucide-react';
@@ -14,12 +14,12 @@ import api from '../../api/axios';
 import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Skeleton } from '../../components/ui/skeleton';
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '../../components/ui/select';
 import { toast } from 'sonner';
 import { cn } from '../../lib/utils';
@@ -34,7 +34,7 @@ const ManageOrders = () => {
     try {
       const { data } = await api.get('/admin/orders');
       setOrders(data.data || []);
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch orders');
     } finally {
       setLoading(false);
@@ -51,7 +51,7 @@ const ManageOrders = () => {
       await api.put(`/admin/orders/${orderId}`, { status: newStatus });
       toast.success(`Order #${orderId.slice(-6).toUpperCase()} updated to ${newStatus}`);
       fetchOrders();
-    } catch (error) {
+    } catch {
       toast.error('Failed to update status');
     } finally {
       setUpdatingId(null);
@@ -106,7 +106,7 @@ const ManageOrders = () => {
                         {new Date(order.createdAt).toLocaleString()}
                       </span>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-stone-100 dark:bg-stone-800 rounded-xl flex items-center justify-center text-primary flex-shrink-0">
@@ -148,9 +148,9 @@ const ManageOrders = () => {
                           </Badge>
                         )}
                       </div>
-                      <Select 
+                      <Select
                         disabled={updatingId === order._id}
-                        value={order.status} 
+                        value={order.status}
                         onValueChange={(val) => handleStatusChange(order._id, val)}
                       >
                         <SelectTrigger className="w-full md:w-[180px] h-11 rounded-xl bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100 focus:ring-primary font-bold text-xs uppercase tracking-widest">

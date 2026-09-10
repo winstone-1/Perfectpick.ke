@@ -18,29 +18,29 @@ const About = () => {
   };
 
   const contactInfos = [
-    { 
-      icon: <MapPin className="text-primary dark:text-amber-300" size={22} />, 
-      title: 'Visit Us', 
+    {
+      icon: <MapPin className="text-primary dark:text-amber-300" size={22} />,
+      title: 'Visit Us',
       detail: 'Amaziah Square, Muthiga\nAlong Waiyaki Way, Nairobi',
       link: 'https://maps.google.com/?q=Amaziah+Square+Muthiga+Waiyaki+Way+Nairobi'
     },
-    { 
-      icon: <Phone className="text-primary dark:text-amber-300" size={22} />, 
-      title: 'Call Us', 
+    {
+      icon: <Phone className="text-primary dark:text-amber-300" size={22} />,
+      title: 'Call Us',
       detail: '+254 787 251 690',
-      link: 'tel:+254787251690' 
+      link: 'tel:+254787251690'
     },
-    { 
-      icon: <Mail className="text-primary dark:text-amber-300" size={22} />, 
-      title: 'Email Us', 
+    {
+      icon: <Mail className="text-primary dark:text-amber-300" size={22} />,
+      title: 'Email Us',
       detail: 'perfectpick26@gmail.com',
-      link: 'mailto:perfectpick26@gmail.com' 
+      link: 'mailto:perfectpick26@gmail.com'
     },
-    { 
-      icon: <Clock className="text-primary dark:text-amber-300" size={22} />, 
-      title: 'Working Hours', 
+    {
+      icon: <Clock className="text-primary dark:text-amber-300" size={22} />,
+      title: 'Working Hours',
       detail: 'Mon - Sat: 8:30 AM - 7:30 PM\nSun & Holidays: 10:30 AM - 6:00 PM',
-      link: null 
+      link: null
     }
   ];
 
@@ -63,7 +63,7 @@ const About = () => {
           >
             <Sparkles size={14} /> Our Story
           </motion.div>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
@@ -71,14 +71,14 @@ const About = () => {
           >
             Defining Elegance <br /> in <span className="text-primary dark:text-amber-300 italic">Nairobi</span>.
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
             className="text-base sm:text-lg text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed"
           >
-            Perfect Pick was born from a simple belief: everyone deserves a piece of luxury 
-            that makes them feel extraordinary. Since 2025, we've curated the finest 
+            Perfect Pick was born from a simple belief: everyone deserves a piece of luxury
+            that makes them feel extraordinary. Since 2025, we've curated the finest
             accessories, knitwear, and lifestyle picks for the modern style enthusiast in Kenya.
           </motion.p>
         </div>
@@ -89,7 +89,7 @@ const About = () => {
       {/* Philosophy */}
       <section className="container mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 items-center">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -40 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -100,8 +100,8 @@ const About = () => {
                 Authenticity, Style &amp; <br />Uncompromising Quality.
               </h2>
               <p className="text-medium dark:text-stone-300 text-base leading-relaxed">
-                At Perfect Pick, we don't just sell products; we curate experiences. 
-                Every bag, shoe, jewelry piece, and accessory is carefully hand-selected and verified 
+                At Perfect Pick, we don't just sell products; we curate experiences.
+                Every bag, shoe, jewelry piece, and accessory is carefully hand-selected and verified
                 for genuine quality and timeless Nairobi chic.
               </p>
             </div>
@@ -123,7 +123,7 @@ const About = () => {
             </div>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
@@ -182,7 +182,7 @@ const About = () => {
 
       {/* Info Grid */}
       <section className="container mx-auto px-4 sm:px-6">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -220,7 +220,7 @@ const About = () => {
         <div className="bg-surface/50 dark:bg-stone-900/50 rounded-[3rem] p-8 md:p-14 text-center space-y-6 border border-stone-200/70 dark:border-stone-800">
           <h2 className="text-2xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">Your Confidence, Our Promise.</h2>
           <p className="text-medium dark:text-stone-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-            We believe in transparency and providing you with the finest shopping experience in Kenya. 
+            We believe in transparency and providing you with the finest shopping experience in Kenya.
             Review our policies or chat with our team on WhatsApp for any inquiries.
           </p>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-2">

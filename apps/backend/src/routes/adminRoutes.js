@@ -1,6 +1,8 @@
 ﻿import express from 'express';
 import {
     getStats,
+    createUser,
+    updateUser,
     createProduct,
     updateProduct,
     deleteProduct,
@@ -77,6 +79,11 @@ router.route('/orders/:id')
 
 // User management
 router.route('/users')
-    .get(adminOnly, getUsers);
+    .get(adminOnly, getUsers)
+    .post(adminOnly, createUser);
+
+router.route('/users/:id')
+    .put(adminOnly, updateUser)
+    .delete(adminOnly, deleteUser);
 
 export default router;

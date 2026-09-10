@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  ShoppingBag, 
-  Heart, 
-  User, 
-  Menu, 
-  X, 
-  LogOut, 
+import {
+  ShoppingBag,
+  Heart,
+  User,
+  Menu,
+  X,
+  LogOut,
   LayoutDashboard,
   Sparkles,
   Flame,
@@ -56,7 +56,7 @@ useEffect(() => {
             } else {
                 setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
             }
-        } catch (error) {
+        } catch {
             setCategories(['bags', 'shoes', 'jewelry', 'gifts', 'accessories', 'clothes']);
         }
     };
@@ -95,11 +95,11 @@ useEffect(() => {
   const isAdmin = user?.isAdmin === true || user?.role === 'admin' || user?.role === 'manager';
 
   return (
-    <nav 
+    <nav
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-300 border-b",
-        scrolled 
-          ? "bg-bg/95 dark:bg-stone-900/95 backdrop-blur-md shadow-sm border-border/80 dark:border-stone-800" 
+        scrolled
+          ? "bg-bg/95 dark:bg-stone-900/95 backdrop-blur-md shadow-sm border-border/80 dark:border-stone-800"
           : "bg-bg/80 dark:bg-stone-900/80 backdrop-blur-sm border-transparent"
       )}
     >
@@ -127,8 +127,8 @@ useEffect(() => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6 lg:gap-8">
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className={cn(
               "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary",
               location.pathname === '/' ? "text-primary" : "text-medium dark:text-stone-200"
@@ -136,8 +136,8 @@ useEffect(() => {
           >
             {t('nav.home')}
           </Link>
-          <Link 
-            to="/new-arrivals" 
+          <Link
+            to="/new-arrivals"
             className={cn(
               "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary flex items-center gap-1.5",
               location.pathname === '/new-arrivals' ? "text-primary" : "text-medium dark:text-stone-200"
@@ -145,8 +145,8 @@ useEffect(() => {
           >
             <Sparkles size={14} className="text-primary" /> {t('nav.newArrivals')}
           </Link>
-          <Link 
-            to="/trending" 
+          <Link
+            to="/trending"
             className={cn(
               "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary flex items-center gap-1.5",
               location.pathname === '/trending' ? "text-primary" : "text-medium dark:text-stone-200"
@@ -161,17 +161,17 @@ useEffect(() => {
               {t('nav.shop')} <ChevronDown size={14} className="group-hover:rotate-180 transition-transform duration-200" />
             </button>
             <div className="absolute top-full left-0 w-52 bg-card dark:bg-stone-900 shadow-2xl rounded-2xl py-2 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
-              <Link 
-                to="/products" 
+              <Link
+                to="/products"
                 className="block px-4 py-2.5 text-sm font-bold text-dark dark:text-stone-100 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary transition-colors"
               >
                 {t('nav.allCollections')}
               </Link>
               <div className="h-px bg-border/40 dark:bg-stone-800 my-1 mx-2" />
               {categories.map((cat) => (
-                <Link 
-                  key={cat} 
-                  to={`/products?category=${cat.toLowerCase()}`} 
+                <Link
+                  key={cat}
+                  to={`/products?category=${cat.toLowerCase()}`}
                   className="block px-4 py-2 text-sm font-medium text-medium dark:text-stone-300 hover:bg-surface dark:hover:bg-stone-800/80 hover:text-primary dark:hover:text-primary capitalize transition-colors"
                 >
                   {cat}
@@ -193,8 +193,8 @@ useEffect(() => {
             </div>
           </div>
 
-          <Link 
-            to="/about" 
+          <Link
+            to="/about"
             className={cn(
               "text-sm font-bold transition-colors hover:text-primary dark:hover:text-primary",
               location.pathname === '/about' ? "text-primary" : "text-medium dark:text-stone-200"
@@ -238,7 +238,7 @@ useEffect(() => {
           </div>
 
           <DarkModeToggle />
-          
+
           {user ? (
             <>
               {isAdmin && (
@@ -248,13 +248,13 @@ useEffect(() => {
                   </Button>
                 </Link>
               )}
-              
+
               <Link to="/wishlist" className="relative group" title={t('nav.wishlist')}>
                 <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <Heart size={20} className={wishlistCount > 0 ? "fill-red-500 text-red-500" : ""} />
                   <AnimatePresence>
                     {wishlistCount > 0 && (
-                      <motion.span 
+                      <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
@@ -272,7 +272,7 @@ useEffect(() => {
                   <ShoppingBag size={20} />
                   <AnimatePresence>
                     {cartCount > 0 && (
-                      <motion.span 
+                      <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
@@ -380,9 +380,9 @@ useEffect(() => {
           )}
 
           {/* Mobile Menu Toggle */}
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             className="md:hidden text-medium dark:text-stone-200"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle navigation menu"
@@ -411,17 +411,17 @@ useEffect(() => {
               <Link to="/trending" className="py-2 text-base font-bold text-dark dark:text-stone-100 hover:text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
                 <Flame size={16} className="text-amber-500" /> {t('nav.trending')}
               </Link>
-              
+
               <div className="pl-3 border-l-2 border-primary/30 space-y-1.5 my-1">
                 <p className="text-[10px] uppercase text-primary font-black tracking-widest mb-1.5">{t('nav.shopCategories')}</p>
                 <Link to="/products" className="block py-1.5 text-sm font-bold text-dark dark:text-stone-200 hover:text-primary" onClick={() => setIsOpen(false)}>
                   {t('nav.allCollections')}
                 </Link>
                 {categories.map(cat => (
-                  <Link 
-                    key={cat} 
-                    to={`/products?category=${cat.toLowerCase()}`} 
-                    className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize" 
+                  <Link
+                    key={cat}
+                    to={`/products?category=${cat.toLowerCase()}`}
+                    className="block py-1 text-sm text-medium dark:text-stone-300 hover:text-primary capitalize"
                     onClick={() => setIsOpen(false)}
                   >
                     {cat}
@@ -467,9 +467,9 @@ useEffect(() => {
                   Kiswahili
                 </button>
               </div>
-              
+
               <div className="h-px bg-border/40 dark:bg-stone-800 my-2" />
-              
+
               {user && isAdmin && (
                 <Link to="/admin" className="text-base font-bold py-2 text-primary flex items-center gap-2" onClick={() => setIsOpen(false)}>
                   <LayoutDashboard size={18} /> {t('nav.adminDashboard')}

@@ -1,6 +1,7 @@
 import Product from '../models/Product.js';
 import Order from '../models/Order.js';
 import User from '../models/User.js';
+import bcrypt from 'bcryptjs';
 
 export const getStats = async (req, res, next) => {
     try {
@@ -13,6 +14,113 @@ export const getStats = async (req, res, next) => {
         ]);
         const totalRevenue = orders.reduce((sum, order) => sum + (order.totalPrice || 0), 0);
         res.json({ success: true, data: { totalProducts, totalOrders, totalUsers, totalRevenue, pendingOrders } });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const createUser = async (req, res, next) => {
+    try {
+        const { name, email, password, isAdmin, avatar } = req.body;
+
+        // Sanitize email
+        const sanitizedEmail = String(email || '').trim().toLowerCase();
+        if (!sanitizedEmail || !name) {
+            return res.status(400).json({ success: false, message: 'Email and name are required' });
+        }
+
+        const userExists = await User.findOne({ email: sanitizedEmail });
+        if (userExists) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = password ? await bcrypt.hash(password, salt) : undefined;
+
+        const user = await User.create({
+            name,
+            email: sanitizedEmail,
+            password: hashedPassword,
+            isAdmin: isAdmin === true || isAdmin === 'true',
+            avatar: avatar || '',
+        });
+
+        if (user) {
+            res.status(201).json({
+                success: true,
+                data: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    isAdmin: user.isAdmin,
+                }
+            });
+        } else {
+            res.status(400).json({ success: false, message: 'Invalid user data' });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Prevent self-demotion
+        if (req.user._id.toString() === user._id.toString() && req.body.isAdmin === false) {
+            return res.status(403).json({
+                success: false,
+                message: 'Admins cannot demote themselves'
+            });
+        }
+
+        // Prevent removing admin from the last admin (guard against locking out)
+        if (req.body.isAdmin === false && user.isAdmin === true) {
+            const totalAdmins = await User.countDocuments({ isAdmin: true });
+            if (totalAdmins <= 1) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Cannot remove admin status - this is the only admin account'
+                });
+            }
+        }
+
+        user.name = req.body.name || user.name;
+        user.email = (req.body.email || user.email).trim().toLowerCase();
+        user.isAdmin = req.body.isAdmin === true || req.body.isAdmin === 'true' || user.isAdmin;
+        user.avatar = req.body.avatar || user.avatar;
+
+        if (req.body.password) {
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(req.body.password, salt);
+        }
+
+        if (req.body.banDuration) {
+            await user.ban(Number(req.body.banDuration));
+            return res.json({ success: true, message: `User banned for ${req.body.banDuration} minutes` });
+        }
+
+        if (req.body.unban) {
+            await user.unban();
+            return res.json({ success: true, message: 'User unbanned' });
+        }
+
+        const updatedUser = await user.save();
+        res.json({
+            success: true,
+            data: {
+                _id: updatedUser._id,
+                name: updatedUser.name,
+                email: updatedUser.email,
+                isAdmin: updatedUser.isAdmin,
+                bannedUntil: updatedUser.bannedUntil,
+            }
+        });
     } catch (error) {
         next(error);
     }
@@ -119,6 +227,32 @@ export const getUsers = async (req, res, next) => {
     try {
         const users = await User.find({}).select('-password');
         res.json({ success: true, data: users });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteUser = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Prevent deleting the last admin
+        if (user.isAdmin === true) {
+            const totalAdmins = await User.countDocuments({ isAdmin: true });
+            if (totalAdmins <= 1) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Cannot delete the last admin account'
+                });
+            }
+        }
+
+        await user.deleteOne();
+        res.json({ success: true, message: 'User deleted' });
     } catch (error) {
         next(error);
     }

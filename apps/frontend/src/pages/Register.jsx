@@ -22,7 +22,7 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  
+
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ const Register = () => {
       } else {
         toast.error(result.error || t('register.googleFailed'));
       }
-    } catch (error) {
+    } catch {
       toast.error(t('register.unexpectedError'));
     } finally {
       setGoogleLoading(false);
@@ -89,16 +89,16 @@ const Register = () => {
             <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('register.createAccount')}</h1>
             <p className="text-muted-foreground dark:text-stone-400 text-xs uppercase tracking-widest font-black">{t('register.joinCommunity')}</p>
           </CardHeader>
-          
+
           <CardContent className="p-6 sm:p-8 space-y-5">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.fullName')}</label>
                 <div className="relative">
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                  <Input 
+                  <Input
                     name="name"
-                    placeholder={t('register.fullNamePlaceholder')} 
+                    placeholder={t('register.fullNamePlaceholder')}
                     className="pl-10 h-11 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400 font-medium text-sm"
                     value={formData.name}
                     onChange={handleChange}
@@ -110,10 +110,10 @@ const Register = () => {
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.emailAddress')}</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                  <Input 
+                  <Input
                     name="email"
-                    type="email" 
-                    placeholder={t('register.emailPlaceholder')} 
+                    type="email"
+                    placeholder={t('register.emailPlaceholder')}
                     className="pl-10 h-11 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400 font-medium text-sm"
                     value={formData.email}
                     onChange={handleChange}
@@ -125,10 +125,10 @@ const Register = () => {
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.password')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                  <Input 
+                  <Input
                     name="password"
-                    type="password" 
-                    placeholder="••••••••" 
+                    type="password"
+                    placeholder="••••••••"
                     className="pl-10 h-11 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400"
                     value={formData.password}
                     onChange={handleChange}
@@ -140,10 +140,10 @@ const Register = () => {
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('register.confirmPassword')}</label>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                  <Input 
+                  <Input
                     name="confirmPassword"
-                    type="password" 
-                    placeholder="••••••••" 
+                    type="password"
+                    placeholder="••••••••"
                     className="pl-10 h-11 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400"
                     value={formData.confirmPassword}
                     onChange={handleChange}
@@ -151,8 +151,8 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full btn-primary h-12 rounded-2xl text-sm font-black shadow-md cursor-pointer mt-2"
                 disabled={loading || googleLoading}
               >
@@ -169,8 +169,8 @@ const Register = () => {
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[11px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest">{t('register.or')}</span>
             </div>
 
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="outline"
               className="w-full h-12 rounded-2xl text-xs font-bold uppercase tracking-wider border-stone-200 dark:border-stone-700 hover:bg-surface dark:hover:bg-stone-800 text-dark dark:text-stone-100 transition-all gap-2.5 cursor-pointer shadow-xs"
               onClick={handleGoogleLogin}

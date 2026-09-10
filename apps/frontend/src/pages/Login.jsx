@@ -18,7 +18,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  
+
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -53,7 +53,7 @@ const Login = () => {
       } else {
         toast.error(result.error || t('login.googleFailed'));
       }
-    } catch (error) {
+    } catch {
       toast.error(t('login.unexpectedError'));
     } finally {
       setGoogleLoading(false);
@@ -73,16 +73,16 @@ const Login = () => {
             <h1 className="text-3xl font-serif font-black text-dark dark:text-stone-100">{t('login.welcomeBack')}</h1>
             <p className="text-muted-foreground dark:text-stone-400 text-xs uppercase tracking-widest font-black">{t('login.signInAccount')}</p>
           </CardHeader>
-          
+
           <CardContent className="p-6 sm:p-8 space-y-6">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold uppercase tracking-wider text-muted-foreground dark:text-stone-300">{t('login.emailAddress')}</label>
                 <div className="relative">
                   <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                  <Input 
-                    type="email" 
-                    placeholder={t('login.emailPlaceholder')} 
+                  <Input
+                    type="email"
+                    placeholder={t('login.emailPlaceholder')}
                     className="pl-10 h-12 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400 font-medium"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -96,9 +96,9 @@ const Login = () => {
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground dark:text-stone-400" size={16} />
-                  <Input 
-                    type="password" 
-                    placeholder="••••••••" 
+                  <Input
+                    type="password"
+                    placeholder="••••••••"
                     className="pl-10 h-12 rounded-2xl border-stone-200 dark:border-stone-700 bg-surface/30 dark:bg-stone-900 text-dark dark:text-stone-100 placeholder:text-stone-400"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -106,8 +106,8 @@ const Login = () => {
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full btn-primary h-12 rounded-2xl text-sm font-black shadow-md cursor-pointer"
                 disabled={loading || googleLoading}
               >
@@ -124,8 +124,8 @@ const Login = () => {
               <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-3 text-[11px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest">{t('login.or')}</span>
             </div>
 
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="outline"
               className="w-full h-12 rounded-2xl text-xs font-bold uppercase tracking-wider border-stone-200 dark:border-stone-700 hover:bg-surface dark:hover:bg-stone-800 text-dark dark:text-stone-100 transition-all gap-2.5 cursor-pointer shadow-xs"
               onClick={handleGoogleLogin}

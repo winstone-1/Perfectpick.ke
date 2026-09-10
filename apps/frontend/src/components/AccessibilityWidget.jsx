@@ -1,12 +1,12 @@
 ﻿import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from "react-i18next";
 import { Accessibility, X, Contrast, Type, Minus, Plus } from "lucide-react";
 
 const FONT_STEPS = ["normal", "large", "x-large"];
 const FONT_LABELS = { normal: "100%", large: "112%", "x-large": "125%" };
 const FONT_SIZES = { normal: "100%", large: "112.5%", "x-large": "125%" };
-const save = (p) => { try { localStorage.setItem("pp-a11y", JSON.stringify(p)); } catch {} };
+const save = (p) => { try { localStorage.setItem("pp-a11y", JSON.stringify(p)); } catch { /* storage unavailable */ } };
 const load = () => { try { return JSON.parse(localStorage.getItem("pp-a11y") || "{}"); } catch { return {}; } };
 
 const AccessibilityWidget = () => {

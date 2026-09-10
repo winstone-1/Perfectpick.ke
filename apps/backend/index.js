@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import connectDB from './src/config/db.js';
 import admin from './src/config/firebaseAdmin.js';
+import { sanitizeBody, sanitizeQuery, validateQueryPattern } from './src/middleware/sanitize.js';
 
 // Routes
 import authRoutes from './src/routes/authRoutes.js';
@@ -51,6 +52,11 @@ app.use('/api/payments/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Security middleware - apply after body parsing
+app.use(sanitizeBody);
+app.use(sanitizeQuery);
+app.use(validateQueryPattern);
+
 // Startup env validation (non-blocking, logs security warnings)
 if (!process.env.PAYSTACK_SECRET_KEY) console.warn('[SECURITY] PAYSTACK_SECRET_KEY not set — Paystack payments will fail');
 if (!process.env.JWT_SECRET) console.warn('[SECURITY] JWT_SECRET not set — auth will fail');
@@ -88,12 +94,22 @@ app.get('/', (req, res) => {
     res.send('Perfect Pick API is running...');
 });
 
-// Global Error Handler
+// Global Error Handler - Safe error messages for production
 app.use((err, req, res, next) => {
-    console.error(`[ERROR] ${err.stack}`);
-    res.status(err.status || 500).json({
+    console.error(`[ERROR] ${err.message}`); // Don't expose stack traces
+    
+    // Determine status code
+    const statusCode = err.statusCode || err.status || 500;
+    
+    // Safe error message (no stack traces in production)
+    const message = process.env.NODE_ENV === 'production' 
+        ? (err.message || 'Internal Server Error')
+        : err.message;
+    
+    res.status(statusCode).json({
         success: false,
-        message: err.message || 'Internal Server Error'
+        message: message,
+        ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
     });
 });
 

@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
 import { useTranslation } from 'react-i18next';
-import { 
-  CheckCircle2, 
-  XCircle, 
-  Loader2, 
-  Smartphone, 
-  ChevronLeft, 
-  CreditCard, 
-  Truck 
+import {
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Smartphone,
+  ChevronLeft,
+  CreditCard,
+  Truck
 } from 'lucide-react';
 import { FaWhatsapp } from 'react-icons/fa6';
 import { useCart } from '../context/CartContext';
@@ -40,18 +40,49 @@ const Checkout = () => {
   const [checkoutRequestId, setCheckoutRequestId] = useState(null);
   const [fallbackData, setFallbackData] = useState({ tillNumber: '3175088' });
 
+  // Multi-step checkout: 1 = shipping details, 2 = payment, success replaces the
+  // payment panel. Inline validation errors are keyed by field name.
+  const [step, setStep] = useState(1);
+  const [errors, setErrors] = useState({});
+
   const cartItems = Array.isArray(cart) ? cart : [];
   const hasItems = cartItems.length > 0;
   const total = cartTotal || 0;
 
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear a field's error as soon as the user edits it
+    if (errors[e.target.name]) setErrors((prev) => ({ ...prev, [e.target.name]: undefined }));
+  };
+
+  // Inline validation for the shipping step — returns true when valid
+  const validateShipping = () => {
+    const next = {};
+    if (!formData.fullName?.trim() || formData.fullName.trim().length < 3) {
+      next.fullName = t('checkout.validation.fullName');
+    }
+    // Kenyan phone: 07XX…, 01XX…, +254… or 254… followed by 9 digits
+    if (!/^(?:\+?254|0)?[17]\d{8}$/.test(formData.phone?.replace(/[\s-]/g, '') || '')) {
+      next.phone = t('checkout.validation.phone');
+    }
+    if (!formData.address?.trim() || formData.address.trim().length < 6) {
+      next.address = t('checkout.validation.address');
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
+  const goBackToShipping = () => {
+    setPaymentStatus('idle');
+    setStep(1);
   };
 
   const handlePay = async (e) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.phone || !formData.address) {
+    // Re-validate before paying (user may have edited fields after step 1)
+    if (!validateShipping()) {
+      setStep(1);
       return toast.error(t('checkout.pleaseFillDetails'));
     }
 
@@ -239,7 +270,26 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Shipping Information */}
+          {/* Step indicator — aria-current marks the active step for screen readers */}
+          <ol className="flex items-center gap-2 text-xs font-black uppercase tracking-widest" aria-label="Checkout progress">
+            {[1, 2].map((s, i) => (
+              <li key={s} className="flex items-center gap-2" aria-current={step === s ? 'step' : undefined}>
+                <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] border transition-colors ${
+                  step > s ? 'bg-emerald-500 border-emerald-500 text-white' :
+                  step === s ? 'bg-primary border-primary text-white' :
+                  'border-stone-300 dark:border-stone-700 text-muted-foreground'}`}>
+                  {step > s ? '✓' : s}
+                </span>
+                <span className={step === s ? 'text-primary dark:text-amber-300' : 'text-muted-foreground dark:text-stone-400'}>
+                  {s === 1 ? t('checkout.stepShipping') : t('checkout.stepPayment')}
+                </span>
+                {i === 0 && <span className="w-8 h-px bg-stone-300 dark:bg-stone-700" aria-hidden="true" />}
+              </li>
+            ))}
+          </ol>
+
+          {/* Shipping Information — step 1 only */}
+          {step === 1 && (
           <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_8px_30px_rgba(61,39,26,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] rounded-[2rem] overflow-hidden checkout-card bg-card">
             <div className="bg-surface/80 dark:bg-stone-800/80 px-8 py-5 border-b border-stone-200/50 dark:border-stone-800 flex items-center gap-3">
               <Truck className="text-primary" size={20} />
@@ -248,41 +298,61 @@ const Checkout = () => {
             <CardContent className="p-6 sm:p-8 space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-primary">{t('checkout.fullName')}</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-primary" htmlFor="checkout-fullName">{t('checkout.fullName')}</label>
                   <Input
+                    id="checkout-fullName"
                     name="fullName"
                     placeholder={t('checkout.fullNamePlaceholder')}
                     className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
                     value={formData.fullName}
                     onChange={handleInputChange}
                     disabled={paymentStatus !== 'idle'}
+                    aria-invalid={!!errors.fullName}
                   />
+                  {errors.fullName && <p className="text-xs text-red-500 font-bold" role="alert">{errors.fullName}</p>}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-primary">{t('checkout.mpesaPhone')}</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-primary" htmlFor="checkout-phone">{t('checkout.mpesaPhone')}</label>
                   <Input
+                    id="checkout-phone"
                     name="phone"
+                    type="tel"
+                    inputMode="tel"
                     placeholder={t('checkout.phonePlaceholder')}
                     className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
                     value={formData.phone}
                     onChange={handleInputChange}
                     disabled={paymentStatus !== 'idle'}
+                    aria-invalid={!!errors.phone}
                   />
+                  {errors.phone && <p className="text-xs text-red-500 font-bold" role="alert">{errors.phone}</p>}
                 </div>
                 <div className="space-y-2 md:col-span-2">
-                  <label className="text-xs font-black uppercase tracking-widest text-primary">{t('checkout.deliveryAddress')}</label>
+                  <label className="text-xs font-black uppercase tracking-widest text-primary" htmlFor="checkout-address">{t('checkout.deliveryAddress')}</label>
                   <Input
+                    id="checkout-address"
                     name="address"
                     placeholder={t('checkout.addressPlaceholder')}
                     className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
                     value={formData.address}
                     onChange={handleInputChange}
                     disabled={paymentStatus !== 'idle'}
+                    aria-invalid={!!errors.address}
                   />
+                  {errors.address && <p className="text-xs text-red-500 font-bold" role="alert">{errors.address}</p>}
                 </div>
               </div>
+
+              {/* Step 1 → continue to payment */}
+              <Button
+                className="w-full btn-primary h-14 rounded-2xl text-base font-black shadow-md cursor-pointer"
+                onClick={() => { if (validateShipping()) setStep(2); }}
+              >
+                {t('checkout.continueToPayment')}
+              </Button>
             </CardContent>
           </Card>
+          )}
 
           {/* M-Pesa Section */}
           <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_8px_30px_rgba(61,39,26,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] rounded-[2rem] overflow-hidden checkout-card bg-card">

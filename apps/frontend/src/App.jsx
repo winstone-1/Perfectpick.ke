@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
 
@@ -11,29 +11,32 @@ import Layout from './components/Layout';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import ScrollToTop from './components/ScrollToTop';
+import ErrorBoundary from './components/ErrorBoundary';
 
-import Home from './pages/Home';
-import LandingPage from './pages/LandingPage';
-import Products from './pages/Products';
-import ProductDetail from './pages/ProductDetail';
-import NewArrivals from './pages/NewArrivals';
-import TrendingNow from './pages/TrendingNow';
-import About from './pages/About';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Orders from './pages/Orders';
-import OrderDetail from './pages/OrderDetail';
-import Wishlist from './pages/Wishlist';
-import Profile from './pages/Profile';
-import ShippingPolicy from './pages/ShippingPolicy';
-import RefundPolicy from './pages/RefundPolicy';
-import NotFound from './pages/NotFound';
+// Code-splitting: every page is lazy-loaded so the initial bundle only ships
+// the app shell (navbar, layout, providers). Vite emits one chunk per page.
+const Home = lazy(() => import('./pages/Home'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Products = lazy(() => import('./pages/Products'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const NewArrivals = lazy(() => import('./pages/NewArrivals'));
+const TrendingNow = lazy(() => import('./pages/TrendingNow'));
+const About = lazy(() => import('./pages/About'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Cart = lazy(() => import('./pages/Cart'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const Orders = lazy(() => import('./pages/Orders'));
+const OrderDetail = lazy(() => import('./pages/OrderDetail'));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
+const Profile = lazy(() => import('./pages/Profile'));
+const ShippingPolicy = lazy(() => import('./pages/ShippingPolicy'));
+const RefundPolicy = lazy(() => import('./pages/RefundPolicy'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
-import AdminDashboard from './pages/admin/Dashboard';
-import ManageProducts from './pages/admin/ManageProducts';
-import ManageOrders from './pages/admin/ManageOrders';
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const ManageProducts = lazy(() => import('./pages/admin/ManageProducts'));
+const ManageOrders = lazy(() => import('./pages/admin/ManageOrders'));
 
 function App() {
   return (
@@ -45,9 +48,18 @@ function App() {
               <ScrollToTop />
               <Toaster position="top-center" expand={true} richColors />
               <Routes>
-                <Route path="/" element={<Layout />}>
+                {/* Suspense: fallback while a lazy page chunk loads */}
+                <Suspense fallback={
+                  <div className="min-h-[60vh] flex items-center justify-center" role="status" aria-live="polite">
+                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent" />
+                    <span className="sr-only">Loading…</span>
+                  </div>
+                }>
+                {/* ErrorBoundary catches render crashes so one broken page
+                    doesn't blank the whole app */}
+                <Route path="/" element={<ErrorBoundary label="the app"><Layout /></ErrorBoundary>}>
                   <Route index element={<LandingPage />} />
-                  <Route path="home" element={<Home />} /> 
+                  <Route path="home" element={<Home />} />
                   <Route path="products" element={<Products />} />
                   <Route path="products/:id" element={<ProductDetail />} />
                   <Route path="new-arrivals" element={<NewArrivals />} />
@@ -57,7 +69,7 @@ function App() {
                   <Route path="register" element={<Register />} />
                   <Route path="shipping" element={<ShippingPolicy />} />
                   <Route path="refund" element={<RefundPolicy />} />
-                  
+
                   {/* Protected Routes */}
                   <Route path="cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
                   <Route path="checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
@@ -73,6 +85,7 @@ function App() {
 
                   <Route path="*" element={<NotFound />} />
                 </Route>
+                </Suspense>
               </Routes>
 
             </WishlistProvider>

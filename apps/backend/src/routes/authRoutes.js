@@ -13,6 +13,7 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
+// Rate limit registration (same as login to prevent abuse)
 router.post('/register', authLimiter, registerUser);
 router.post('/login', authLimiter, loginUser);
 router.post('/firebase', authLimiter, firebaseLogin);

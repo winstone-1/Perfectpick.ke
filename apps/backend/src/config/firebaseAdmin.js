@@ -19,6 +19,16 @@ try {
       if (sa.private_key && typeof sa.private_key === 'string') {
         sa.private_key = sa.private_key.replace(/\\n/g, '\n');
       }
+      
+      // Add missing required fields if not present
+      if (!sa.project_id) sa.project_id = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'antigravity-a3438';
+      if (!sa.private_key_id) sa.private_key_id = '1';
+      if (!sa.client_email) sa.client_email = `service-account@${sa.project_id}.iam.gserviceaccount.com`;
+      if (!sa.client_id) sa.client_id = '1';
+      if (!sa.auth_uri) sa.auth_uri = 'https://accounts.google.com/o/oauth2/auth';
+      if (!sa.token_uri) sa.token_uri = 'https://oauth2.googleapis.com/token';
+      if (!sa.auth_provider_x509_cert_url) sa.auth_provider_x509_cert_url = 'https://www.googleapis.com/oauth2/v1/certs';
+      if (!sa.client_x509_cert_url) sa.client_x509_cert_url = `https://www.googleapis.com/robot/v1/metadata/x509/${sa.client_email.split('@')[0]}%40${sa.project_id}.iam.gserviceaccount.com`;
     } catch (parseError) {
       console.error('FIREBASE_SERVICE_ACCOUNT parsing error:', parseError.message);
     }

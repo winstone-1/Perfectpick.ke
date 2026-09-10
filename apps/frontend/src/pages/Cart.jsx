@@ -2,20 +2,19 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { 
-  ShoppingBag, 
-  Trash2, 
-  Minus, 
-  Plus, 
-  ArrowRight, 
-  ChevronLeft, 
-  Truck 
+import {
+  ShoppingBag,
+  Trash2,
+  Minus,
+  Plus,
+  ArrowRight,
+  ChevronLeft,
+  Truck
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Separator } from '../components/ui/separator';
-import { cn } from '../lib/utils';
 
 const Cart = () => {
   const { t } = useTranslation();
@@ -98,9 +97,9 @@ const Cart = () => {
                         {/* Image */}
                         <div className="w-20 h-20 sm:w-28 sm:h-28 bg-surface dark:bg-stone-800 rounded-2xl overflow-hidden shrink-0 flex items-center justify-center border border-stone-200/50 dark:border-stone-700">
                           {img ? (
-                            <img 
-                              src={img} 
-                              alt={name} 
+                            <img
+                              src={img}
+                              alt={name}
                               className="w-full h-full object-cover"
                               onError={(e) => { e.target.style.display = 'none'; }}
                             />
@@ -118,9 +117,9 @@ const Cart = () => {
                                 {item?.variant || t('cart.standard')}
                               </p>
                             </div>
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
+                            <Button
+                              variant="ghost"
+                              size="icon"
                               className="text-muted-foreground dark:text-stone-400 hover:text-red-500 dark:hover:text-red-400 -mt-1 -mr-1"
                               onClick={() => item?._id && removeFromCart(item._id)}
                               aria-label="Remove item"
@@ -132,9 +131,9 @@ const Cart = () => {
                           <div className="flex justify-between items-end mt-4">
                             {/* Stepper */}
                             <div className="flex items-center border border-stone-200/80 dark:border-stone-700 rounded-xl p-0.5 bg-surface/50 dark:bg-stone-800">
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-7 w-7 text-medium dark:text-stone-300"
                                 onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) - 1)}
                                 disabled={(item?.quantity || 1) <= 1}
@@ -142,9 +141,9 @@ const Cart = () => {
                                 <Minus size={12} />
                               </Button>
                               <span className="w-7 text-center font-bold text-xs text-dark dark:text-stone-100">{item?.quantity || 1}</span>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
+                              <Button
+                                variant="ghost"
+                                size="icon"
                                 className="h-7 w-7 text-medium dark:text-stone-300"
                                 onClick={() => item?._id && updateQuantity(item._id, (item?.quantity || 1) + 1)}
                               >
@@ -170,7 +169,7 @@ const Cart = () => {
         <div className="w-full lg:w-[380px]">
           <div className="bg-card text-card-foreground rounded-[2rem] p-7 sm:p-8 shadow-[0_8px_30px_rgba(61,39,26,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] border border-stone-200/70 dark:border-stone-800 sticky top-24 space-y-6">
             <h2 className="text-2xl font-serif font-black text-dark dark:text-stone-100">{t('cart.orderSummary')}</h2>
-            
+
             <div className="space-y-3.5">
               <div className="flex justify-between text-sm text-medium dark:text-stone-300">
                 <span>{t('cart.subtotal')}</span>
@@ -183,16 +182,16 @@ const Cart = () => {
               <p className="text-[11px] text-muted-foreground dark:text-stone-400 leading-relaxed">
                 {t('cart.deliveryNote')}
               </p>
-              
+
               <Separator className="bg-border/40 dark:bg-stone-800" />
-              
+
               <div className="flex justify-between items-center text-xl font-black text-dark dark:text-stone-100 pt-1">
                 <span>{t('cart.total')}</span>
                 <span className="text-primary dark:text-amber-300">{formatPrice(cartTotal)}</span>
               </div>
             </div>
 
-            <Button 
+            <Button
               className="w-full btn-primary h-14 rounded-2xl text-base font-black group shadow-md cursor-pointer"
               onClick={() => navigate('/checkout')}
               disabled={!hasItems}
