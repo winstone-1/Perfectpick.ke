@@ -34,7 +34,7 @@ const RefundPolicy = () => {
       <section className="bg-surface/50 dark:bg-stone-900/50 py-16 md:py-24 relative overflow-hidden border-b border-border/40 dark:border-stone-800">
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
-            <Link to="/home">
+            <Link to="/">
               <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-amber-300 gap-2 text-xs uppercase font-bold tracking-wider">
                 <ArrowLeft size={16} /> Back to Home
               </Button>

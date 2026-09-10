@@ -47,14 +47,20 @@ function App() {
             <WishlistProvider>
               <ScrollToTop />
               <Toaster position="top-center" expand={true} richColors />
+              {/*
+                Suspense MUST wrap Routes (or be inside each Route's element),
+                NOT be a direct child of Routes. React Router v6 only allows
+                <Route> or <React.Fragment> as direct children of <Routes>.
+                Placing <Suspense> inside <Routes> causes:
+                  "[undefined] is not a <Route> component"
+              */}
+              <Suspense fallback={
+                <div className="min-h-[60vh] flex items-center justify-center" role="status" aria-live="polite">
+                  <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent" />
+                  <span className="sr-only">Loading…</span>
+                </div>
+              }>
               <Routes>
-                {/* Suspense: fallback while a lazy page chunk loads */}
-                <Suspense fallback={
-                  <div className="min-h-[60vh] flex items-center justify-center" role="status" aria-live="polite">
-                    <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent" />
-                    <span className="sr-only">Loading…</span>
-                  </div>
-                }>
                 {/* ErrorBoundary catches render crashes so one broken page
                     doesn't blank the whole app */}
                 <Route path="/" element={<ErrorBoundary label="the app"><Layout /></ErrorBoundary>}>
@@ -85,8 +91,8 @@ function App() {
 
                   <Route path="*" element={<NotFound />} />
                 </Route>
-                </Suspense>
               </Routes>
+              </Suspense>
 
             </WishlistProvider>
           </CartProvider>
