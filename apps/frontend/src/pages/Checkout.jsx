@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
+import { gsapSafe } from '../lib/gsapSafe';
 import { useTranslation } from 'react-i18next';
 import {
   CheckCircle2,
@@ -243,10 +243,13 @@ const Checkout = () => {
     }
   }, [hasItems, paymentStatus, navigate]);
 
+  // Entrance reveal — gsapSafe skips silently when the container isn't
+  // mounted (empty cart early-returns null below, so containerRef is null
+  // and '.checkout-col' doesn't exist — previously a GSAP target error).
   useLayoutEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const ctx = gsap.context(() => {
-      gsap.from('.checkout-col', {
+    const ctx = gsapSafe.context(containerRef, () => {
+      gsapSafe.from(containerRef, '.checkout-col', {
         y: 20,
         opacity: 0,
         duration: 0.7,
@@ -254,7 +257,7 @@ const Checkout = () => {
         ease: 'power3.out',
         delay: 0.1,
       });
-      gsap.from('.checkout-card', {
+      gsapSafe.from(containerRef, '.checkout-card', {
         y: 16,
         opacity: 0,
         duration: 0.6,
@@ -262,27 +265,33 @@ const Checkout = () => {
         ease: 'power2.out',
         delay: 0.3,
       });
-    }, containerRef);
-    return () => ctx.revert();
+    });
+    return () => ctx?.revert();
   }, []);
 
+  // Payment-state flourishes — scoped to the container and fully reverted on
+  // status change/unmount. The old version used document-wide selectors and
+  // leaked the infinite waiting-spinner tween on every status flip.
   useLayoutEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (paymentStatus === 'fallback') {
-      gsap.fromTo('.checkout-till',
-        { scale: 0.92, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.4)' }
-      );
-    }
-    if (paymentStatus === 'success') {
-      gsap.fromTo('#success-check',
-        { scale: 0, rotation: -15 },
-        { scale: 1, rotation: 0, duration: 0.7, ease: 'elastic.out(1,0.5)' }
-      );
-    }
-    if (paymentStatus === 'waiting') {
-      gsap.to('.waiting-spinner', { rotation: 360, duration: 1, repeat: -1, ease: 'linear' });
-    }
+    const ctx = gsapSafe.context(containerRef, () => {
+      if (paymentStatus === 'fallback') {
+        gsapSafe.fromTo(containerRef, '.checkout-till',
+          { scale: 0.92, opacity: 0 },
+          { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.4)' }
+        );
+      }
+      if (paymentStatus === 'success') {
+        gsapSafe.fromTo(containerRef, '#success-check',
+          { scale: 0, rotation: -15 },
+          { scale: 1, rotation: 0, duration: 0.7, ease: 'elastic.out(1,0.5)' }
+        );
+      }
+      if (paymentStatus === 'waiting') {
+        gsapSafe.to(containerRef, '.waiting-spinner', { rotation: 360, duration: 1, repeat: -1, ease: 'linear' });
+      }
+    });
+    return () => ctx?.revert();
   }, [paymentStatus]);
 
   if (!hasItems && paymentStatus === 'idle') {

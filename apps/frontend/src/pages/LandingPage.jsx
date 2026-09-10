@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
+import { gsapSafe } from '../lib/gsapSafe';
 import { ShoppingBag, Truck, ShieldCheck, RotateCcw, ArrowRight, Sparkles, Tag, UserPlus } from 'lucide-react';
 import { GiHandBag, GiHighHeel, GiNecklace, GiPresent } from 'react-icons/gi';
 import { FaUserTie, FaShirt } from 'react-icons/fa6';
@@ -152,11 +152,13 @@ useEffect(() => {
 
   const goToBanner = (idx) => { setBannerIndex(idx); clearInterval(bannerInterval.current); };
 
-  // GSAP polish — subtle reveals, respects reduced motion, no functional change
+  // GSAP polish — subtle reveals, respects reduced motion, no functional change.
+  // gsapSafe scopes to pageRef and skips missing targets (e.g. trust pillars
+  // render after login redirect unmounts the page), avoiding GSAP target errors.
   useLayoutEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const ctx = gsap.context(() => {
-      gsap.from('.landing-category', {
+    const ctx = gsapSafe.context(pageRef, () => {
+      gsapSafe.from(pageRef, '.landing-category', {
         y: 18,
         opacity: 0,
         duration: 0.6,
@@ -164,7 +166,7 @@ useEffect(() => {
         ease: 'power2.out',
         delay: 0.2,
       });
-      gsap.from('.landing-trust', {
+      gsapSafe.from(pageRef, '.landing-trust', {
         y: 16,
         opacity: 0,
         duration: 0.5,
@@ -172,8 +174,8 @@ useEffect(() => {
         ease: 'power2.out',
         delay: 0.4,
       });
-    }, pageRef);
-    return () => ctx.revert();
+    });
+    return () => ctx?.revert();
   }, [featured]);
 
   const heroProduct = featured[heroIndex];

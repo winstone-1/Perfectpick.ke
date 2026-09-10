@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useLayoutEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
+import { gsapSafe } from '../lib/gsapSafe';
 import { Search, SlidersHorizontal, PackageOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../api/axios';
@@ -83,10 +83,13 @@ const fetchCategories = async () => {
     return () => clearTimeout(timer);
   }, [fetchProducts]);
 
+  // Entrance reveal — runs only after real product cards exist in the DOM.
+  // gsapSafe no-ops when the grid is empty (fetch error / no results), which
+  // previously threw GSAP's "target not found" error on every empty search.
   useLayoutEffect(() => {
     if (loading || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const ctx = gsap.context(() => {
-      gsap.from('.product-card', {
+    const ctx = gsapSafe.context(gridRef, () => {
+      gsapSafe.from(gridRef, '.product-card', {
         y: 16,
         opacity: 0,
         duration: 0.45,
@@ -94,8 +97,8 @@ const fetchCategories = async () => {
         ease: 'power2.out',
         delay: 0.05,
       });
-    }, gridRef);
-    return () => ctx.revert();
+    });
+    return () => ctx?.revert();
   }, [loading, products]);
 
   const handleCategoryChange = (category) => {
