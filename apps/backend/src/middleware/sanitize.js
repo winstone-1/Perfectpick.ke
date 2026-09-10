@@ -39,21 +39,33 @@ const sanitizeObject = (obj) => {
 };
 
 /**
- * Sanitize incoming request body
+ * Sanitize incoming request body (mutates in place — req.body may be
+ * getter-backed on some Express versions, so never reassign it).
  */
 export const sanitizeBody = (req, res, next) => {
+    // Skip raw bodies (Paystack webhook uses express.raw() → Buffer).
+    // HMAC verification needs the untouched bytes; do not mutate.
+    if (!req.body || typeof req.body !== 'object' || Buffer.isBuffer(req.body)) {
+        return next();
+    }
     if (req.body && typeof req.body === 'object') {
-        req.body = sanitizeObject(req.body);
+        const clean = sanitizeObject(req.body);
+        // Mutate in place to preserve the original object reference
+        for (const k of Object.keys(req.body)) delete req.body[k];
+        Object.assign(req.body, clean);
     }
     next();
 };
 
 /**
- * Sanitize query parameters
+ * Sanitize query parameters (mutates in place — Express 5 exposes
+ * req.query as a getter-only property, so reassignment throws).
  */
 export const sanitizeQuery = (req, res, next) => {
     if (req.query && typeof req.query === 'object') {
-        req.query = sanitizeObject(req.query);
+        const clean = sanitizeObject(req.query);
+        for (const k of Object.keys(req.query)) delete req.query[k];
+        Object.assign(req.query, clean);
     }
     next();
 };

@@ -46,12 +46,21 @@ const ManageProducts = () => {
     category: 'bags',
     images: [],
     videos: [],
+    heroPages: [],
     featured: false,
     discount: 0,
     discountLabel: '',
     discountBanner: '',
     variants: [{ name: 'Default', stock: 10 }],
   });
+
+  // Pages a product's hero videos may appear on (admin-targeted rotation)
+  const HERO_PAGE_OPTIONS = [
+    { value: 'landing', label: 'Landing Page' },
+    { value: 'home', label: 'Home' },
+    { value: 'trending', label: 'Trending Picks' },
+    { value: 'new-arrivals', label: 'New Arrivals' },
+  ];
 
   const [categoryGroups, setCategoryGroups] = useState([
     { parent: 'Fashion', categories: ['bags', 'shoes', 'handbags', 'clothes', 'accessories'] },
@@ -86,7 +95,7 @@ const ManageProducts = () => {
   const resetForm = () => {
     setFormData({
       name: '', description: '', price: '', category: 'bags',
-      images: [], videos: [], featured: false,
+      images: [], videos: [], heroPages: [], featured: false,
       discount: 0, discountLabel: '', discountBanner: '',
       variants: [{ name: 'Default', stock: 10 }],
     });
@@ -105,6 +114,7 @@ const ManageProducts = () => {
       category: product.category,
       images: product.images || [],
       videos: product.videos || [],
+      heroPages: product.heroPages || [],
       featured: product.featured || false,
       discount: product.discount || 0,
       discountLabel: product.discountLabel || '',
@@ -130,6 +140,15 @@ const ManageProducts = () => {
   const removeNewImage      = (i) => setImageFiles(p => p.filter((_, idx) => idx !== i));
   const removeNewVideo      = (i) => setVideoFiles(p => p.filter((_, idx) => idx !== i));
 
+  const toggleHeroPage = (page) => {
+    setFormData(p => ({
+      ...p,
+      heroPages: p.heroPages.includes(page)
+        ? p.heroPages.filter(v => v !== page)
+        : [...p.heroPages, page],
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.price || !formData.category) {
@@ -147,6 +166,7 @@ const ManageProducts = () => {
       data.append('discount',      formData.discount);
       data.append('discountLabel', formData.discountLabel);
       data.append('images',        JSON.stringify(formData.images));
+      data.append('heroPages',     JSON.stringify(formData.heroPages));
       imageFiles.forEach(f => data.append('images', f));
 
       const config = { headers: { 'Content-Type': 'multipart/form-data' } };
@@ -242,7 +262,7 @@ const ManageProducts = () => {
               <DialogTitle className="font-serif font-black text-2xl text-stone-900 dark:text-stone-100">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </DialogTitle>
-              <button onClick={() => setIsDialogOpen(false)} className="h-8 w-8 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-400 transition-colors">
+              <button onClick={() => setIsDialogOpen(false)} aria-label="Close dialog" className="h-8 w-8 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 flex items-center justify-center text-stone-600 dark:text-stone-400 transition-colors">
                 <X size={20} />
               </button>
             </div>
@@ -287,7 +307,7 @@ const ManageProducts = () => {
                       {formData.images.map((url, i) => (
                         <div key={`ei-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-border/10 group">
                           <img src={url} className="w-full h-full object-cover" />
-                          <button type="button" onClick={() => removeExistingImage(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button type="button" onClick={() => removeExistingImage(i)} aria-label={`Remove image ${i + 1}`} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <X size={12} />
                           </button>
                         </div>
@@ -295,7 +315,7 @@ const ManageProducts = () => {
                       {imageFiles.map((file, i) => (
                         <div key={`ni-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-border/10 group">
                           <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
-                          <button type="button" onClick={() => removeNewImage(i)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button type="button" onClick={() => removeNewImage(i)} aria-label={`Remove new image ${i + 1}`} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <X size={12} />
                           </button>
                           <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-[8px] text-white p-1 text-center">New</div>
@@ -317,12 +337,28 @@ const ManageProducts = () => {
                     <label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
                       <Video size={12} /> Hero Background Videos
                     </label>
+                    {/* Target pages — empty = all pages (legacy). Select to
+                        restrict this product's videos to specific heroes. */}
+                    <div className="flex flex-wrap gap-2" role="group" aria-label="Show these videos on">
+                      {HERO_PAGE_OPTIONS.map(opt => (
+                        <button
+                          type="button"
+                          key={opt.value}
+                          onClick={() => toggleHeroPage(opt.value)}
+                          aria-pressed={formData.heroPages.includes(opt.value)}
+                          className={`text-[10px] font-bold px-3 py-1.5 rounded-full border transition-colors ${formData.heroPages.includes(opt.value) ? 'bg-primary text-white border-primary' : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-primary/50'}`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                    <p className="text-[9px] text-muted-foreground italic">No selection = videos eligible for every hero. Select pages to target Landing, Home, Trending, or New Arrivals.</p>
                     <div className="space-y-2">
                       {formData.videos.map((url, i) => (
                         <div key={`ev-${i}`} className="flex items-center gap-3 p-3 bg-surface rounded-xl border border-border/10 group">
                           <Video size={16} className="text-primary flex-shrink-0" />
                           <span className="text-xs text-muted-foreground truncate flex-1">Video {i + 1}</span>
-                          <button type="button" onClick={() => removeExistingVideo(i)} className="text-red-500 hover:text-red-600">
+                          <button type="button" onClick={() => removeExistingVideo(i)} aria-label={`Remove video ${i + 1}`} className="text-red-500 hover:text-red-600">
                             <X size={14} />
                           </button>
                         </div>
@@ -332,7 +368,7 @@ const ManageProducts = () => {
                           <Video size={16} className="text-primary flex-shrink-0" />
                           <span className="text-xs text-dark font-bold truncate flex-1">{file.name}</span>
                           <span className="text-[9px] text-primary font-bold uppercase">New</span>
-                          <button type="button" onClick={() => removeNewVideo(i)} className="text-red-500 hover:text-red-600">
+                          <button type="button" onClick={() => removeNewVideo(i)} aria-label={`Remove new video ${file.name}`} className="text-red-500 hover:text-red-600">
                             <X size={14} />
                           </button>
                         </div>
@@ -448,7 +484,7 @@ const ManageProducts = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Variants & Stock</label>
-                  <Button type="button" variant="ghost" size="sm" onClick={handleAddVariant} className="text-primary hover:text-primary dark:hover:text-primary-light font-bold">
+                  <Button type="button" variant="ghost" size="sm" onClick={handleAddVariant} aria-label="Add variant" className="text-primary hover:text-primary dark:hover:text-primary-light font-bold">
                     <Plus size={16} className="mr-1" /> Add Variant
                   </Button>
                 </div>
@@ -457,7 +493,7 @@ const ManageProducts = () => {
                     <div key={i} className="flex gap-4 items-center">
                       <Input placeholder="Name (e.g. Small / Brown)" value={v.name} onChange={(e) => handleVariantChange(i, 'name', e.target.value)} className="h-11 rounded-xl bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100" />
                       <Input type="number" placeholder="Stock" value={v.stock} onChange={(e) => handleVariantChange(i, 'stock', e.target.value)} className="w-32 h-11 rounded-xl bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-700 text-stone-900 dark:text-stone-100" />
-                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveVariant(i)} className="text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50" disabled={formData.variants.length === 1}>
+                      <Button type="button" variant="ghost" size="icon" onClick={() => handleRemoveVariant(i)} aria-label={`Remove variant ${i + 1}`} className="text-rose-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/50" disabled={formData.variants.length === 1}>
                         <Trash2 size={18} />
                       </Button>
                     </div>
@@ -545,10 +581,10 @@ const ManageProducts = () => {
                       </td>
                       <td className="py-6 pr-4 text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" className="hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-stone-700 dark:text-stone-300" onClick={() => handleEdit(product)}>
+                          <Button variant="ghost" size="icon" aria-label={`Edit ${product.name}`} className="hover:bg-stone-100 dark:hover:bg-stone-800 rounded-xl text-stone-700 dark:text-stone-300" onClick={() => handleEdit(product)}>
                             <Pencil size={18} />
                           </Button>
-                          <Button variant="ghost" size="icon" className="text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl" onClick={() => handleDelete(product._id)}>
+                          <Button variant="ghost" size="icon" aria-label={`Delete ${product.name}`} className="text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-xl" onClick={() => handleDelete(product._id)}>
                             <Trash2 size={18} />
                           </Button>
                         </div>

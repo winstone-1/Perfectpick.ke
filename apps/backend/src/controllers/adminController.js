@@ -79,6 +79,14 @@ export const updateUser = async (req, res, next) => {
             });
         }
 
+        // Admins cannot be banned — role guard (bans are for customers only)
+        if (req.body.banDuration && user.isAdmin === true) {
+            return res.status(403).json({
+                success: false,
+                message: 'Admin accounts cannot be banned'
+            });
+        }
+
         // Prevent removing admin from the last admin (guard against locking out)
         if (req.body.isAdmin === false && user.isAdmin === true) {
             const totalAdmins = await User.countDocuments({ isAdmin: true });
@@ -92,7 +100,13 @@ export const updateUser = async (req, res, next) => {
 
         user.name = req.body.name || user.name;
         user.email = (req.body.email || user.email).trim().toLowerCase();
-        user.isAdmin = req.body.isAdmin === true || req.body.isAdmin === 'true' || user.isAdmin;
+        // Allow demoting OTHER admins (self + last-admin guarded above).
+        // Explicit true/false/'true'/'false' are honoured; omission keeps current.
+        if (req.body.isAdmin === true || req.body.isAdmin === 'true') {
+            user.isAdmin = true;
+        } else if (req.body.isAdmin === false || req.body.isAdmin === 'false') {
+            user.isAdmin = false;
+        }
         user.avatar = req.body.avatar || user.avatar;
 
         if (req.body.password) {
@@ -128,7 +142,7 @@ export const updateUser = async (req, res, next) => {
 
 export const createProduct = async (req, res, next) => {
     try {
-        let { name, price, description, category, variants, images, featured, discount, discountLabel } = req.body;
+        let { name, price, description, category, variants, images, featured, discount, discountLabel, heroPages } = req.body;
 
         images = req.body.images || [];
         if (typeof images === 'string') {
@@ -137,12 +151,19 @@ export const createProduct = async (req, res, next) => {
         if (typeof variants === 'string') {
             try { variants = JSON.parse(variants); } catch { variants = []; }
         }
+        // heroPages may arrive as JSON string (multipart) or array
+        if (typeof heroPages === 'string') {
+            try { heroPages = JSON.parse(heroPages); } catch { heroPages = [heroPages]; }
+        }
+        const allowedPages = ['landing', 'home', 'trending', 'new-arrivals'];
+        const cleanPages = Array.isArray(heroPages) ? heroPages.filter(p => allowedPages.includes(p)) : [];
 
         const product = await Product.create({
             name, price, description, images, category, variants,
             featured: featured === 'true' || featured === true,
             discount: Number(discount) || 0,
             discountLabel: discountLabel || '',
+            heroPages: cleanPages,
         });
         res.status(201).json({ success: true, data: product });
     } catch (error) {
@@ -155,7 +176,7 @@ export const updateProduct = async (req, res, next) => {
         const product = await Product.findById(req.params.id);
         if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 
-        let { name, price, description, category, variants, images, featured, discount, discountLabel } = req.body;
+        let { name, price, description, category, variants, images, featured, discount, discountLabel, heroPages } = req.body;
 
         if (typeof images === 'string') {
             try { images = JSON.parse(images); } catch { images = [images]; }
@@ -177,6 +198,14 @@ export const updateProduct = async (req, res, next) => {
         if (featured !== undefined) product.featured = featured === 'true' || featured === true;
         if (discount !== undefined) product.discount = Number(discount) || 0;
         if (discountLabel !== undefined) product.discountLabel = discountLabel;
+        if (heroPages !== undefined) {
+            let pages = heroPages;
+            if (typeof pages === 'string') {
+                try { pages = JSON.parse(pages); } catch { pages = [pages]; }
+            }
+            const allowedPages = ['landing', 'home', 'trending', 'new-arrivals'];
+            product.heroPages = Array.isArray(pages) ? pages.filter(p => allowedPages.includes(p)) : [];
+        }
 
         const updatedProduct = await product.save();
         res.json({ success: true, data: updatedProduct });

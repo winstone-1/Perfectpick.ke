@@ -93,6 +93,9 @@ useEffect(() => {
   }, []);
 
   const isAdmin = user?.isAdmin === true || user?.role === 'admin' || user?.role === 'manager';
+  // Landing page already carries Get Started / Sign In CTAs — hide the
+  // duplicate Register pill there to reduce clutter (auth relocated to hero).
+  const isLanding = location.pathname === '/';
 
   return (
     <nav
@@ -208,7 +211,7 @@ useEffect(() => {
         <div className="flex items-center gap-1 sm:gap-3">
           {/* Language Switcher */}
           <div className="relative group">
-            <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+            <Button variant="ghost" size="icon" aria-label="Change language" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
               <Globe size={18} />
             </Button>
             <div className="absolute right-0 top-full mt-2 w-28 bg-card dark:bg-stone-900 shadow-2xl rounded-xl py-1 hidden group-hover:block z-50 border border-stone-200/80 dark:border-stone-800">
@@ -242,15 +245,15 @@ useEffect(() => {
           {user ? (
             <>
               {isAdmin && (
-                <Link to="/admin" className="hidden sm:block" title={t('nav.adminDashboard')}>
-                  <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+                <Link to="/admin" className="hidden sm:block" title={t('nav.adminDashboard')} aria-label={t('nav.adminDashboard')}>
+                  <Button variant="ghost" size="icon" aria-label={t('nav.adminDashboard')} className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                     <LayoutDashboard size={20} />
                   </Button>
                 </Link>
               )}
 
-              <Link to="/wishlist" className="relative group" title={t('nav.wishlist')}>
-                <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+              <Link to="/wishlist" className="relative group" title={t('nav.wishlist')} aria-label={t('nav.wishlist')}>
+                <Button variant="ghost" size="icon" aria-label={t('nav.wishlist')} className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <Heart size={20} className={wishlistCount > 0 ? "fill-red-500 text-red-500" : ""} />
                   <AnimatePresence>
                     {wishlistCount > 0 && (
@@ -267,8 +270,8 @@ useEffect(() => {
                 </Button>
               </Link>
 
-              <Link to="/cart" className="relative group" title={t('nav.shoppingBag', 'Shopping Bag')}>
-                <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+              <Link to="/cart" className="relative group" title={t('nav.shoppingBag', 'Shopping Bag')} aria-label={t('nav.shoppingBag', 'Shopping Bag')}>
+                <Button variant="ghost" size="icon" aria-label={t('nav.shoppingBag', 'Shopping Bag')} className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <ShoppingBag size={20} />
                   <AnimatePresence>
                     {cartCount > 0 && (
@@ -358,24 +361,28 @@ useEffect(() => {
                 )}
               </div>
 
-              <Link to="/profile" title={t('nav.account')} className="sm:hidden">
-                <Button variant="ghost" size="icon" className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
+              <Link to="/profile" title={t('nav.account')} aria-label={t('nav.account')} className="sm:hidden">
+                <Button variant="ghost" size="icon" aria-label={t('nav.account')} className="text-medium dark:text-stone-200 hover:text-primary dark:hover:text-primary hover:bg-surface dark:hover:bg-stone-800">
                   <User size={20} />
                 </Button>
               </Link>
             </>
           ) : (
             <div className="flex items-center gap-2">
-              <Link to="/login">
-                <Button variant="ghost" className="text-medium dark:text-stone-200 hover:text-primary hidden sm:flex text-sm font-bold">
+              <Link to="/login" aria-label={t('nav.login')}>
+                <Button variant="ghost" aria-label={t('nav.login')} className="text-medium dark:text-stone-200 hover:text-primary hidden sm:flex text-sm font-bold">
                   {t('nav.login')}
                 </Button>
               </Link>
-              <Link to="/register">
-                <Button className="btn-primary text-xs sm:text-sm px-4 py-2">
+              {/* Register pill is hidden on the landing page — the hero already
+                  carries the Get Started CTA (auth relocated to avoid duplication). */}
+              {!isLanding && (
+              <Link to="/register" aria-label={t('nav.register')}>
+                <Button aria-label={t('nav.register')} className="btn-primary text-xs sm:text-sm px-4 py-2">
                   {t('nav.register')}
                 </Button>
               </Link>
+              )}
             </div>
           )}
 
@@ -385,7 +392,8 @@ useEffect(() => {
             size="icon"
             className="md:hidden text-medium dark:text-stone-200"
             onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle navigation menu"
+            aria-label={isOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={isOpen}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>

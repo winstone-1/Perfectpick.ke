@@ -15,6 +15,15 @@ const protect = async (req, res, next) => {
             if (!req.user) {
                 return res.status(401).json({ success: false, message: 'Not authorized, user not found' });
             }
+            // Block banned users at the auth layer (ban expiry handled by model)
+            if (typeof req.user.isBanned === 'function' && req.user.isBanned()) {
+                const ban = typeof req.user.getBanStatus === 'function' ? req.user.getBanStatus() : {};
+                return res.status(403).json({
+                    success: false,
+                    message: 'Account temporarily suspended',
+                    ...(ban.remainingMinutes ? { remainingMinutes: ban.remainingMinutes } : {}),
+                });
+            }
             return next();
         } catch (error) {
             return res.status(401).json({ success: false, message: 'Not authorized, token failed' });

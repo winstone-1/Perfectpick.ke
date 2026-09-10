@@ -29,10 +29,17 @@ const Checkout = () => {
 
   const [formData, setFormData] = useState({
     fullName: '',
+    email: '',
     phone: '',
     address: '',
     city: 'Nairobi',
   });
+
+  // Paystack test-mode public key (frontend reference only — charge is
+  // initiated server-side via /payments/mpesa using PAYSTACK_SECRET_KEY).
+  // Shows a "Test mode" badge so QA can confirm test keys are wired.
+  const paystackPublicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
+  const isPaystackTestMode = paystackPublicKey.startsWith('pk_test_');
 
   const [paymentStatus, setPaymentStatus] = useState('idle');
   const [loading, setLoading] = useState(false);
@@ -56,10 +63,15 @@ const Checkout = () => {
   };
 
   // Inline validation for the shipping step — returns true when valid
+  // Validates fullName, email, phone (Kenyan), and address inline.
   const validateShipping = () => {
     const next = {};
     if (!formData.fullName?.trim() || formData.fullName.trim().length < 3) {
       next.fullName = t('checkout.validation.fullName');
+    }
+    // Email is required by Paystack (receipt + charge identification)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email?.trim() || '')) {
+      next.email = t('checkout.validation.email', { defaultValue: 'Enter a valid email address' });
     }
     // Kenyan phone: 07XX…, 01XX…, +254… or 254… followed by 9 digits
     if (!/^(?:\+?254|0)?[17]\d{8}$/.test(formData.phone?.replace(/[\s-]/g, '') || '')) {
@@ -72,10 +84,35 @@ const Checkout = () => {
     return Object.keys(next).length === 0;
   };
 
+  // Return to the shipping step and reset transient payment state.
   const goBackToShipping = () => {
     setPaymentStatus('idle');
     setStep(1);
   };
+
+  // Keyboard shortcuts: Enter advances from step 1 when valid, Esc cancels
+  // an in-flight payment prompt and returns to shipping.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        if (paymentStatus === 'waiting' || paymentStatus === 'fallback' || paymentStatus === 'failed') {
+          goBackToShipping();
+        } else if (step === 2) {
+          setStep(1);
+        }
+      }
+      if (e.key === 'Enter' && step === 1 && paymentStatus === 'idle') {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'SELECT') {
+          e.preventDefault();
+          if (validateShipping()) setStep(2);
+        }
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step, paymentStatus, formData]);
 
   const handlePay = async (e) => {
     e.preventDefault();
@@ -92,8 +129,9 @@ const Checkout = () => {
 
     setLoading(true);
     try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      const email = user?.email || 'customer@example.com';
+      const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
+      // Prefer the typed checkout email (required by Paystack); fall back to account email.
+      const email = formData.email?.trim() || storedUser?.email || storedUser?.data?.email || 'customer@example.com';
 
       const { data: orderData } = await api.post('/orders', {
         shippingAddress: {
@@ -257,16 +295,28 @@ const Checkout = () => {
 
   return (
     <div ref={containerRef} className="container mx-auto px-4 sm:px-6 py-12 lg:py-20">
+      {/* Live region announces payment status changes to screen readers */}
+      <div aria-live="polite" role="status" className="sr-only">
+        {paymentStatus === 'waiting' && t('checkout.checkYourPhone')}
+        {paymentStatus === 'success' && t('checkout.paymentConfirmed')}
+        {paymentStatus === 'failed' && t('checkout.paymentFailed')}
+        {paymentStatus === 'fallback' && t('checkout.automatedTimedOut')}
+      </div>
       <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 max-w-7xl mx-auto">
         {/* Shipping & Payment Column */}
         <div className="flex-1 space-y-8 checkout-col">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/cart')} className="rounded-full hover:bg-surface dark:hover:bg-stone-800">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/cart')} aria-label={t('common.back', { defaultValue: 'Back to cart' })} className="rounded-full hover:bg-surface dark:hover:bg-stone-800">
               <ChevronLeft size={22} />
             </Button>
             <div>
               <h1 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">{t('checkout.title')}</h1>
               <p className="text-xs text-muted-foreground dark:text-stone-400 font-bold uppercase tracking-widest mt-0.5">{t('checkout.securePayment')}</p>
+              {isPaystackTestMode && (
+                <p className="mt-1 inline-block text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 border border-amber-300/50">
+                  Paystack test mode
+                </p>
+              )}
             </div>
           </div>
 
@@ -312,6 +362,24 @@ const Checkout = () => {
                   {errors.fullName && <p className="text-xs text-red-500 font-bold" role="alert">{errors.fullName}</p>}
                 </div>
                 <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-primary" htmlFor="checkout-email">{t('checkout.email', { defaultValue: 'Email' })}</label>
+                  <Input
+                    id="checkout-email"
+                    name="email"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder={t('checkout.emailPlaceholder', { defaultValue: 'you@example.com' })}
+                    className="h-12 rounded-xl bg-surface/50 dark:bg-stone-800 border-stone-200/80 dark:border-stone-700 text-dark dark:text-stone-100"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    disabled={paymentStatus !== 'idle'}
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'checkout-email-error' : undefined}
+                  />
+                  {errors.email && <p id="checkout-email-error" className="text-xs text-red-500 font-bold" role="alert">{errors.email}</p>}
+                </div>
+                <div className="space-y-2">
                   <label className="text-xs font-black uppercase tracking-widest text-primary" htmlFor="checkout-phone">{t('checkout.mpesaPhone')}</label>
                   <Input
                     id="checkout-phone"
@@ -354,13 +422,18 @@ const Checkout = () => {
           </Card>
           )}
 
-          {/* M-Pesa Section */}
+          {/* M-Pesa Section — step 2; aria-live announces status to AT */}
           <Card className="border border-stone-200/70 dark:border-stone-800 shadow-[0_8px_30px_rgba(61,39,26,0.05)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.35)] rounded-[2rem] overflow-hidden checkout-card bg-card">
             <div className="bg-emerald-50/80 dark:bg-emerald-950/60 px-8 py-5 border-b border-emerald-100 dark:border-emerald-900/60 flex items-center gap-3">
               <Smartphone className="text-emerald-600 dark:text-emerald-400" size={20} />
               <h2 className="font-serif font-bold text-lg text-emerald-950 dark:text-emerald-200 tracking-tight">{t('checkout.paymentMethod')}</h2>
+              {step === 2 && paymentStatus === 'idle' && (
+                <button onClick={goBackToShipping} className="ml-auto text-xs font-bold text-muted-foreground dark:text-stone-400 hover:text-primary underline underline-offset-2 cursor-pointer" aria-label={t('checkout.backToShipping', { defaultValue: 'Back to shipping details' })}>
+                  ← {t('checkout.backToShipping', { defaultValue: 'Back' })}
+                </button>
+              )}
             </div>
-            <CardContent className="p-6 sm:p-8">
+            <CardContent className="p-6 sm:p-8" aria-live="polite">
               <AnimatePresence mode="wait">
                 {paymentStatus === 'idle' && (
                   <motion.div

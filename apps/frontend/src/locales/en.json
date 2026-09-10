@@ -222,7 +222,19 @@
     "couldNotConfirm": "Could not confirm payment. Please try again or contact support.",
     "paymentStatusPrefix": "Payment status:",
     "noPaymentRef": "No payment reference found",
-    "stkJournalTimedOut": "STK prompt timed out. You can still confirm manually or try again."
+    "stkJournalTimedOut": "STK prompt timed out. You can still confirm manually or try again.",
+    "stepShipping": "Shipping",
+    "stepPayment": "Payment",
+    "continueToPayment": "Continue to Payment",
+    "backToShipping": "Back",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "validation": {
+      "fullName": "Enter your full name (min 3 characters)",
+      "email": "Enter a valid email address",
+      "phone": "Enter a valid Kenyan phone (e.g. 0712345678)",
+      "address": "Enter your delivery address (min 6 characters)"
+    }
   },
   "orders": {
     "loading": "Loading orders...",
@@ -354,5 +366,11 @@
     "yes": "Yes",
     "no": "No",
     "or": "or"
+  },
+  "cookies": {
+    "title": "We use cookies",
+    "desc": "We use cookies to improve your shopping experience, remember preferences, and analyse traffic. You can accept or decline.",
+    "accept": "Accept",
+    "decline": "Decline"
   }
 }

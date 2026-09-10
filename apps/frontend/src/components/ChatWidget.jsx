@@ -61,28 +61,28 @@ const ChatWidget = () => {
         {isOpen && (
           <motion.div initial={{opacity:0,y:30,scale:0.92}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:30,scale:0.92}} transition={{duration:0.25,ease:"easeOut"}}
             className="w-[300px] sm:w-[360px] bg-card text-card-foreground rounded-3xl shadow-[0_16px_50px_rgba(0,0,0,0.22)] overflow-hidden border border-stone-200/80 dark:border-stone-800 flex flex-col max-h-[520px]">
-            <div className="bg-dark text-footer-text p-4 flex items-center justify-between border-b border-white/10 shrink-0">
+            <div className="bg-stone-900 dark:bg-stone-950 text-white p-4 flex items-center justify-between border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary font-serif font-black text-sm">P</div>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-dark" />
+                  <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-amber-300 font-serif font-black text-sm">P</div>
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-stone-900" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-bold text-base text-[#faf7f4] leading-none">{t('chatWidget.assistantName')}</h3>
-                  <p className="text-[11px] text-footer-text/70 mt-1 flex items-center gap-1"><Sparkles size={10} className="text-amber-300" /> {t('chatWidget.assistantTitle')}</p>
+                  <h3 className="font-serif font-bold text-base text-white leading-none">{t('chatWidget.assistantName')}</h3>
+                  <p className="text-[11px] text-stone-300 mt-1 flex items-center gap-1"><Sparkles size={10} className="text-amber-300" /> {t('chatWidget.assistantTitle')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-0.5">
-                <button onClick={minimise} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label={t('chatWidget.minimiseChat')}><Minus size={15} /></button>
-                <button onClick={close} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label={t('common.close')}><X size={15} /></button>
+                <button onClick={minimise} className="text-stone-300 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label={t('chatWidget.minimiseChat')}><Minus size={15} /></button>
+                <button onClick={close} className="text-stone-300 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors" aria-label={t('common.close')}><X size={15} /></button>
               </div>
             </div>
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 bg-card">
-              <div className="bg-surface dark:bg-stone-900/80 p-3.5 rounded-2xl border border-stone-200/60 dark:border-stone-800 text-xs text-medium dark:text-stone-300 leading-relaxed">
+              <div className="bg-surface dark:bg-stone-900/80 p-3.5 rounded-2xl border border-stone-200/60 dark:border-stone-800 text-xs text-stone-700 dark:text-stone-200 leading-relaxed">
                 {t('chatWidget.greeting')}
               </div>
               {messages.map((m, i) => (
-                <div key={i} className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${m.role === 'user' ? 'bg-primary text-white ml-8 rounded-br-md' : 'bg-surface dark:bg-stone-900/80 border border-stone-200/60 dark:border-stone-800 text-medium dark:text-stone-300 mr-4 rounded-bl-md'}`}>
+                <div key={i} className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${m.role === 'user' ? 'bg-primary text-white ml-8 rounded-br-md' : 'bg-surface dark:bg-stone-900/80 border border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-200 mr-4 rounded-bl-md'}`}>
                   {m.content}
                 </div>
               ))}

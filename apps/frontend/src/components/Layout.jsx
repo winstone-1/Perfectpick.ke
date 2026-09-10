@@ -6,6 +6,7 @@ import Footer from './Footer';
 import BackToTop from './BackToTop';
 import ChatWidget from './ChatWidget';
 import AccessibilityWidget from './AccessibilityWidget';
+import CookieConsent from './CookieConsent';
 
 /**
  * Layout — shell for every page.
@@ -40,6 +41,7 @@ const Layout = () => {
       <AccessibilityWidget />
       <BackToTop />
       <ChatWidget />
+      <CookieConsent />
 
       <Footer />
     </div>

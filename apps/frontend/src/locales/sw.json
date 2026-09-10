@@ -221,7 +221,19 @@
     "couldNotConfirm": "Haiwezekani kuthibitisha malipo. Tafadhali jaribu tena au wasiliana na msaada.",
     "paymentStatusPrefix": "Hali ya malipo:",
     "noPaymentRef": "Hakuna rejea ya malipo",
-    "stkJournalTimedOut": "Ombi la STK limeisha muda. Bado unaweza kuthibitisha kwa mkono au jaribu tena."
+    "stkJournalTimedOut": "Ombi la STK limeisha muda. Bado unaweza kuthibitisha kwa mkono au jaribu tena.",
+    "stepShipping": "Usafirishaji",
+    "stepPayment": "Malipo",
+    "continueToPayment": "Endelea kwa Malipo",
+    "backToShipping": "Rudi",
+    "email": "Barua pepe",
+    "emailPlaceholder": "wewe@example.com",
+    "validation": {
+      "fullName": "Weka jina lako kamili (herufi 3+)",
+      "email": "Weka barua pepe sahihi",
+      "phone": "Weka nambari sahihi ya Kenya (mf. 0712345678)",
+      "address": "Weka anwani ya uwasilishaji (herufi 6+)"
+    }
   },
   "orders": {
     "loading": "Inapakia maagizo...",
@@ -353,5 +365,11 @@
     "yes": "Ndiyo",
     "no": "Hapana",
     "or": "au"
+  },
+  "cookies": {
+    "title": "Tunatumia cookies",
+    "desc": "Tunatumia cookies kuboresha ununuzi wako, kukumbuka mapendeleo, na kuchambua trafiki. Unaweza kukubali au kukataa.",
+    "accept": "Kubali",
+    "decline": "Kataa"
   }
 }

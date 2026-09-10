@@ -49,6 +49,14 @@ const productSchema = new mongoose.Schema({
         type: [String], // Cloudinary video URLs
         default: [],
     },
+    // Hero video targeting — which pages this product's videos may appear on.
+    // Empty/omitted = legacy behaviour (eligible for all hero slots).
+    // Admin sets this in Manage Products → Hero Background Videos.
+    heroPages: {
+        type: [String],
+        enum: ['landing', 'home', 'trending', 'new-arrivals'],
+        default: [],
+    },
     featured: {
         type: Boolean,
         default: false,

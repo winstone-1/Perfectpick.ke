@@ -49,6 +49,11 @@ const LandingPage = () => {
   const [banners, setBanners]           = useState([]);
   const [bannerIndex, setBannerIndex]   = useState(0);
   const [categories, setCategories]     = useState(FALLBACK_CATEGORIES);
+  // Hero video controls: pause/play + mute. Persist pause preference.
+  const [heroPaused, setHeroPaused] = useState(() => {
+    try { return localStorage.getItem('pp-hero-paused') === '1'; } catch { return false; }
+  });
+  const [heroMuted, setHeroMuted] = useState(true);
 
   const videoRef       = useRef(null);
   const videoInterval  = useRef(null);
@@ -67,7 +72,21 @@ const LandingPage = () => {
         const { data } = await api.get('/products?featured=true');
         const products = data.data || [];
         setFeatured(products);
-        setVideos(products.flatMap(p => p.videos || []));
+        // Hero videos: prefer product videos explicitly targeted at the
+        // landing page (heroPages includes 'landing' or is unset/legacy),
+        // so admins can assign videos to Landing / Trending / etc.
+        const landingVideos = products.flatMap(p => {
+          const pages = p.heroPages;
+          const targeted = !pages || pages.length === 0 || pages.includes('landing');
+          return targeted ? (p.videos || []) : [];
+        });
+        setVideos(landingVideos);
+        // 24-hour schedule: pick the starting video from the day number so
+        // the hero rotates daily, then advances every 8s within the day.
+        if (landingVideos.length > 0) {
+          const dayNumber = Math.floor(Date.now() / 86400000);
+          setVideoIndex(dayNumber % landingVideos.length);
+        }
         setBanners(products.filter(p => p.discount > 0 && p.discountBanner).slice(0, 3));
       } catch {
         setFeatured([]);
@@ -79,17 +98,22 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
-    if (videos.length < 2) return;
+    if (videos.length < 2 || heroPaused) return;
     videoInterval.current = setInterval(() => setVideoIndex(i => (i + 1) % videos.length), 8000);
     return () => clearInterval(videoInterval.current);
-  }, [videos]);
+  }, [videos, heroPaused]);
 
   useEffect(() => {
     if (videoRef.current && videos.length > 0) {
       videoRef.current.load();
-      videoRef.current.play().catch(() => {});
+      if (!heroPaused) videoRef.current.play().catch(() => {});
+      else videoRef.current.pause();
     }
-  }, [videoIndex, videos]);
+  }, [videoIndex, videos, heroPaused]);
+
+  useEffect(() => {
+    try { localStorage.setItem('pp-hero-paused', heroPaused ? '1' : '0'); } catch { /* ignore */ }
+  }, [heroPaused]);
 
   useEffect(() => {
     if (videos.length > 0 || featured.length < 2) return;
@@ -171,14 +195,15 @@ useEffect(() => {
     <div ref={pageRef} className="min-h-screen bg-bg">
 
       {/* ── HERO ─────────────────────────────────────────────────── */}
-      <section className="relative h-[92vh] overflow-hidden bg-surface">
+      <section className="relative h-[92vh] overflow-hidden bg-surface" aria-label="Featured collection hero">
         {videos.length > 0 && (
           <video
             ref={videoRef}
             key={videoIndex}
             className="absolute inset-0 w-full h-full object-cover"
-            autoPlay muted playsInline
+            autoPlay={!heroPaused} muted={heroMuted} playsInline
             loop={videos.length === 1}
+            aria-label={`Hero video ${videoIndex + 1} of ${videos.length}`}
             onEnded={() => { if (videos.length > 1) setVideoIndex(i => (i + 1) % videos.length); }}
           >
             <source src={videos[videoIndex]} />
@@ -274,12 +299,29 @@ useEffect(() => {
         )}
 
         {videos.length > 1 && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
             {videos.map((_, i) => (
-              <button key={i} onClick={() => setVideoIndex(i)}
+              <button key={i} onClick={() => setVideoIndex(i)} aria-label={`Show hero video ${i + 1}`}
                 className={`transition-all duration-300 rounded-full ${i === videoIndex ? 'w-8 h-2 bg-primary' : 'w-2 h-2 bg-white/50 hover:bg-white/80'}`}
               />
             ))}
+            {/* Pause / play + mute controls for the rotating hero video */}
+            <button onClick={() => setHeroPaused(p => !p)} aria-label={heroPaused ? 'Play hero video' : 'Pause hero video'}
+              className="ml-2 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 border border-white/20">
+              {heroPaused ? '▶' : '⏸'}
+            </button>
+            <button onClick={() => setHeroMuted(m => !m)} aria-label={heroMuted ? 'Unmute hero video' : 'Mute hero video'}
+              className="w-8 h-8 rounded-full bg-black/50 text-white text-xs flex items-center justify-center hover:bg-black/70 border border-white/20">
+              {heroMuted ? '🔇' : '🔊'}
+            </button>
+          </div>
+        )}
+        {videos.length === 1 && (
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex items-center gap-2">
+            <button onClick={() => setHeroPaused(p => !p)} aria-label={heroPaused ? 'Play hero video' : 'Pause hero video'}
+              className="w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 border border-white/20">
+              {heroPaused ? '▶' : '⏸'}
+            </button>
           </div>
         )}
       </section>
@@ -343,7 +385,7 @@ useEffect(() => {
               {banners.length > 1 && (
                 <div className="flex justify-center gap-2 mt-6">
                   {banners.map((_, i) => (
-                    <button key={i} onClick={() => goToBanner(i)}
+                    <button key={i} onClick={() => goToBanner(i)} aria-label={`Show sale banner ${i + 1}`}
                       className={`transition-all duration-300 rounded-full ${i === bannerIndex ? 'w-8 h-2 bg-primary' : 'w-2 h-2 bg-white/30 hover:bg-white/60'}`}
                     />
                   ))}

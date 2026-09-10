@@ -13,6 +13,15 @@ const TrendingNow = () => {
   const [activeTab, setActiveTab] = useState('viewCount'); // 'viewCount', 'wishlistCount', 'salesCount'
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Hero videos targeted at this page by admins (heroPages includes 'trending').
+  const [heroVideos, setHeroVideos] = useState([]);
+  const [heroPaused, setHeroPaused] = useState(false);
+  // 24-hour rotation seed — computed once on mount (effect, not render,
+  // so the purity lint rule stays happy and the index is stable).
+  const [heroSeed, setHeroSeed] = useState(0);
+  useEffect(() => {
+    setHeroSeed(Math.floor(Date.now() / 86400000));
+  }, []);
 
   const tabs = [
     { id: 'viewCount', label: t('trendingNow.mostViewed'), icon: <Eye size={16} /> },
@@ -37,11 +46,45 @@ const TrendingNow = () => {
     fetchTrending();
   }, [activeTab]);
 
+  // Load admin-targeted hero videos for the Trending page (24h rotation seed).
+  useEffect(() => {
+    const fetchHeroVideos = async () => {
+      try {
+        const { data } = await api.get('/products?featured=true');
+        const items = data.data || [];
+        const targeted = items.flatMap(p => {
+          const pages = p.heroPages;
+          return pages && pages.includes('trending') ? (p.videos || []) : [];
+        });
+        setHeroVideos(targeted);
+      } catch {
+        setHeroVideos([]);
+      }
+    };
+    fetchHeroVideos();
+  }, []);
+
+  const heroVideo = heroVideos.length > 0
+    ? heroVideos[heroSeed % heroVideos.length]
+    : null;
+
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="bg-surface/50 dark:bg-stone-900/50 py-12 md:py-20 px-4 md:px-8 border-b border-border/40 dark:border-stone-800">
-        <div className="container mx-auto text-center space-y-4 md:space-y-6">
+      {/* Hero Section — plays the admin-targeted trending video when set */}
+      <section className="relative bg-surface/50 dark:bg-stone-900/50 py-12 md:py-20 px-4 md:px-8 border-b border-border/40 dark:border-stone-800 overflow-hidden" aria-label="Trending hero">
+        {heroVideo && (
+          <>
+            <video key={heroVideo} className="absolute inset-0 w-full h-full object-cover" autoPlay={!heroPaused} muted playsInline loop aria-label="Trending hero video">
+              <source src={heroVideo} />
+            </video>
+            <div className="absolute inset-0 bg-black/55" aria-hidden="true" />
+            <button onClick={() => setHeroPaused(p => !p)} aria-label={heroPaused ? 'Play trending hero video' : 'Pause trending hero video'}
+              className="absolute bottom-4 right-4 z-10 w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/70 border border-white/20">
+              {heroPaused ? '▶' : '⏸'}
+            </button>
+          </>
+        )}
+        <div className="container mx-auto text-center space-y-4 md:space-y-6 relative z-[1]">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -52,7 +95,7 @@ const TrendingNow = () => {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
+            className={heroVideo ? "text-4xl md:text-6xl font-serif font-black text-white" : "text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"}
           >
             {t('trendingNow.title')} <span className="text-primary dark:text-amber-300 italic" />
           </motion.h1>
@@ -60,7 +103,7 @@ const TrendingNow = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="text-sm md:text-base text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed px-4"
+            className={heroVideo ? "text-sm md:text-base text-white/85 max-w-2xl mx-auto leading-relaxed px-4" : "text-sm md:text-base text-medium dark:text-stone-300 max-w-2xl mx-auto leading-relaxed px-4"}
           >
             {t('trendingNow.desc')}
           </motion.p>
@@ -76,6 +119,9 @@ const TrendingNow = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
+                role="tab"
+                aria-selected={activeTab === tab.id}
+                aria-label={tab.label}
                 className={cn(
                   "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
                   activeTab === tab.id 

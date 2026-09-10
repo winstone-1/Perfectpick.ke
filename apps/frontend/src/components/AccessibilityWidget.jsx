@@ -43,12 +43,12 @@ const AccessibilityWidget = () => {
           <motion.div initial={{opacity:0,y:20,scale:0.95}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:20,scale:0.95}} transition={{duration:0.2,ease:"easeOut"}}
             role="dialog" aria-label={t('accessibility.title')}
             className="w-64 bg-card text-card-foreground rounded-3xl shadow-[0_16px_50px_rgba(0,0,0,0.2)] border border-stone-200/80 dark:border-stone-800 overflow-hidden">
-            <div className="bg-dark text-footer-text p-4 flex items-center justify-between border-b border-white/10">
+            <div className="bg-stone-900 dark:bg-stone-950 text-white p-4 flex items-center justify-between border-b border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center text-primary"><Accessibility size={15} /></div>
-                <span className="font-serif font-bold text-[#faf7f4] text-sm">{t('accessibility.title')}</span>
+                <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center text-amber-300"><Accessibility size={15} /></div>
+                <span className="font-serif font-bold text-white text-sm">{t('accessibility.title')}</span>
               </div>
-              <button onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-footer-text/70 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"><X size={15} /></button>
+              <button onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-stone-300 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"><X size={15} /></button>
             </div>
             <div className="p-4 space-y-4">
               <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800">
