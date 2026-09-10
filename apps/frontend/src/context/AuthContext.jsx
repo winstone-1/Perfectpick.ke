@@ -52,6 +52,10 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: false, error: data.message || 'Firebase login failed' };
     } catch (error) {
+      // 503 = Firebase not configured on the server side
+      if (error.response?.status === 503 || error.response?.data?.code === 'FIREBASE_DISABLED') {
+        return { success: false, error: 'Google Sign-In is not available right now. Please use email and password.' };
+      }
       const msg = error.response?.data?.message || error.message;
       console.error('Google Auth Error:', error);
       return { success: false, error: msg };

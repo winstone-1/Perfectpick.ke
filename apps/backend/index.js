@@ -71,7 +71,9 @@ if (process.env.NODE_ENV !== 'production') {
   app.use('/api/auth/config-check', (req, res) => {
       res.json({
           database: mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected',
-          firebaseAdmin: !!admin.apps.length ? 'Initialized' : 'Not Initialized',
+          // admin.apps is only populated when Firebase SDK has been initialised;
+          // guard against undefined to avoid crashing this debug route.
+          firebaseAdmin: (admin.apps && admin.apps.length) ? 'Initialized' : 'Not Initialized',
           env: {
               hasServiceAccount: !!process.env.FIREBASE_SERVICE_ACCOUNT,
               hasStorageBucket: !!process.env.FIREBASE_STORAGE_BUCKET,
