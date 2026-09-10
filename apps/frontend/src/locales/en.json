@@ -269,6 +269,11 @@
     "fillAllFields": "Please fill in all fields",
     "loginFailed": "Login failed",
     "googleFailed": "Google sign-in failed",
+    "googleUnavailable": "Google Sign-In is not available right now. Please use email and password.",
+    "googleCancelled": "Google sign-in was cancelled.",
+    "googlePopupBlocked": "Popup was blocked. Please allow popups and try again.",
+    "googleNetworkError": "Network error. Check your connection and try again.",
+    "googleDomainError": "This domain is not authorized for Google sign-in.",
     "unexpectedError": "An unexpected error occurred"
   },
   "register": {
@@ -292,6 +297,11 @@
     "passwordsMismatch": "Passwords do not match",
     "registrationFailed": "Registration failed",
     "googleFailed": "Google sign-up failed",
+    "googleUnavailable": "Google Sign-Up is not available right now. Please create an account with email and password.",
+    "googleCancelled": "Google sign-up was cancelled.",
+    "googlePopupBlocked": "Popup was blocked. Please allow popups and try again.",
+    "googleNetworkError": "Network error. Check your connection and try again.",
+    "googleDomainError": "This domain is not authorized for Google sign-up.",
     "unexpectedError": "An unexpected error occurred"
   },
   "chatWidget": {

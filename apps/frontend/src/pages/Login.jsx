@@ -19,10 +19,29 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, googleAvailable } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
+
+  // Map stable Google error codes to localized, user-friendly messages.
+  const googleErrorMessage = (result) => {
+    switch (result?.code) {
+      case 'GOOGLE_CLIENT_DISABLED':
+      case 'GOOGLE_SERVER_DISABLED':
+        return t('login.googleUnavailable');
+      case 'GOOGLE_CANCELLED':
+        return t('login.googleCancelled', { defaultValue: 'Google sign-in was cancelled.' });
+      case 'GOOGLE_POPUP_BLOCKED':
+        return t('login.googlePopupBlocked', { defaultValue: 'Popup was blocked. Please allow popups and try again.' });
+      case 'GOOGLE_NETWORK_ERROR':
+        return t('login.googleNetworkError', { defaultValue: 'Network error. Check your connection and try again.' });
+      case 'GOOGLE_DOMAIN_NOT_ALLOWED':
+        return t('login.googleDomainError', { defaultValue: 'This domain is not authorized for Google sign-in.' });
+      default:
+        return result?.error || t('login.googleFailed');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,6 +63,9 @@ const Login = () => {
   };
 
   const handleGoogleLogin = async () => {
+    if (!googleAvailable) {
+      return toast.info(t('login.googleUnavailable'));
+    }
     setGoogleLoading(true);
     try {
       const result = await loginWithGoogle();
@@ -51,7 +73,7 @@ const Login = () => {
         toast.success(t('login.googleSuccess'));
         navigate(from, { replace: true });
       } else {
-        toast.error(result.error || t('login.googleFailed'));
+        toast.error(googleErrorMessage(result));
       }
     } catch {
       toast.error(t('login.unexpectedError'));
@@ -127,9 +149,11 @@ const Login = () => {
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 rounded-2xl text-xs font-bold uppercase tracking-wider border-stone-200 dark:border-stone-700 hover:bg-surface dark:hover:bg-stone-800 text-dark dark:text-stone-100 transition-all gap-2.5 cursor-pointer shadow-xs"
+              className="w-full h-12 rounded-2xl text-xs font-bold uppercase tracking-wider border-stone-200 dark:border-stone-700 hover:bg-surface dark:hover:bg-stone-800 text-dark dark:text-stone-100 transition-all gap-2.5 cursor-pointer shadow-xs disabled:opacity-50 disabled:cursor-not-allowed"
               onClick={handleGoogleLogin}
-              disabled={loading || googleLoading}
+              disabled={loading || googleLoading || !googleAvailable}
+              aria-label={t('login.continueGoogle')}
+              title={!googleAvailable ? t('login.googleUnavailable') : undefined}
             >
               {googleLoading ? (
                 <Loader2 className="animate-spin" size={18} />
@@ -137,6 +161,12 @@ const Login = () => {
                 <><FaGoogle className="text-red-500 text-base" /> {t('login.continueGoogle')}</>
               )}
             </Button>
+            {/* Graceful fallback notice — email/password remains fully usable. */}
+            {!googleAvailable && (
+              <p className="text-[11px] text-center text-muted-foreground dark:text-stone-400 leading-relaxed" role="note">
+                {t('login.googleUnavailable')}
+              </p>
+            )}
           </CardContent>
 
           <CardFooter className="bg-surface/30 dark:bg-stone-900/40 p-6 text-center border-t border-border/40 dark:border-stone-800">

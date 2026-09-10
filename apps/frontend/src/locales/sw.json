@@ -268,6 +268,11 @@
     "fillAllFields": "Tafadhali jaza sehemu zote",
     "loginFailed": "Kuingia kumeshindikana",
     "googleFailed": "Kuingia kwa Google kumeshindikana",
+    "googleUnavailable": "Kuingia kwa Google haipatikani sasa. Tafadhali tumia barua pepe na nenosiri.",
+    "googleCancelled": "Kuingia kwa Google kumeghairiwa.",
+    "googlePopupBlocked": "Dirisha limezuiwa. Tafadhali ruhusu popups na ujaribu tena.",
+    "googleNetworkError": "Hitilafu ya mtandao. Angalia muunganisho na ujaribu tena.",
+    "googleDomainError": "Kikoa hiki hakijaidhinishwa kwa kuingia kwa Google.",
     "unexpectedError": "Hitilafu isiyotarajiwa imetokea"
   },
   "register": {
@@ -291,6 +296,11 @@
     "passwordsMismatch": "Nenosiri hazifanani",
     "registrationFailed": "Usajili umeshindikana",
     "googleFailed": "Usajili wa Google umeshindikana",
+    "googleUnavailable": "Usajili wa Google haupatikani sasa. Tafadhali fungua akaunti kwa barua pepe na nenosiri.",
+    "googleCancelled": "Usajili wa Google umeghairiwa.",
+    "googlePopupBlocked": "Dirisha limezuiwa. Tafadhali ruhusu popups na ujaribu tena.",
+    "googleNetworkError": "Hitilafu ya mtandao. Angalia muunganisho na ujaribu tena.",
+    "googleDomainError": "Kikoa hiki hakijaidhinishwa kwa usajili wa Google.",
     "unexpectedError": "Hitilafu isiyotarajiwa imetokea"
   },
   "chatWidget": {
