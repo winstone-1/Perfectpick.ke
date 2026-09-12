@@ -20,16 +20,36 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    try {
-      const savedUser = localStorage.getItem('user');
-      if (savedUser) {
-        const parsed = JSON.parse(savedUser);
-        setUser(normalizeUser(parsed));
+    const initAuth = async () => {
+      let parsed = null;
+      try {
+        const savedUser = localStorage.getItem('user');
+        if (savedUser) {
+          parsed = JSON.parse(savedUser);
+          setUser(normalizeUser(parsed));
+        }
+      } catch {
+        localStorage.removeItem('user');
       }
-    } catch {
-      localStorage.removeItem('user');
-    }
-    setLoading(false);
+      // Refresh from server to fix stale isAdmin/avatar (e.g. admin was promoted after login).
+      // Token may have been issued before promotion; server is source of truth.
+      const token = parsed?.token || parsed?.data?.token;
+      if (token) {
+        try {
+          const { data } = await api.get('/auth/profile');
+          const fresh = data?.data || data;
+          if (fresh && (fresh._id || fresh.email)) {
+            const merged = normalizeUser({ ...parsed, ...fresh, token: fresh.token || token });
+            localStorage.setItem('user', JSON.stringify(merged));
+            setUser(merged);
+          }
+        } catch {
+          // ignore — keep cached user; 401 interceptor will clear if token invalid
+        }
+      }
+      setLoading(false);
+    };
+    initAuth();
   }, []);
 
   // Probe once whether the API server has Firebase Admin configured.
