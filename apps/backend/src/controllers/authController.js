@@ -50,6 +50,7 @@ export const registerUser = async (req, res, next) => {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
+                    avatar: user.avatar || '',
                     isAdmin: user.isAdmin,
                     token: generateToken(user._id),
                 }
@@ -103,6 +104,7 @@ export const loginUser = async (req, res, next) => {
                     _id: user._id,
                     name: user.name,
                     email: user.email,
+                    avatar: user.avatar || '',
                     isAdmin: user.isAdmin,
                     token: generateToken(user._id),
                 }
@@ -263,14 +265,22 @@ export const getUserProfile = async (req, res, next) => {
 // @access  Private
 export const updateUserProfile = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user._id);
+        const user = await User.findById(req.user._id).select('+password');
 
         if (user) {
-            user.name = req.body.name || user.name;
-            user.email = req.body.email || user.email;
-            if (req.body.password) {
+            if (req.body.name) user.name = req.body.name.trim();
+            if (req.body.email) user.email = String(req.body.email).trim().toLowerCase();
+            // Password change: accept both {password} and {newPassword,currentPassword}
+            const newPass = req.body.newPassword || req.body.password;
+            const currPass = req.body.currentPassword;
+            if (newPass) {
+                if (currPass && user.password) {
+                    const ok = await user.matchPassword(currPass);
+                    if (!ok) return res.status(400).json({ message: 'Current password is incorrect' });
+                }
+                if (String(newPass).length < 6) return res.status(400).json({ message: 'Password must be at least 6 characters' });
                 const salt = await bcrypt.genSalt(10);
-                user.password = await bcrypt.hash(req.body.password, salt);
+                user.password = await bcrypt.hash(String(newPass), salt);
             }
 
             const updatedUser = await user.save();
@@ -280,6 +290,7 @@ export const updateUserProfile = async (req, res, next) => {
                     _id: updatedUser._id,
                     name: updatedUser.name,
                     email: updatedUser.email,
+                    avatar: updatedUser.avatar || '',
                     isAdmin: updatedUser.isAdmin,
                     token: generateToken(updatedUser._id),
                 }

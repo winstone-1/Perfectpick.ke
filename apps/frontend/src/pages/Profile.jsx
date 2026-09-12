@@ -42,6 +42,14 @@ const Profile = () => {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(user?.avatar || null);
 
+  // Keep derived state in sync when AuthContext refreshes user (e.g. after admin promotion or avatar sync)
+  React.useEffect(() => {
+    setAvatarPreview(user?.avatar || null);
+    if (user?.name || user?.email) {
+      setPersonalInfo({ name: user.name || '', email: user.email || '' });
+    }
+  }, [user?.avatar, user?.name, user?.email]);
+
   const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -75,7 +83,9 @@ const Profile = () => {
     setUpdatingInfo(true);
     try {
       const { data } = await api.put('/auth/profile', { name: personalInfo.name });
-      login({ ...user, name: data.user.name });
+      const updated = data.data || data;
+      // Preserve existing token/avatar if backend omits them; normalize via login()
+      login({ ...user, ...updated, token: updated.token || user?.token });
       toast.success('Profile updated successfully');
     } catch (error) {
       toast.error(error.response?.data?.message || 'Update failed');
@@ -158,9 +168,9 @@ const Profile = () => {
                 <div className="space-y-1">
                   <h2 className="text-xl font-serif font-black text-dark dark:text-stone-100">{user?.name}</h2>
                   <p className="text-xs text-muted-foreground dark:text-stone-400 font-mono truncate">{user?.email}</p>
-                  {(user?.role === 'admin' || user?.role === 'manager') && (
+                    {(user?.isAdmin || user?.role === 'admin' || user?.role === 'manager') && (
                     <Badge className="bg-primary/10 text-primary dark:bg-amber-950/60 dark:text-amber-300 border-none uppercase tracking-widest text-[9px] font-black mt-1">
-                      {user?.role}
+                      {user?.role || 'admin'}
                     </Badge>
                   )}
                 </div>
