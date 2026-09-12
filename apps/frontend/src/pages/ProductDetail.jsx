@@ -183,12 +183,16 @@ const ProductDetail = () => {
           animate={{ opacity: 1, x: 0 }}
           className="space-y-5"
         >
-          <div className="aspect-square bg-surface dark:bg-stone-900 rounded-3xl overflow-hidden flex items-center justify-center relative shadow-[0_8px_30px_rgba(61,39,26,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] border border-stone-200/70 dark:border-stone-800">
+          <div className="aspect-square bg-surface dark:bg-stone-900 rounded-3xl overflow-hidden flex items-center justify-center relative shadow-[0_8px_30px_rgba(61,39,26,0.06)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.3)] border border-stone-200/70 dark:border-stone-800 group">
             {mainImage ? (
-              <img 
+              <motion.img 
+                key={mainImage}
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
                 src={mainImage} 
                 alt={product.name} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
                 onError={(e) => {
                   e.target.src = '';
                   e.target.style.display = 'none';

@@ -127,10 +127,12 @@ const About = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="relative"
+            whileHover={{ scale: 1.01 }}
+            transition={{ duration: 0.4 }}
+            className="relative group"
           >
-            <div className="aspect-[4/5] bg-surface dark:bg-stone-900 rounded-[3rem] overflow-hidden flex items-center justify-center border border-stone-200/70 dark:border-stone-800 shadow-xl">
-              <div className="text-7xl sm:text-8xl text-primary dark:text-amber-300 opacity-90"><FaCrown /></div>
+            <div className="aspect-[4/5] bg-surface dark:bg-stone-900 rounded-[3rem] overflow-hidden flex items-center justify-center border border-stone-200/70 dark:border-stone-800 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
+              <motion.div whileHover={{ rotate: 3, scale: 1.05 }} transition={{ duration: 0.3 }} className="text-7xl sm:text-8xl text-primary dark:text-amber-300 opacity-90"><FaCrown /></motion.div>
             </div>
             {/* Quote Card */}
             <Card className="absolute -bottom-6 -left-4 sm:-left-8 border border-stone-200/70 dark:border-stone-800 shadow-2xl bg-card text-card-foreground rounded-3xl p-6 sm:p-7 max-w-xs rotate-[-2deg]">

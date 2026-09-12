@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   User,
   Mail,
@@ -132,17 +133,19 @@ const Profile = () => {
               <CardContent className="p-6 text-center space-y-5">
                 {/* Avatar */}
                 <div className="relative inline-block">
-                  <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 shadow-md mx-auto bg-surface dark:bg-stone-800 flex items-center justify-center">
+                  <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="w-24 h-24 rounded-full overflow-hidden border-2 border-primary/30 shadow-md mx-auto bg-surface dark:bg-stone-800 flex items-center justify-center group">
                     {avatarPreview ? (
-                      <img
+                      <motion.img
+                        key={avatarPreview}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.3 }}
                         src={avatarPreview}
                         alt={user?.name}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
                       <User size={40} className="text-primary dark:text-amber-300" />
                     )}
-                  </div>
+                  </motion.div>
 
                   <input
                     ref={avatarInputRef}
