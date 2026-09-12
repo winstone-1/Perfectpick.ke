@@ -11,6 +11,8 @@ import {
   Loader2,
   Video,
   Tag,
+  Upload,
+  FileJson,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../api/axios';
@@ -38,6 +40,11 @@ const ManageProducts = () => {
   const [imageFiles, setImageFiles]   = useState([]);
   const [videoFiles, setVideoFiles]   = useState([]);
   const [bannerFile, setBannerFile]   = useState(null);
+  const [bulkOpen, setBulkOpen]       = useState(false);
+  const [bulkJson, setBulkJson]       = useState('');
+  const [bulkFile, setBulkFile]       = useState(null);
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [bulkResult, setBulkResult]   = useState(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -233,6 +240,36 @@ const ManageProducts = () => {
     });
   };
 
+  const handleBulkUpload = async () => {
+    setBulkLoading(true); setBulkResult(null);
+    try {
+      let payload;
+      if (bulkFile) {
+        const text = await bulkFile.text();
+        const isCsv = bulkFile.name.endsWith('.csv') || text.includes('name,') ;
+        if (isCsv && bulkFile.name.endsWith('.csv')) payload = { csv: text };
+        else {
+          try { const parsed = JSON.parse(text); payload = Array.isArray(parsed) ? { products: parsed } : { products: parsed.products || parsed.data || [] }; }
+          catch { payload = { csv: text }; }
+        }
+      } else if (bulkJson.trim()) {
+        const t = bulkJson.trim();
+        if (t.startsWith('[') || t.startsWith('{')) {
+          try { const parsed = JSON.parse(t); payload = Array.isArray(parsed) ? { products: parsed } : (parsed.products ? parsed : { products: [parsed] }); }
+          catch (e) { toast.error('Invalid JSON'); setBulkLoading(false); return; }
+        } else {
+          payload = { csv: t };
+        }
+      } else return toast.error('Paste JSON or select a file');
+      const { data } = await api.post('/admin/products/bulk', payload);
+      setBulkResult(data.data);
+      if (data.data.succeeded?.length) toast.success(`${data.data.succeeded.length} products imported`);
+      if (data.data.failed?.length) toast.error(`${data.data.failed.length} rows failed — see details`);
+      fetchProducts();
+    } catch (e) { toast.error(e.response?.data?.message || 'Bulk upload failed'); }
+    finally { setBulkLoading(false); }
+  };
+
   const PriceDisplay = (price) => new Intl.NumberFormat('en-KE', {
     style: 'currency', currency: 'KES', minimumFractionDigits: 0
   }).format(price);
@@ -250,12 +287,50 @@ const ManageProducts = () => {
           <p className="text-stone-500 dark:text-stone-400 font-bold uppercase tracking-widest text-[10px]">Total: {products.length} Products</p>
         </div>
 
-        <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
-          <DialogTrigger asChild>
-            <Button className="btn-primary rounded-2xl h-14 px-8 text-lg font-black shadow-lg">
-              <Plus className="mr-2" /> Add Product
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-3">
+          <Dialog open={bulkOpen} onOpenChange={setBulkOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="rounded-2xl h-14 px-6 font-black border-stone-300 dark:border-stone-700">
+                <Upload size={18} className="mr-2" /> Bulk Import
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl rounded-[2rem] bg-card border border-stone-200 dark:border-stone-800 p-0 overflow-hidden">
+              <div className="px-8 py-6 border-b border-stone-200 dark:border-stone-800 flex justify-between items-center bg-stone-50 dark:bg-stone-900">
+                <DialogTitle className="font-serif font-black text-xl">Bulk Import Products</DialogTitle>
+                <button onClick={()=>setBulkOpen(false)} className="h-8 w-8 rounded-full hover:bg-stone-200 dark:hover:bg-stone-800 flex items-center justify-center"><X size={18}/></button>
+              </div>
+              <div className="p-8 space-y-6">
+                <p className="text-xs text-muted-foreground leading-relaxed">Upload <strong>JSON</strong> (<code className="px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded">{"{products:[{name,price,category,variants,images}]}"}</code>) or <strong>CSV</strong> with headers <code className="px-1 py-0.5 bg-stone-100 dark:bg-stone-800 rounded">name,price,category,description,images,variants</code>. Existing products (same name+category) are updated; others created. Max 100/req — per-row validation, partial success allowed.</p>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2"><FileJson size={12}/> Paste JSON or CSV</label>
+                  <textarea value={bulkJson} onChange={e=>setBulkJson(e.target.value)} placeholder='[{"name":"Tote","price":2500,"category":"bags","variants":[{"name":"Default","stock":10}]}]' className="w-full h-40 rounded-xl border border-stone-200 dark:border-stone-700 p-4 text-xs font-mono bg-stone-50 dark:bg-stone-900 text-stone-900 dark:text-stone-100 focus:ring-2 focus:ring-primary" />
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] font-black uppercase text-muted-foreground">or</span>
+                  <label className="flex-1 flex items-center gap-2 p-3 border-2 border-dashed border-stone-200 dark:border-stone-700 rounded-xl cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-900">
+                    <Upload size={16} className="text-muted-foreground"/><span className="text-xs font-bold">{bulkFile?bulkFile.name:'Select JSON/CSV file'}</span>
+                    <input type="file" className="hidden" accept=".json,.csv" onChange={e=>setBulkFile(e.target.files[0]||null)} />
+                  </label>
+                </div>
+                {bulkResult && (
+                  <div className="rounded-xl border border-stone-200 dark:border-stone-700 p-4 space-y-2 max-h-48 overflow-auto text-xs">
+                    <p className="font-bold">Result: {bulkResult.succeeded?.length||0} succeeded, {bulkResult.failed?.length||0} failed / {bulkResult.total}</p>
+                    {bulkResult.succeeded?.length>0 && <ul className="list-disc pl-4 text-emerald-700 dark:text-emerald-300">{bulkResult.succeeded.map(s=><li key={s.index}>{s.name} — {s.action}</li>)}</ul>}
+                    {bulkResult.failed?.length>0 && <ul className="list-disc pl-4 text-rose-600 dark:text-rose-300">{bulkResult.failed.map(f=><li key={f.index}>row {f.index}: {f.errors.join('; ')}</li>)}</ul>}
+                  </div>
+                )}
+                <Button onClick={handleBulkUpload} disabled={bulkLoading} className="w-full btn-primary rounded-xl h-12 font-black">{bulkLoading?<Loader2 className="animate-spin"/>:'Import'}</Button>
+                <a href={'data:text/plain;charset=utf-8,'+encodeURIComponent('name,price,category,description,images\n"Tote Bag",2500,bags,"Leather tote","https://example.com/a.jpg"\n"Earrings",800,jewelry,"Gold studs",""')} download="template.csv" className="text-[11px] text-primary hover:underline text-center block">Download CSV template</a>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          <Dialog open={isDialogOpen} onOpenChange={(open) => { setIsDialogOpen(open); if (!open) resetForm(); }}>
+            <DialogTrigger asChild>
+              <Button className="btn-primary rounded-2xl h-14 px-8 text-lg font-black shadow-lg">
+                <Plus className="mr-2" /> Add Product
+              </Button>
+            </DialogTrigger>
 
           <DialogContent className="max-w-4xl overflow-y-auto max-h-[90vh] rounded-[2.5rem] bg-card text-card-foreground border border-stone-200 dark:border-stone-800 shadow-2xl p-0">
             <div className="sticky top-0 z-10 bg-stone-50 dark:bg-stone-900 px-10 py-6 border-b border-stone-200 dark:border-stone-800 flex justify-between items-center">
@@ -509,6 +584,7 @@ const ManageProducts = () => {
             </form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Product Table */}

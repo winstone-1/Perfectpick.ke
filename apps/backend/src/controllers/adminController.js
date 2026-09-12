@@ -286,3 +286,119 @@ export const deleteUser = async (req, res, next) => {
         next(error);
     }
 };
+
+const ALLOWED_CATEGORIES = new Set([
+    'bags','shoes','jewelry','gifts','accessories','clothes','handbags','earrings','hairclips',
+    'keyrings','phone-charms','beauty-accessories','gift-boxes','mugs','fans','body-mists',
+    'oils','ponchos','sweaters','cardigans','watches','rings',
+]);
+
+const parseCSV = (text) => {
+    const lines = text.trim().split(/\r?\n/);
+    if (lines.length < 2) return [];
+    const header = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g,''));
+    return lines.slice(1).map((line, idx) => {
+        // Simple quote-aware split
+        const vals = [];
+        let cur = ''; let inQ = false;
+        for (let i=0;i<line.length;i++) {
+            const ch=line[i];
+            if (ch==='"') { inQ=!inQ; continue; }
+            if (ch===',' && !inQ) { vals.push(cur.trim()); cur=''; } else cur+=ch;
+        }
+        vals.push(cur.trim());
+        const obj={_csvLine: idx+2};
+        header.forEach((h,i)=>{ obj[h]= (vals[i]||'').replace(/^"|"$/g,'').trim(); });
+        return obj;
+    });
+};
+
+export const bulkUpsertProducts = async (req, res, next) => {
+    try {
+        let rows = [];
+        // Accept {products:[...]} JSON array OR {csv:"..."} string OR raw array body
+        if (Array.isArray(req.body)) rows = req.body;
+        else if (Array.isArray(req.body.products)) rows = req.body.products;
+        else if (typeof req.body.csv === 'string' && req.body.csv.trim()) rows = parseCSV(req.body.csv);
+        else if (typeof req.body.data === 'string') {
+            try { const p=JSON.parse(req.body.data); rows = Array.isArray(p)?p:p.products||[]; } catch {}
+        }
+
+        if (!Array.isArray(rows) || rows.length === 0) {
+            return res.status(400).json({ success:false, message:'No products provided. Send {products:[...]} or {csv:\"...\"}' });
+        }
+        if (rows.length > 100) return res.status(400).json({ success:false, message:'Max 100 products per bulk request' });
+
+        const succeeded = [];
+        const failed = [];
+
+        for (let i=0;i<rows.length;i++) {
+            const raw = rows[i];
+            const rowIndex = raw._csvLine || i;
+            try {
+                let name = String(raw.name||'').trim();
+                let price = raw.price;
+                let category = String(raw.category||'').trim().toLowerCase();
+                let description = raw.description || '';
+                let images = raw.images;
+                let variants = raw.variants;
+                let featured = raw.featured;
+                let discount = raw.discount;
+                let discountLabel = raw.discountLabel || '';
+                let heroPages = raw.heroPages;
+
+                // Normalize images: string "a|b" or JSON string or array
+                if (typeof images === 'string') {
+                    const s=images.trim();
+                    if (!s) images=[];
+                    else if (s.startsWith('[')) { try{ images=JSON.parse(s);}catch{ images=s.split(/[|,;]/).map(v=>v.trim()).filter(Boolean); } }
+                    else images=s.split(/[|,;]/).map(v=>v.trim()).filter(Boolean);
+                }
+                if (!Array.isArray(images)) images=[];
+
+                if (typeof variants === 'string') { try{ variants=JSON.parse(variants);}catch{ variants=[];} }
+                if (!Array.isArray(variants) || variants.length===0) variants=[{name:'Default', stock:10}];
+                else variants = variants.map(v=>({ name:String(v.name||'').trim(), stock: Number(v.stock)||0 }))
+                    .filter(v=>v.name);
+
+                if (typeof heroPages === 'string') { try{ heroPages=JSON.parse(heroPages);}catch{ heroPages=heroPages.split(/[|,;]/).map(v=>v.trim()).filter(Boolean);} }
+                if (!Array.isArray(heroPages)) heroPages=[];
+                heroPages = heroPages.filter(p=>['landing','home','trending','new-arrivals'].includes(p));
+
+                const errors=[];
+                if (!name || name.length<2) errors.push('name required (min 2 chars)');
+                price = Number(price);
+                if (!Number.isFinite(price) || price<=0) errors.push('price must be a positive number');
+                if (!category || !ALLOWED_CATEGORIES.has(category)) errors.push(`category must be one of: ${[...ALLOWED_CATEGORIES].join(', ')}`);
+                if (variants.length===0) errors.push('at least one variant required');
+                variants.forEach((v,vi)=>{ if(!v.name) errors.push(`variants[${vi}].name required`); if(!Number.isFinite(v.stock)||v.stock<0) errors.push(`variants[${vi}].stock must be >=0`); });
+                if (errors.length) { failed.push({ index: rowIndex, row: raw, errors }); continue; }
+
+                const featuredBool = featured===true||featured==='true';
+                const discountNum = Number(discount)||0;
+
+                // Upsert by name+category (update if exists, else create)
+                let product = await Product.findOne({ name, category });
+                if (product) {
+                    product.description = description || product.description;
+                    product.price = price;
+                    if (images.length) product.images = images;
+                    product.variants = variants;
+                    product.featured = featuredBool;
+                    product.discount = discountNum;
+                    product.discountLabel = discountLabel;
+                    if (heroPages.length) product.heroPages = heroPages;
+                    await product.save();
+                    succeeded.push({ index: rowIndex, _id: product._id, name, action:'updated' });
+                } else {
+                    product = await Product.create({ name, description, price, category, images, variants, featured: featuredBool, discount: discountNum, discountLabel, heroPages });
+                    succeeded.push({ index: rowIndex, _id: product._id, name, action:'created' });
+                }
+            } catch (err) {
+                failed.push({ index: rowIndex, row: raw, errors:[err.message||'Unknown error'] });
+            }
+        }
+
+        res.json({ success:true, data:{ succeeded, failed, total: rows.length } });
+    } catch (error) { next(error); }
+};

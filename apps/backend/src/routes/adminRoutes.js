@@ -10,6 +10,7 @@ import {
     getOrders,
     updateOrderStatus,
     getUsers,
+    bulkUpsertProducts,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/protect.js';
 import { adminOnly, managerOrAdmin } from '../middleware/roles.js';
@@ -21,6 +22,9 @@ router.use(protect);
 
 // Stats
 router.get('/stats', adminOnly, getStats);
+
+// Bulk product import — must be before /products/:id
+router.post('/products/bulk', adminOnly, bulkUpsertProducts);
 
 // Product management
 router.route('/products')
