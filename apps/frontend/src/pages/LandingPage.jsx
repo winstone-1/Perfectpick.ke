@@ -331,7 +331,7 @@ useEffect(() => {
       {/* ── SALE BANNERS ─────────────────────────────────────────── */}
       {banners.length > 0 && (
         <section className="py-16 bg-stone-900 dark:bg-stone-950 relative overflow-hidden border-y border-stone-800">
-          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, #c08050 0%, transparent 60%)' }} />
+          <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, #AE9187 0%, transparent 60%)' }} />
           <div className="container mx-auto px-6">
             <motion.div
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
@@ -457,7 +457,7 @@ useEffect(() => {
       {/* ── FOOTER CTA ───────────────────────────────────────────── */}
       <section className="mx-4 sm:mx-6 my-16 rounded-[2.5rem] overflow-hidden bg-stone-900 dark:bg-stone-950 relative border border-stone-800 shadow-2xl">
         <div className="absolute inset-0 opacity-5"
-          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #c08050 0%, transparent 50%), radial-gradient(circle at 80% 50%, #c08050 0%, transparent 50%)' }}
+          style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, #AE9187 0%, transparent 50%), radial-gradient(circle at 80% 50%, #AE9187 0%, transparent 50%)' }}
         />
         <div className="relative z-10 py-16 px-6 text-center space-y-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-3">

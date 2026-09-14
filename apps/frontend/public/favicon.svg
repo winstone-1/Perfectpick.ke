@@ -1,14 +1,21 @@
 ﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Outer warm-brown ring matching brand primary colour -->
-  <circle cx="32" cy="32" r="31" fill="#c08050" />
-  <!-- Gold accent ring -->
-  <circle cx="32" cy="32" r="28" fill="none" stroke="#d4a96a" stroke-width="1.2" />
+  <defs>
+    <!-- Copper-mauve brand gradient #AE9187 -> #8B6E64 -->
+    <linearGradient id="pp-primary" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#AE9187" />
+      <stop offset="1" stop-color="#8B6E64" />
+    </linearGradient>
+  </defs>
+  <!-- Outer copper-mauve ring matching brand primary gradient -->
+  <circle cx="32" cy="32" r="31" fill="url(#pp-primary)" />
+  <!-- Soft mauve accent ring -->
+  <circle cx="32" cy="32" r="28" fill="none" stroke="#C9B7AD" stroke-width="1.2" />
   <!-- Cream inner fill -->
-  <circle cx="32" cy="32" r="26.5" fill="#fdf0e2" />
+  <circle cx="32" cy="32" r="26.5" fill="#faf6f4" />
   <!-- Shopping-bag body -->
   <rect x="19" y="28" width="26" height="20" rx="3" fill="#3d271a" />
   <!-- Bag handles -->
   <path d="M24 28 C24 20 40 20 40 28" fill="none" stroke="#3d271a" stroke-width="3" stroke-linecap="round"/>
   <!-- Heart accent -->
-  <path d="M32 23 C32 23 29.5 20 27 21.5 C24.5 23 25 26.5 32 29.5 C39 26.5 39.5 23 37 21.5 C34.5 20 32 23 32 23Z" fill="#c08050" opacity="0.85"/>
+  <path d="M32 23 C32 23 29.5 20 27 21.5 C24.5 23 25 26.5 32 29.5 C39 26.5 39.5 23 37 21.5 C34.5 20 32 23 32 23Z" fill="#8B6E64" opacity="0.85"/>
 </svg>

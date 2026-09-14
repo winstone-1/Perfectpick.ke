@@ -13,7 +13,7 @@ const NotFound = () => {
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 0.05, scale: 1 }}
           transition={{ duration: 1 }}
-          className="text-[15rem] md:text-[20rem] font-serif font-black text-[#c08050] leading-none select-none"
+          className="text-[15rem] md:text-[20rem] font-serif font-black text-primary leading-none select-none"
         >
           404
         </motion.div>
