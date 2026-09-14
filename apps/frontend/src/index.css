@@ -5,14 +5,24 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, serif;
 
-  --color-primary: #c08050;
-  --color-primary-hover: #a86b3e;
+  /* Warm copper-mauve palette: gradient #AE9187 (light) -> #8B6E64 (dark).
+     Base = darker end so white text passes AA (4.65:1); `deep` is the
+     AA-safe small-text-on-tint variant (7.08:1 on white); `light` is the
+     dark-mode base/accent; `ink` is dark text for use on mauve fills. */
+  --color-primary: #8B6E64;
+  --color-primary-hover: #755C54;
+  --color-primary-light: #AE9187;
+  --color-primary-lighter: #C9B7AD;
+  --color-primary-deep: #6B534B;
+  --color-primary-ink: #251C17;
+  --color-primary-gradient-from: #AE9187;
+  --color-primary-gradient-to: #8B6E64;
   --color-dark: #3d271a;
   --color-medium: #5c3a26;
   --color-muted: #7d573f;
-  --color-bg: #fdf8f3;
-  --color-surface: #f9eede;
-  --color-border: color-mix(in srgb, #e8c49a 45%, transparent);
+  --color-bg: #faf6f4;
+  --color-surface: #f5ece7;
+  --color-border: color-mix(in srgb, #d3b8ac 45%, transparent);
   --color-footer-bg: #3d271a;
   --color-footer-text: #f3dcc0;
 
@@ -36,25 +46,25 @@
 
 @layer base {
   :root {
-    --background: #fdf8f3;
+    --background: #faf6f4;
     --foreground: #3d271a;
     --card: #ffffff;
     --card-foreground: #3d271a;
     --popover: #ffffff;
     --popover-foreground: #3d271a;
-    --primary: 32 46% 53%; /* #c08050 */
-    --primary-foreground: 32 100% 98%;
-    --secondary: 35 50% 94%; /* #f9eede */
-    --secondary-foreground: 32 45% 18%;
-    --muted: 35 40% 92%;
-    --muted-foreground: 28 20% 40%;
-    --accent: 35 50% 94%;
-    --accent-foreground: 32 45% 18%;
+    --primary: 15 16% 47%; /* #8B6E64 */
+    --primary-foreground: 15 25% 98%;
+    --secondary: 15 28% 93%; /* mauve-tinted #f5ece7 family */
+    --secondary-foreground: 15 30% 18%;
+    --muted: 15 25% 92%;
+    --muted-foreground: 15 20% 38%;
+    --accent: 15 28% 93%;
+    --accent-foreground: 15 30% 18%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 32 30% 86%;
-    --input: 32 30% 86%;
-    --ring: 32 46% 53%;
+    --border: 15 18% 84%;
+    --input: 15 18% 84%;
+    --ring: 15 16% 47%;
     --radius: 0.875rem;
   }
 
@@ -75,7 +85,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: #2e2825;
     --input: #2e2825;
-    --ring: #d8915e;
+    --ring: #AE9187;
 
     --color-bg: #121212;
     --color-surface: #1c1917;
@@ -83,8 +93,16 @@
     --color-dark: #faf7f4;
     --color-medium: #e7ded7;
     --color-muted: #cfc4bc;
-    --color-primary: #d8915e;
-    --color-primary-hover: #e6a272;
+    /* Dark mode: lighter mauve end as base (6.42:1 as text on #121212).
+       White text on it is only 2.92:1, so dark-mode primary fills use
+       `ink` text — see the contrast block below. */
+    --color-primary: #AE9187;
+    --color-primary-hover: #C2AEA5;
+    --color-primary-light: #C2AEA5;
+    --color-primary-lighter: #C9B7AD;
+    --color-primary-deep: #C9B7AD;
+    --color-primary-gradient-from: #C2AEA5;
+    --color-primary-gradient-to: #AE9187;
   }
 
   * {
@@ -106,7 +124,27 @@
 
 /* Custom Utilities */
 @utility btn-primary {
+  /* Solid base (not the gradient): white text on the mid-gradient would
+     fall below AA, while white on --color-primary is 4.65:1 in light mode.
+     Dark-mode text is remapped to ink in the contrast block below. */
   @apply bg-primary text-white hover:bg-primary-hover transition-all duration-300 rounded-xl px-5 py-2.5 inline-flex items-center justify-center font-bold tracking-wide active:scale-98 shadow-sm hover:shadow-md cursor-pointer;
+}
+
+/* Decorative copper-mauve gradient (surfaces/overlays only — never behind
+   body text, so contrast is unaffected). Dark values resolve automatically
+   via the .dark token overrides above. */
+@utility bg-primary-gradient {
+  background-image: linear-gradient(135deg, var(--color-primary-gradient-from), var(--color-primary-gradient-to));
+}
+
+/* Copper-mauve dark-mode contrast (brand color untouched — text adapts):
+   white on dark-mode primary (#AE9187) is 2.92:1; ink (#251C17) is 5.73:1.
+   Unlayered so it wins over layered `text-white` utilities. */
+.dark .btn-primary {
+  color: #251C17;
+}
+.dark .bg-primary.text-white {
+  color: #251C17;
 }
 
 @utility btn-outline {
@@ -139,10 +177,10 @@
 }
 
 .glass-nav {
-  background: rgba(253, 248, 243, 0.95);
+  background: rgba(250, 246, 244, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(232, 196, 154, 0.5);
+  border-bottom: 1px solid rgba(211, 184, 172, 0.5);
 }
 
 .dark .glass-nav {
@@ -180,7 +218,7 @@
 /* Glassmorphic card with gradient glow */
 .glass-card-glow {
   position: relative;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(249, 238, 222, 0.95));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(245, 236, 231, 0.95));
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid rgba(255, 255, 255, 0.5);
@@ -194,7 +232,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(192, 128, 80, 0.05) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(174, 145, 135, 0.08) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -202,7 +240,7 @@
   content: '';
   position: absolute;
   inset: -1px;
-  background: linear-gradient(135deg, rgba(192, 128, 80, 0.3), transparent);
+  background: linear-gradient(135deg, var(--color-primary-gradient-from), var(--color-primary-gradient-to));
   z-index: 0;
   border-radius: 2rem;
   filter: blur(20px);
@@ -220,7 +258,7 @@
 
 /* Focus styles - visible focus rings */
 :focus-visible {
-  outline: 3px solid rgba(192, 128, 80, 0.6);
+  outline: 3px solid rgba(139, 110, 100, 0.75);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -230,7 +268,7 @@
   position: absolute;
   top: -100px;
   left: 0;
-  background: #c08050;
+  background: #8B6E64;
   color: white;
   padding: 12px 24px;
   z-index: 10000;
@@ -347,13 +385,13 @@
 }
 
 .skeleton {
-  background: linear-gradient(90deg, transparent, rgba(192, 128, 80, 0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(139, 110, 100, 0.12), transparent);
   background-size: 1000px 100%;
   animation: shimmer 2s infinite linear;
 }
 
 .dark .skeleton {
-  background: linear-gradient(90deg, transparent, rgba(192, 128, 80, 0.05), transparent);
+  background: linear-gradient(90deg, transparent, rgba(174, 145, 135, 0.08), transparent);
 }
 
 /* Cart update aria-live region */
@@ -362,7 +400,7 @@
   top: -100vh;
   left: 0;
   padding: 12px 24px;
-  background: #c08050;
+  background: #8B6E64;
   color: white;
   border-radius: 0 0 12px 12px;
   font-weight: 600;
@@ -397,10 +435,10 @@
   left: 0;
   right: 0;
   height: 64px;
-  background: rgba(253, 248, 243, 0.95);
+  background: rgba(250, 246, 244, 0.95);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(232, 196, 154, 0.5);
+  border-top: 1px solid rgba(211, 184, 172, 0.5);
   z-index: 50;
   display: flex;
   justify-content: space-around;
@@ -425,8 +463,8 @@
 }
 
 .mobile-nav-item.active {
-  background: rgba(192, 128, 80, 0.1);
-  color: #c08050;
+  background: rgba(139, 110, 100, 0.12);
+  color: #8B6E64;
 }
 
 .mobile-nav-item svg {
