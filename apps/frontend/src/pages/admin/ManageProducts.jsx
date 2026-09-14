@@ -381,7 +381,7 @@ const ManageProducts = () => {
                     <div className="grid grid-cols-4 gap-3">
                       {formData.images.map((url, i) => (
                         <div key={`ei-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-border/10 group">
-                          <img src={url} className="w-full h-full object-cover" />
+                          <img src={url} alt="" className="w-full h-full object-cover" />
                           <button type="button" onClick={() => removeExistingImage(i)} aria-label={`Remove image ${i + 1}`} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <X size={12} />
                           </button>
@@ -389,7 +389,7 @@ const ManageProducts = () => {
                       ))}
                       {imageFiles.map((file, i) => (
                         <div key={`ni-${i}`} className="relative aspect-square rounded-xl overflow-hidden border border-border/10 group">
-                          <img src={URL.createObjectURL(file)} className="w-full h-full object-cover" />
+                          <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
                           <button type="button" onClick={() => removeNewImage(i)} aria-label={`Remove new image ${i + 1}`} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
                             <X size={12} />
                           </button>
@@ -524,6 +524,7 @@ const ManageProducts = () => {
                         <div className="relative rounded-xl overflow-hidden border border-stone-200 dark:border-stone-700 group">
                           <img
                             src={bannerFile ? URL.createObjectURL(bannerFile) : formData.discountBanner}
+                            alt=""
                             className="w-full h-32 object-cover"
                           />
                           {bannerFile && (
@@ -619,7 +620,7 @@ const ManageProducts = () => {
                         <div className="flex items-center gap-4">
                           <div className="h-14 w-14 bg-stone-100 dark:bg-stone-800 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center">
                             {firstImage
-                              ? <img src={firstImage} className="h-full w-full object-cover" />
+                              ? <img src={firstImage} alt="" className="h-full w-full object-cover" />
                               : <ImageIcon size={20} className="text-stone-400 opacity-40" />
                             }
                           </div>
