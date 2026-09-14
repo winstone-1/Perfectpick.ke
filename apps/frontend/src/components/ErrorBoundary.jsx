@@ -49,7 +49,7 @@ class ErrorBoundary extends React.Component {
             </button>
             <a
               href="/"
-              className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-sm text-white hover:opacity-90 transition-opacity"
+              className="inline-flex items-center rounded-full bg-primary px-4 py-2 text-sm text-white dark:text-primary-ink hover:opacity-90 transition-opacity"
             >
               Go home
             </a>

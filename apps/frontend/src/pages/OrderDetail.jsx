@@ -176,7 +176,7 @@ const OrderDetail = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-black text-lg text-primary dark:text-amber-300">{formatPrice(item.price * item.quantity)}</p>
+                    <p className="font-black text-lg text-primary dark:text-primary-light">{formatPrice(item.price * item.quantity)}</p>
                   </div>
                 </div>
                 );
@@ -197,7 +197,7 @@ const OrderDetail = () => {
                   <Separator className="bg-border/40 dark:bg-stone-800" />
                   <div className="flex justify-between items-center text-xl font-black text-dark dark:text-stone-100 pt-1">
                     <span>Total</span>
-                    <span className="text-primary dark:text-amber-300">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
+                    <span className="text-primary dark:text-primary-light">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                   </div>
                 </div>
               </div>
@@ -227,7 +227,7 @@ const OrderDetail = () => {
 
           {/* Secure Note & Support */}
           <div className="bg-stone-900 dark:bg-stone-950 rounded-3xl p-6 text-stone-100 space-y-4 border border-stone-800 shadow-xl">
-            <div className="flex items-center gap-2.5 text-amber-400">
+            <div className="flex items-center gap-2.5 text-primary-light">
               <ShieldCheck size={22} />
               <h3 className="font-serif font-bold text-base text-stone-100">Authenticity Guarantee</h3>
             </div>

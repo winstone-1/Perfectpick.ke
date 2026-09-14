@@ -132,11 +132,11 @@ const Home = () => {
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 items-center gap-12 relative z-10">
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} className="space-y-6">
             <div className="space-y-4">
-              <Badge className="bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 border border-primary/20 text-xs font-black px-3.5 py-1 uppercase tracking-widest">
+              <Badge className="bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light border border-primary/20 text-xs font-black px-3.5 py-1 uppercase tracking-widest">
                 <Sparkles size={12} className="mr-1.5" /> {t('home.heroBadge')}
               </Badge>
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif font-black text-dark dark:text-stone-100 leading-tight">
-                {t('home.heroTitle1')} <span className="text-primary dark:text-amber-300 italic">{t('home.heroTitleHighlight')}</span> {t('home.heroTitle2')}
+                {t('home.heroTitle1')} <span className="text-primary dark:text-primary-light italic">{t('home.heroTitleHighlight')}</span> {t('home.heroTitle2')}
               </h1>
               <p className="text-base sm:text-lg text-medium dark:text-stone-300 max-w-lg leading-relaxed">
                 {t('home.heroDesc')}
@@ -151,15 +151,15 @@ const Home = () => {
           <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.8, delay: 0.2 }} className="grid grid-cols-2 gap-4">
             {[FaBagShopping, FaShoePrints, FaGem, FaShirt].map((Icon, i) => (
               <motion.div key={i} whileHover={{ scale: 1.04, rotate: i % 2 === 0 ? 2 : -2 }}
-                className="aspect-square rounded-3xl flex items-center justify-center shadow-lg bg-card/80 dark:bg-stone-800/90 border border-stone-200/70 dark:border-stone-700/80 text-primary dark:text-amber-300"
+                className="aspect-square rounded-3xl flex items-center justify-center shadow-lg bg-card/80 dark:bg-stone-800/90 border border-stone-200/70 dark:border-stone-700/80 text-primary dark:text-primary-light"
               >
                 <Icon size={72} />
               </motion.div>
             ))}
           </motion.div>
         </div>
-        <div className="absolute top-20 right-[10%] w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-20 left-[5%] w-96 h-96 bg-primary/10 dark:bg-amber-400/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-20 right-[10%] w-64 h-64 bg-primary/5 dark:bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-20 left-[5%] w-96 h-96 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl pointer-events-none" />
       </section>
 
       {/* Stats Bar */}
@@ -167,7 +167,7 @@ const Home = () => {
         <div className="bg-stone-900 dark:bg-stone-950 text-stone-100 rounded-3xl p-6 md:p-10 shadow-2xl flex flex-col md:flex-row justify-around items-center gap-6 border border-stone-800">
           {stats.map((stat, i) => (
             <div key={i} className="text-center md:border-r last:border-0 border-stone-800 pr-0 md:pr-10 w-full md:w-auto last:pr-0">
-              <div className="text-3xl font-serif font-black text-amber-400">
+              <div className="text-3xl font-serif font-black text-primary-light">
                 {stat.value}
               </div>
               <div className="text-xs text-stone-400 uppercase tracking-widest font-black mt-0.5">{t(stat.labelKey)}</div>
@@ -188,9 +188,9 @@ const Home = () => {
           {categories.map(({ name, icon: CategoryIcon, descKey, href }, i) => (
             <motion.div key={i} variants={itemVariants}>
               <Link to={href} className="group block h-full">
-                <Card className="h-full border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_16px_rgba(61,39,26,0.03)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:shadow-lg hover:border-primary/40 dark:hover:border-amber-400/40 transition-all duration-300 rounded-3xl bg-card text-card-foreground">
+                <Card className="h-full border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_16px_rgba(61,39,26,0.03)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] hover:shadow-lg hover:border-primary/40 dark:hover:border-primary-light/40 transition-all duration-300 rounded-3xl bg-card text-card-foreground">
                   <CardContent className="p-6 text-center flex flex-col items-center gap-3">
-                    <div className="w-14 h-14 rounded-2xl bg-surface dark:bg-stone-800 flex items-center justify-center text-primary dark:text-amber-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-amber-400 dark:group-hover:text-stone-950 transition-all duration-300 border border-stone-200/50 dark:border-stone-700">
+                    <div className="w-14 h-14 rounded-2xl bg-surface dark:bg-stone-800 flex items-center justify-center text-primary dark:text-primary-light group-hover:scale-110 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-primary-light dark:group-hover:text-stone-950 transition-all duration-300 border border-stone-200/50 dark:border-stone-700">
                       <CategoryIcon size={26} />
                     </div>
                     <div>
@@ -214,7 +214,7 @@ const Home = () => {
               <p className="text-xs text-muted-foreground dark:text-stone-400 uppercase font-black tracking-widest">{t('home.handSelected')}</p>
             </div>
             <Link to="/products">
-              <Button variant="ghost" className="text-primary dark:text-amber-300 hover:text-primary-hover group font-bold text-xs uppercase tracking-wider">
+              <Button variant="ghost" className="text-primary dark:text-primary-light hover:text-primary-hover group font-bold text-xs uppercase tracking-wider">
                 {t('home.viewAll')} <ArrowRight className="ml-1.5 h-4 w-4 transform group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -244,7 +244,7 @@ const Home = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {features.map(({ icon: FeatureIcon, titleKey, descKey }, i) => (
             <motion.div key={i} whileHover={{ y: -4 }} className="p-6 rounded-3xl bg-card text-card-foreground border border-stone-200/70 dark:border-stone-800 shadow-[0_4px_16px_rgba(61,39,26,0.03)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] text-center space-y-3">
-              <div className="inline-flex items-center justify-center p-3 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 rounded-2xl border border-primary/20">
+              <div className="inline-flex items-center justify-center p-3 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-primary-light rounded-2xl border border-primary/20">
                 <FeatureIcon size={22} />
               </div>
               <h3 className="text-base font-serif font-bold text-dark dark:text-stone-100">{t(titleKey)}</h3>
@@ -267,7 +267,7 @@ const Home = () => {
 
                 <p className="text-stone-200 text-xs sm:text-sm italic leading-relaxed">"{t(`testimonials.${key}`, { ns: 'translation', defaultValue: testimonialTexts.en[key] })}"</p>
                 <div className="flex items-center gap-3 pt-2">
-                  <div className="w-9 h-9 rounded-full bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-xs">
+                  <div className="w-9 h-9 rounded-full bg-primary-light/20 text-primary-light flex items-center justify-center font-bold text-xs">
                     {name[0]}
                   </div>
                   <div>

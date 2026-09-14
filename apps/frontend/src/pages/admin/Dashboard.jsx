@@ -98,13 +98,13 @@ const AdminDashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 pt-4">
         <Link to="/admin/products" className="group">
-          <Card className="border border-stone-200/70 dark:border-stone-800 shadow-xl rounded-[2.5rem] bg-card text-card-foreground hover:border-primary/40 dark:hover:border-amber-400/40 transition-all duration-300 overflow-hidden h-full">
+          <Card className="border border-stone-200/70 dark:border-stone-800 shadow-xl rounded-[2.5rem] bg-card text-card-foreground hover:border-primary/40 dark:hover:border-primary-light/40 transition-all duration-300 overflow-hidden h-full">
             <CardContent className="p-8 sm:p-10 flex flex-col justify-between h-full space-y-6">
               <div className="flex justify-between items-start">
-                <div className="p-4 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 rounded-2xl">
+                <div className="p-4 bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light rounded-2xl">
                   <PackageSearch size={28} />
                 </div>
-                <div className="h-10 w-10 rounded-full border border-stone-200 dark:border-stone-700 flex items-center justify-center group-hover:bg-primary group-hover:text-white dark:group-hover:bg-amber-400 dark:group-hover:text-stone-950 transition-all">
+                <div className="h-10 w-10 rounded-full border border-stone-200 dark:border-stone-700 flex items-center justify-center group-hover:bg-primary group-hover:text-white dark:group-hover:bg-primary-light dark:group-hover:text-stone-950 transition-all">
                   <ArrowUpRight size={18} />
                 </div>
               </div>
@@ -119,10 +119,10 @@ const AdminDashboard = () => {
           <Card className="border border-stone-800 shadow-xl rounded-[2.5rem] bg-stone-900 dark:bg-stone-950 text-stone-100 hover:bg-stone-850 transition-all duration-300 overflow-hidden h-full">
             <CardContent className="p-8 sm:p-10 flex flex-col justify-between h-full space-y-6">
               <div className="flex justify-between items-start">
-                <div className="p-4 bg-stone-800 text-amber-400 rounded-2xl">
+                <div className="p-4 bg-stone-800 text-primary-light rounded-2xl">
                   <ClipboardList size={28} />
                 </div>
-                <div className="h-10 w-10 rounded-full border border-stone-700 flex items-center justify-center group-hover:bg-amber-400 group-hover:text-stone-950 transition-all">
+                <div className="h-10 w-10 rounded-full border border-stone-700 flex items-center justify-center group-hover:bg-primary-light group-hover:text-stone-950 transition-all">
                   <ChevronRight size={18} />
                 </div>
               </div>

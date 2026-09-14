@@ -143,7 +143,7 @@ const Profile = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     ) : (
-                      <User size={40} className="text-primary dark:text-amber-300" />
+                      <User size={40} className="text-primary dark:text-primary-light" />
                     )}
                   </motion.div>
 
@@ -172,7 +172,7 @@ const Profile = () => {
                   <h2 className="text-xl font-serif font-black text-dark dark:text-stone-100">{user?.name}</h2>
                   <p className="text-xs text-muted-foreground dark:text-stone-400 font-mono truncate">{user?.email}</p>
                     {(user?.isAdmin || user?.role === 'admin' || user?.role === 'manager') && (
-                    <Badge className="bg-primary/10 text-primary dark:bg-amber-950/60 dark:text-amber-300 border-none uppercase tracking-widest text-[9px] font-black mt-1">
+                    <Badge className="bg-primary/10 text-primary-deep dark:bg-primary/20 dark:text-primary-light border-none uppercase tracking-widest text-[9px] font-black mt-1">
                       {user?.role || 'admin'}
                     </Badge>
                   )}
@@ -181,7 +181,7 @@ const Profile = () => {
                 <Separator className="bg-border/40 dark:bg-stone-800" />
 
                 <div className="space-y-1 text-left">
-                  <div className="flex items-center justify-between p-3 rounded-2xl bg-primary/10 dark:bg-amber-950/30 text-primary dark:text-amber-300 font-bold text-xs">
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light font-bold text-xs">
                     <div className="flex items-center gap-3">
                       <User size={16} />
                       <span>Personal Information</span>
@@ -216,7 +216,7 @@ const Profile = () => {
             </Card>
 
             <div className="bg-stone-900 dark:bg-stone-950 rounded-3xl p-6 text-stone-100 space-y-3 border border-stone-800 shadow-xl">
-              <div className="flex items-center gap-2 text-amber-400">
+              <div className="flex items-center gap-2 text-primary-light">
                 <ShieldCheck size={18} />
                 <h3 className="font-serif font-bold text-sm text-stone-100">Encrypted & Secure</h3>
               </div>

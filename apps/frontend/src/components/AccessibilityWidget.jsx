@@ -45,7 +45,7 @@ const AccessibilityWidget = () => {
             className="w-64 bg-card text-card-foreground rounded-3xl shadow-[0_16px_50px_rgba(0,0,0,0.2)] border border-stone-200/80 dark:border-stone-800 overflow-hidden">
             <div className="bg-stone-900 dark:bg-stone-950 text-white p-4 flex items-center justify-between border-b border-white/10">
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center text-amber-300"><Accessibility size={15} /></div>
+                <div className="w-7 h-7 rounded-lg bg-primary/20 border border-primary/40 flex items-center justify-center text-primary-deep"><Accessibility size={15} /></div>
                 <span className="font-serif font-bold text-white text-sm">{t('accessibility.title')}</span>
               </div>
               <button onClick={() => setOpen(false)} aria-label={t('common.close')} className="text-stone-300 hover:text-white p-1.5 rounded-full hover:bg-white/10 transition-colors"><X size={15} /></button>
@@ -53,7 +53,7 @@ const AccessibilityWidget = () => {
             <div className="p-4 space-y-4">
               <div className="flex items-center justify-between gap-3 p-3 rounded-2xl bg-surface dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800">
                 <div className="flex items-center gap-2.5">
-                  <Contrast size={16} className="text-primary dark:text-amber-300 shrink-0" />
+                  <Contrast size={16} className="text-primary dark:text-primary-light shrink-0" />
                   <div><p className="text-xs font-bold text-dark dark:text-stone-100 leading-none">{t('accessibility.highContrast')}</p><p className="text-[10px] text-muted-foreground mt-0.5">{t('accessibility.boostVisibility')}</p></div>
                 </div>
                 <button role="switch" aria-checked={hc} onClick={() => setContrast(!hc)}
@@ -64,12 +64,12 @@ const AccessibilityWidget = () => {
               </div>
               <div className="p-3 rounded-2xl bg-surface dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800 space-y-2.5">
                 <div className="flex items-center gap-2">
-                  <Type size={16} className="text-primary dark:text-amber-300 shrink-0" />
+                  <Type size={16} className="text-primary dark:text-primary-light shrink-0" />
                   <div><p className="text-xs font-bold text-dark dark:text-stone-100 leading-none">{t('accessibility.textSize')}</p><p className="text-[10px] text-muted-foreground mt-0.5">{t('accessibility.currentSize', { size: FONT_LABELS[FONT_STEPS[fs]] })}</p></div>
                 </div>
                 <div className="flex items-center gap-2">
                   <button onClick={() => fs > 0 && setFont(fs - 1)} disabled={fs === 0} aria-label={t('common.back')}
-                    className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"><Minus size={14} /></button>
+                    className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-center justify-center hover:bg-primary hover:text-white dark:hover:text-primary-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"><Minus size={14} /></button>
                   <div className="flex-1 flex items-center justify-center gap-1.5">
                     {FONT_STEPS.map((_, i) => (
                       <button key={i} onClick={() => setFont(i)} aria-label={FONT_LABELS[FONT_STEPS[i]]}
@@ -77,10 +77,10 @@ const AccessibilityWidget = () => {
                     ))}
                   </div>
                   <button onClick={() => fs < FONT_STEPS.length - 1 && setFont(fs + 1)} disabled={fs === FONT_STEPS.length - 1} aria-label={t('common.next')}
-                    className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-center justify-center hover:bg-primary hover:text-white hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"><Plus size={14} /></button>
+                    className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-stone-800 border border-stone-200/70 dark:border-stone-700 flex items-center justify-center hover:bg-primary hover:text-white dark:hover:text-primary-ink hover:border-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"><Plus size={14} /></button>
                 </div>
               </div>
-              {hasChanges && <button onClick={reset} className="w-full text-xs text-muted-foreground hover:text-primary dark:hover:text-amber-300 transition-colors py-1 font-bold uppercase tracking-wider">{t('accessibility.resetDefaults')}</button>}
+              {hasChanges && <button onClick={reset} className="w-full text-xs text-muted-foreground hover:text-primary dark:hover:text-primary-light transition-colors py-1 font-bold uppercase tracking-wider">{t('accessibility.resetDefaults')}</button>}
             </div>
           </motion.div>
         )}

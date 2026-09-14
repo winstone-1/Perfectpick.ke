@@ -34,14 +34,14 @@ const ShippingPolicy = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <Link to="/">
-              <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-amber-300 gap-2 text-xs uppercase font-bold tracking-wider">
+              <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-primary-light gap-2 text-xs uppercase font-bold tracking-wider">
                 <ArrowLeft size={16} /> Back to Home
               </Button>
             </Link>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
+              className="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
             >
               <Truck size={14} /> Logistics &amp; Delivery
             </motion.div>
@@ -50,7 +50,7 @@ const ShippingPolicy = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
             >
-              Shipping <span className="text-primary dark:text-amber-300 italic">Policy</span>
+              Shipping <span className="text-primary dark:text-primary-light italic">Policy</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -64,8 +64,8 @@ const ShippingPolicy = () => {
         </div>
         
         {/* Background Elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 dark:bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-primary/5 dark:bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 -mt-8 relative z-20">
@@ -93,28 +93,28 @@ const ShippingPolicy = () => {
                       <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Nairobi CBD &amp; Westlands</h4>
                       <p className="text-xs text-muted-foreground dark:text-stone-400">Order before 12PM for priority same-day dispatch</p>
                     </div>
-                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">Same Day</span>
+                    <span className="text-primary-deep dark:text-primary-light font-bold text-xs bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full whitespace-nowrap">Same Day</span>
                   </div>
                   <div className="flex justify-between items-start border-b border-border/40 dark:border-stone-800 pb-4">
                     <div>
                       <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Nairobi Estates</h4>
                       <p className="text-xs text-muted-foreground dark:text-stone-400">Kilimani, Karen, Langata, Kasarani, Lavington, etc.</p>
                     </div>
-                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">1-2 Days</span>
+                    <span className="text-primary-deep dark:text-primary-light font-bold text-xs bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full whitespace-nowrap">1-2 Days</span>
                   </div>
                   <div className="flex justify-between items-start border-b border-border/40 dark:border-stone-800 pb-4">
                     <div>
                       <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Greater Nairobi</h4>
                       <p className="text-xs text-muted-foreground dark:text-stone-400">Kiambu, Ruiru, Machakos, Thika</p>
                     </div>
-                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">2-3 Days</span>
+                    <span className="text-primary-deep dark:text-primary-light font-bold text-xs bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full whitespace-nowrap">2-3 Days</span>
                   </div>
                   <div className="flex justify-between items-start">
                     <div>
                       <h4 className="font-bold text-dark dark:text-stone-100 text-sm">Rest of Kenya</h4>
                       <p className="text-xs text-muted-foreground dark:text-stone-400">Doorstep or parcel courier delivery</p>
                     </div>
-                    <span className="text-primary dark:text-amber-300 font-bold text-xs bg-primary/10 dark:bg-amber-950/60 px-3 py-1 rounded-full whitespace-nowrap">2-4 Days</span>
+                    <span className="text-primary-deep dark:text-primary-light font-bold text-xs bg-primary/10 dark:bg-primary/20 px-3 py-1 rounded-full whitespace-nowrap">2-4 Days</span>
                   </div>
                 </div>
               </CardContent>
@@ -150,9 +150,9 @@ const ShippingPolicy = () => {
                     <span className="text-medium dark:text-stone-300">Rest of Kenya</span>
                     <span className="font-bold text-dark dark:text-stone-100">KES 600 - 800</span>
                   </div>
-                  <div className="bg-primary/5 dark:bg-amber-950/40 p-4 rounded-2xl flex items-center justify-between border border-primary/20">
+                  <div className="bg-primary/5 dark:bg-primary/20 p-4 rounded-2xl flex items-center justify-between border border-primary/20">
                     <div className="flex items-center gap-2.5">
-                      <ShieldCheck className="text-primary dark:text-amber-300" size={20} />
+                      <ShieldCheck className="text-primary-deep dark:text-primary-light" size={20} />
                       <span className="font-serif font-bold text-dark dark:text-stone-100 text-xs sm:text-sm">Standard Orders in Nairobi</span>
                     </div>
                     <span className="text-emerald-600 dark:text-emerald-400 font-black text-xs uppercase tracking-wider">FREE</span>
@@ -213,7 +213,7 @@ const ShippingPolicy = () => {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <a href="mailto:perfectpick26@gmail.com" className="flex items-center gap-3 p-3.5 bg-surface dark:bg-stone-800 rounded-2xl border border-stone-200/50 dark:border-stone-700 hover:border-primary/40 transition-colors group">
-                    <Mail className="text-primary dark:text-amber-300 group-hover:scale-110 transition-transform shrink-0" size={18} />
+                    <Mail className="text-primary dark:text-primary-light group-hover:scale-110 transition-transform shrink-0" size={18} />
                     <div className="overflow-hidden">
                       <p className="text-[10px] text-muted-foreground dark:text-stone-400 uppercase font-black">Email Us</p>
                       <p className="text-xs font-bold text-dark dark:text-stone-100 truncate">perfectpick26@gmail.com</p>

@@ -47,7 +47,7 @@ const CookieConsent = () => {
           className="fixed bottom-4 left-4 right-4 sm:right-auto sm:max-w-md z-[70] bg-card text-card-foreground rounded-3xl shadow-[0_16px_50px_rgba(0,0,0,0.25)] border border-stone-200/80 dark:border-stone-800 p-5 space-y-4"
         >
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 flex items-center justify-center shrink-0 border border-primary/20">
+            <div className="w-9 h-9 rounded-2xl bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light flex items-center justify-center shrink-0 border border-primary/20">
               <Cookie size={18} />
             </div>
             <div className="flex-1">

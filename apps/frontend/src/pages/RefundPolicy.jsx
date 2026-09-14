@@ -35,14 +35,14 @@ const RefundPolicy = () => {
         <div className="container mx-auto px-4 relative z-10 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <Link to="/">
-              <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-amber-300 gap-2 text-xs uppercase font-bold tracking-wider">
+              <Button variant="ghost" className="mb-6 text-muted-foreground dark:text-stone-400 hover:text-primary dark:hover:text-primary-light gap-2 text-xs uppercase font-bold tracking-wider">
                 <ArrowLeft size={16} /> Back to Home
               </Button>
             </Link>
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
+              className="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
             >
               <RotateCcw size={14} /> Returns &amp; Exchanges
             </motion.div>
@@ -51,7 +51,7 @@ const RefundPolicy = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
             >
-              Refund <span className="text-primary dark:text-amber-300 italic">Policy</span>
+              Refund <span className="text-primary dark:text-primary-light italic">Policy</span>
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -65,8 +65,8 @@ const RefundPolicy = () => {
         </div>
         
         {/* Background Elements */}
-        <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 dark:bg-primary/5 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/5 dark:bg-primary/5 rounded-full blur-3xl translate-y-1/2 translate-x-1/2 pointer-events-none" />
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 -mt-8 relative z-20">
@@ -88,8 +88,8 @@ const RefundPolicy = () => {
                 </div>
               </CardHeader>
               <CardContent className="p-6 sm:p-8 space-y-4">
-                <div className="bg-primary/5 dark:bg-amber-950/40 p-6 rounded-2xl border border-primary/10 text-center">
-                  <p className="text-4xl font-serif font-black text-primary dark:text-amber-300 mb-1">7 Days</p>
+                <div className="bg-primary/5 dark:bg-primary/20 p-6 rounded-2xl border border-primary/10 text-center">
+                  <p className="text-4xl font-serif font-black text-primary dark:text-primary-light mb-1">7 Days</p>
                   <p className="text-medium dark:text-stone-300 font-bold uppercase tracking-widest text-[11px]">Exchange &amp; Return Window</p>
                 </div>
                 <p className="text-xs sm:text-sm text-medium dark:text-stone-300 leading-relaxed">
@@ -113,7 +113,7 @@ const RefundPolicy = () => {
               </CardHeader>
               <CardContent className="p-6 sm:p-8 space-y-5">
                 <div className="space-y-3">
-                  <h4 className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-amber-300">Eligible for Exchange / Return</h4>
+                  <h4 className="text-[10px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Eligible for Exchange / Return</h4>
                   <ul className="space-y-2.5 text-xs sm:text-sm">
                     <li className="flex items-center gap-2.5 text-medium dark:text-stone-300">
                       <CheckCircle2 className="text-emerald-600 dark:text-emerald-400 shrink-0" size={16} />
@@ -177,7 +177,7 @@ const RefundPolicy = () => {
                   </div>
                 </div>
                 <div className="bg-surface/60 dark:bg-stone-800 p-3.5 rounded-2xl flex items-center gap-2.5 mt-4 border border-stone-200/50 dark:border-stone-700">
-                  <AlertCircle size={16} className="text-primary dark:text-amber-300 shrink-0" />
+                  <AlertCircle size={16} className="text-primary dark:text-primary-light shrink-0" />
                   <p className="text-xs text-medium dark:text-stone-300">Exchanges are subject to current inventory availability.</p>
                 </div>
               </CardContent>

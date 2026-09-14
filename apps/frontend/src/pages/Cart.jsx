@@ -151,7 +151,7 @@ const Cart = () => {
                               </Button>
                             </div>
 
-                            <p className="font-black text-base sm:text-lg text-primary dark:text-amber-300">
+                            <p className="font-black text-base sm:text-lg text-primary dark:text-primary-light">
                               {formatPrice(itemTotal)}
                             </p>
                           </div>
@@ -187,7 +187,7 @@ const Cart = () => {
 
               <div className="flex justify-between items-center text-xl font-black text-dark dark:text-stone-100 pt-1">
                 <span>{t('cart.total')}</span>
-                <span className="text-primary dark:text-amber-300">{formatPrice(cartTotal)}</span>
+                <span className="text-primary dark:text-primary-light">{formatPrice(cartTotal)}</span>
               </div>
             </div>
 

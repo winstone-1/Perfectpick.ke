@@ -421,7 +421,7 @@ const ManageProducts = () => {
                           key={opt.value}
                           onClick={() => toggleHeroPage(opt.value)}
                           aria-pressed={formData.heroPages.includes(opt.value)}
-                          className={`text-[10px] font-bold px-3 py-1.5 rounded-full border transition-colors ${formData.heroPages.includes(opt.value) ? 'bg-primary text-white border-primary' : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-primary/50'}`}
+                          className={`text-[10px] font-bold px-3 py-1.5 rounded-full border transition-colors ${formData.heroPages.includes(opt.value) ? 'bg-primary text-white dark:text-primary-ink border-primary' : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-200 dark:border-stone-700 hover:border-primary/50'}`}
                         >
                           {opt.label}
                         </button>

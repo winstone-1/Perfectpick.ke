@@ -64,12 +64,12 @@ const ChatWidget = () => {
             <div className="bg-stone-900 dark:bg-stone-950 text-white p-4 flex items-center justify-between border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-amber-300 font-serif font-black text-sm">P</div>
+                  <div className="w-9 h-9 rounded-full bg-primary/20 border border-primary/40 flex items-center justify-center text-primary-light font-serif font-black text-sm">P</div>
                   <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-400 rounded-full ring-2 ring-stone-900" />
                 </div>
                 <div>
                   <h3 className="font-serif font-bold text-base text-white leading-none">{t('chatWidget.assistantName')}</h3>
-                  <p className="text-[11px] text-stone-300 mt-1 flex items-center gap-1"><Sparkles size={10} className="text-amber-300" /> {t('chatWidget.assistantTitle')}</p>
+                  <p className="text-[11px] text-stone-300 mt-1 flex items-center gap-1"><Sparkles size={10} className="text-primary-light" /> {t('chatWidget.assistantTitle')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-0.5">
@@ -82,7 +82,7 @@ const ChatWidget = () => {
                 {t('chatWidget.greeting')}
               </div>
               {messages.map((m, i) => (
-                <div key={i} className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${m.role === 'user' ? 'bg-primary text-white ml-8 rounded-br-md' : 'bg-surface dark:bg-stone-900/80 border border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-200 mr-4 rounded-bl-md'}`}>
+                <div key={i} className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${m.role === 'user' ? 'bg-primary text-white dark:text-primary-ink ml-8 rounded-br-md' : 'bg-surface dark:bg-stone-900/80 border border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-200 mr-4 rounded-bl-md'}`}>
                   {m.content}
                 </div>
               ))}
@@ -124,7 +124,7 @@ const ChatWidget = () => {
       <motion.button whileHover={{scale:1.08}} whileTap={{scale:0.94}} onClick={toggle}
         aria-label={isOpen ? t('chatWidget.minimiseChat') : isMinimised ? t('chatWidget.openChat') : t('chatWidget.chatWithPia')}
         aria-expanded={isOpen}
-        className="relative w-12 h-12 rounded-full bg-primary hover:bg-primary-hover text-white shadow-[0_8px_25px_rgba(192,128,80,0.4)] flex items-center justify-center border border-white/20 transition-transform duration-200 cursor-pointer">
+        className="relative w-12 h-12 rounded-full bg-primary hover:bg-primary-hover text-white dark:text-primary-ink shadow-[0_8px_25px_rgba(139,110,100,0.4)] flex items-center justify-center border border-white/20 transition-transform duration-200 cursor-pointer"
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div key="minus" initial={{rotate:-90,opacity:0}} animate={{rotate:0,opacity:1}} exit={{rotate:90,opacity:0}}><Minus size={20} /></motion.div>

@@ -88,7 +88,7 @@ const ProductCard = ({ product }) => {
           {/* Badges */}
           <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
             {(product.featured || product.isFeatured) && (
-              <Badge className="bg-primary text-white border-none px-2 py-0.5 text-[9px] uppercase tracking-wider font-extrabold shadow-sm rounded-full">
+              <Badge className="bg-primary text-white dark:text-primary-ink border-none px-2 py-0.5 text-[9px] uppercase tracking-wider font-extrabold shadow-sm rounded-full">
                 Featured
               </Badge>
             )}
@@ -121,7 +121,7 @@ const ProductCard = ({ product }) => {
           <div className="pt-1 flex items-baseline gap-2">
             {discountedPrice ? (
               <>
-                <p className="text-sm sm:text-base font-black text-primary dark:text-amber-300">
+                <p className="text-sm sm:text-base font-black text-primary dark:text-primary-light">
                   {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES', minimumFractionDigits: 0 }).format(discountedPrice)}
                 </p>
                 <span className="text-xs text-muted-foreground dark:text-stone-400 line-through">

@@ -245,13 +245,13 @@ const ProductDetail = () => {
           className="space-y-8"
         >
           <div className="space-y-3">
-            <Badge className="bg-primary/15 text-primary dark:text-amber-300 border-none uppercase tracking-widest font-black px-3.5 py-1 rounded-full text-[10px]">
+            <Badge className="bg-primary/15 text-primary-deep dark:text-primary-light border-none uppercase tracking-widest font-black px-3.5 py-1 rounded-full text-[10px]">
               {product.category || t('productDetail.luxuryPick')}
             </Badge>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-black text-dark dark:text-stone-100 leading-tight">
               {product.name}
             </h1>
-            <p className="text-3xl font-black text-primary dark:text-amber-300">{formattedPrice}</p>
+            <p className="text-3xl font-black text-primary dark:text-primary-light">{formattedPrice}</p>
           </div>
 
           <div className="space-y-2">

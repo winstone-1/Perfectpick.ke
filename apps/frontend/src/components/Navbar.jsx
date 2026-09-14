@@ -279,7 +279,7 @@ useEffect(() => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm"
+                        className="absolute -top-1 -right-1 bg-primary text-white dark:text-primary-ink text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow-sm"
                       >
                         {cartCount}
                       </motion.span>
@@ -457,7 +457,7 @@ useEffect(() => {
                   className={cn(
                     "flex-1 py-2 text-xs font-bold rounded-xl border transition-colors",
                     i18n.language?.startsWith('en')
-                      ? "bg-primary text-white border-primary"
+                      ? "bg-primary text-white dark:text-primary-ink border-primary"
                       : "bg-card text-medium border-stone-200 dark:border-stone-700 dark:text-stone-300"
                   )}
                 >
@@ -468,7 +468,7 @@ useEffect(() => {
                   className={cn(
                     "flex-1 py-2 text-xs font-bold rounded-xl border transition-colors",
                     i18n.language?.startsWith('sw')
-                      ? "bg-primary text-white border-primary"
+                      ? "bg-primary text-white dark:text-primary-ink border-primary"
                       : "bg-card text-medium border-stone-200 dark:border-stone-700 dark:text-stone-300"
                   )}
                 >

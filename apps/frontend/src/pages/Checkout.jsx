@@ -339,7 +339,7 @@ const Checkout = () => {
                   'border-stone-300 dark:border-stone-700 text-muted-foreground'}`}>
                   {step > s ? '✓' : s}
                 </span>
-                <span className={step === s ? 'text-primary dark:text-amber-300' : 'text-muted-foreground dark:text-stone-400'}>
+                <span className={step === s ? 'text-primary dark:text-primary-light' : 'text-muted-foreground dark:text-stone-400'}>
                   {s === 1 ? t('checkout.stepShipping') : t('checkout.stepPayment')}
                 </span>
                 {i === 0 && <span className="w-8 h-px bg-stone-300 dark:bg-stone-700" aria-hidden="true" />}
@@ -455,7 +455,7 @@ const Checkout = () => {
                     <div className="bg-surface dark:bg-stone-800/80 p-6 rounded-2xl space-y-3 border border-stone-200/70 dark:border-stone-700">
                       <div className="flex justify-between items-center">
                         <span className="text-xs font-black text-muted-foreground dark:text-stone-400 uppercase tracking-wider">{t('checkout.tillNumber')}</span>
-                        <span className="text-xl font-mono font-black text-primary dark:text-amber-300">3175088</span>
+                        <span className="text-xl font-mono font-black text-primary dark:text-primary-light">3175088</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground dark:text-stone-400 text-center uppercase tracking-widest font-black">
                         {t('checkout.perfectPickSelection')}
@@ -530,7 +530,7 @@ const Checkout = () => {
 
                     <div className="bg-surface dark:bg-stone-800 p-6 rounded-2xl space-y-3 border-2 border-primary/30">
                       <p className="text-[10px] font-black text-muted-foreground dark:text-stone-400 uppercase tracking-widest text-center">{t('checkout.buyGoodsTill')}</p>
-                      <p className="text-4xl font-mono font-black text-primary dark:text-amber-300 text-center tracking-tighter checkout-till">{fallbackData.tillNumber}</p>
+                      <p className="text-4xl font-mono font-black text-primary dark:text-primary-light text-center tracking-tighter checkout-till">{fallbackData.tillNumber}</p>
                       <p className="text-[10px] text-muted-foreground dark:text-stone-400 text-center uppercase tracking-widest font-black">
                         {t('checkout.perfectPickSelection')}
                       </p>
@@ -629,7 +629,7 @@ const Checkout = () => {
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-bold text-dark dark:text-stone-100 truncate">{item?.product?.name || 'Product'}</h4>
                     <p className="text-[10px] text-muted-foreground dark:text-stone-400 uppercase font-bold">{item?.variant || t('cart.standard')} x {item?.quantity || 1}</p>
-                    <p className="text-xs font-black text-primary dark:text-amber-300 mt-0.5">{formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}</p>
+                    <p className="text-xs font-black text-primary dark:text-primary-light mt-0.5">{formatPrice((item?.product?.price || 0) * (item?.quantity || 1))}</p>
                   </div>
                 </div>
               ))}
@@ -649,7 +649,7 @@ const Checkout = () => {
               <Separator className="bg-border/30 dark:bg-stone-800" />
               <div className="flex justify-between text-xl font-black text-dark dark:text-stone-100 pt-1">
                 <span>{t('checkout.total')}</span>
-                <span className="text-primary dark:text-amber-300">{formatPrice(total)}</span>
+                <span className="text-primary dark:text-primary-light">{formatPrice(total)}</span>
               </div>
             </div>
 

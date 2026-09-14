@@ -19,25 +19,25 @@ const About = () => {
 
   const contactInfos = [
     {
-      icon: <MapPin className="text-primary dark:text-amber-300" size={22} />,
+      icon: <MapPin className="text-primary dark:text-primary-light" size={22} />,
       title: 'Visit Us',
       detail: 'Amaziah Square, Muthiga\nAlong Waiyaki Way, Nairobi',
       link: 'https://maps.google.com/?q=Amaziah+Square+Muthiga+Waiyaki+Way+Nairobi'
     },
     {
-      icon: <Phone className="text-primary dark:text-amber-300" size={22} />,
+      icon: <Phone className="text-primary dark:text-primary-light" size={22} />,
       title: 'Call Us',
       detail: '+254 787 251 690',
       link: 'tel:+254787251690'
     },
     {
-      icon: <Mail className="text-primary dark:text-amber-300" size={22} />,
+      icon: <Mail className="text-primary dark:text-primary-light" size={22} />,
       title: 'Email Us',
       detail: 'perfectpick26@gmail.com',
       link: 'mailto:perfectpick26@gmail.com'
     },
     {
-      icon: <Clock className="text-primary dark:text-amber-300" size={22} />,
+      icon: <Clock className="text-primary dark:text-primary-light" size={22} />,
       title: 'Working Hours',
       detail: 'Mon - Sat: 8:30 AM - 7:30 PM\nSun & Holidays: 10:30 AM - 6:00 PM',
       link: null
@@ -59,7 +59,7 @@ const About = () => {
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
+            className="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
           >
             <Sparkles size={14} /> Our Story
           </motion.div>
@@ -69,7 +69,7 @@ const About = () => {
             transition={{ delay: 0.15 }}
             className="text-4xl sm:text-5xl md:text-7xl font-serif font-black text-dark dark:text-stone-100 tracking-tight"
           >
-            Defining Elegance <br /> in <span className="text-primary dark:text-amber-300 italic">Nairobi</span>.
+            Defining Elegance <br /> in <span className="text-primary dark:text-primary-light italic">Nairobi</span>.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -82,8 +82,8 @@ const About = () => {
             accessories, knitwear, and lifestyle picks for the modern style enthusiast in Kenya.
           </motion.p>
         </div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 dark:bg-amber-400/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 dark:bg-amber-400/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 dark:bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/10 dark:bg-primary/5 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
       </section>
 
       {/* Philosophy */}
@@ -107,14 +107,14 @@ const About = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-2 p-5 rounded-2xl bg-surface/40 dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800">
-                <div className="w-10 h-10 bg-primary/10 dark:bg-amber-950/60 rounded-xl flex items-center justify-center text-primary dark:text-amber-300">
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary-deep dark:text-primary-light">
                   <ShieldCheck size={22} />
                 </div>
                 <h4 className="font-serif font-bold text-dark dark:text-stone-100 text-base">Genuine Only</h4>
                 <p className="text-xs text-muted-foreground dark:text-stone-400">Authentic luxury accessories guaranteed.</p>
               </div>
               <div className="space-y-2 p-5 rounded-2xl bg-surface/40 dark:bg-stone-900 border border-stone-200/60 dark:border-stone-800">
-                <div className="w-10 h-10 bg-primary/10 dark:bg-amber-950/60 rounded-xl flex items-center justify-center text-primary dark:text-amber-300">
+                <div className="w-10 h-10 bg-primary/10 dark:bg-primary/20 rounded-xl flex items-center justify-center text-primary-deep dark:text-primary-light">
                   <Heart size={22} />
                 </div>
                 <h4 className="font-serif font-bold text-dark dark:text-stone-100 text-base">Passion Driven</h4>
@@ -132,7 +132,7 @@ const About = () => {
             className="relative group"
           >
             <div className="aspect-[4/5] bg-surface dark:bg-stone-900 rounded-[3rem] overflow-hidden flex items-center justify-center border border-stone-200/70 dark:border-stone-800 shadow-xl group-hover:shadow-2xl transition-shadow duration-300">
-              <motion.div whileHover={{ rotate: 3, scale: 1.05 }} transition={{ duration: 0.3 }} className="text-7xl sm:text-8xl text-primary dark:text-amber-300 opacity-90"><FaCrown /></motion.div>
+              <motion.div whileHover={{ rotate: 3, scale: 1.05 }} transition={{ duration: 0.3 }} className="text-7xl sm:text-8xl text-primary dark:text-primary-light opacity-90"><FaCrown /></motion.div>
             </div>
             {/* Quote Card */}
             <Card className="absolute -bottom-6 -left-4 sm:-left-8 border border-stone-200/70 dark:border-stone-800 shadow-2xl bg-card text-card-foreground rounded-3xl p-6 sm:p-7 max-w-xs rotate-[-2deg]">
@@ -142,7 +142,7 @@ const About = () => {
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-6 h-1 bg-primary rounded-full" />
-                  <span className="text-[11px] font-black uppercase tracking-widest text-primary dark:text-amber-300">Perfect Pick Nairobi</span>
+                  <span className="text-[11px] font-black uppercase tracking-widest text-primary dark:text-primary-light">Perfect Pick Nairobi</span>
                 </div>
               </CardContent>
             </Card>
@@ -169,7 +169,7 @@ const About = () => {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3.5 p-4 rounded-2xl bg-stone-800/80 hover:bg-stone-800 border border-stone-700/60 transition-colors group cursor-pointer"
               >
-                <div className="w-10 h-10 rounded-xl bg-stone-900 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-stone-900 flex items-center justify-center text-primary-light group-hover:scale-110 transition-transform">
                   {s.icon}
                 </div>
                 <div>
@@ -201,7 +201,7 @@ const About = () => {
                   <div>
                     <h3 className="font-serif font-bold text-base text-dark dark:text-stone-100">{info.title}</h3>
                     {info.link ? (
-                      <a href={info.link} target={info.link && info.link.startsWith("http") ? "_blank" : undefined} rel={info.link && info.link.startsWith("http") ? "noopener noreferrer" : undefined} className="text-xs text-primary dark:text-amber-300 hover:underline mt-1 block font-medium whitespace-pre-line leading-relaxed">
+                      <a href={info.link} target={info.link && info.link.startsWith("http") ? "_blank" : undefined} rel={info.link && info.link.startsWith("http") ? "noopener noreferrer" : undefined} className="text-xs text-primary dark:text-primary-light hover:underline mt-1 block font-medium whitespace-pre-line leading-relaxed">
                         {info.detail}
                       </a>
                     ) : (

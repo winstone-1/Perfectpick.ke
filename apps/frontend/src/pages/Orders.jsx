@@ -142,7 +142,7 @@ const Orders = () => {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-[10px] uppercase font-bold text-muted-foreground dark:text-stone-400 tracking-wider">{t('orders.total')}</p>
-                      <span className="text-lg font-black text-primary dark:text-amber-300">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
+                      <span className="text-lg font-black text-primary dark:text-primary-light">{formatPrice(order.totalPrice ?? order.totalAmount)}</span>
                     </div>
                     <Button
                       variant="outline"

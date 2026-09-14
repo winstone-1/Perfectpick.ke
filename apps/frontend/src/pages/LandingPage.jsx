@@ -296,7 +296,7 @@ useEffect(() => {
           >
             <p className="text-[10px] text-muted-foreground dark:text-stone-400 font-bold uppercase tracking-wider">Featured Pick</p>
             <p className="font-serif font-black text-dark dark:text-stone-100 text-sm mt-0.5">{heroProduct.name}</p>
-            <p className="text-primary dark:text-amber-300 font-black text-sm">{formatKES(heroProduct.price)}</p>
+            <p className="text-primary dark:text-primary-light font-black text-sm">{formatKES(heroProduct.price)}</p>
           </motion.div>
         )}
 
@@ -337,7 +337,7 @@ useEffect(() => {
               initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
               className="text-center mb-10 space-y-2"
             >
-              <div className="flex items-center justify-center gap-2 text-amber-400">
+              <div className="flex items-center justify-center gap-2 text-primary-light">
                 <Tag size={16} />
                 <span className="text-xs font-bold uppercase tracking-[0.3em]">Limited Time Exclusive</span>
               </div>
@@ -371,7 +371,7 @@ useEffect(() => {
                         <p className="text-white/90 font-bold text-base sm:text-lg">{banners[bannerIndex].name}</p>
                         <div className="flex items-center gap-4 pt-1">
                           <span className="text-white/50 line-through text-sm">{formatKES(banners[bannerIndex].price)}</span>
-                          <span className="text-amber-400 font-black text-xl">
+                          <span className="text-primary-light font-black text-xl">
                             {formatKES(banners[bannerIndex].price * (1 - banners[bannerIndex].discount / 100))}
                           </span>
                         </div>
@@ -404,7 +404,7 @@ useEffect(() => {
           initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
           className="text-center mb-12 space-y-2"
         >
-          <p className="text-primary dark:text-amber-300 text-xs font-black uppercase tracking-[0.3em]">Curated Picks</p>
+          <p className="text-primary dark:text-primary-light text-xs font-black uppercase tracking-[0.3em]">Curated Picks</p>
           <h2 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">Browse Categories</h2>
         </motion.div>
 
@@ -413,9 +413,9 @@ useEffect(() => {
             <motion.div key={value} initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.06 }} className="landing-category">
               <button
                 onClick={() => navigate('/register')}
-                className="w-full group flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] bg-card text-card-foreground shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-stone-200/70 dark:border-stone-800 hover:shadow-lg hover:border-primary/40 dark:hover:border-amber-400/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                className="w-full group flex flex-col items-center justify-center gap-3 p-6 rounded-[2rem] bg-card text-card-foreground shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-stone-200/70 dark:border-stone-800 hover:shadow-lg hover:border-primary/40 dark:hover:border-primary-light/40 hover:-translate-y-1 transition-all duration-300 cursor-pointer"
               >
-                <div className="w-14 h-14 rounded-2xl bg-surface dark:bg-stone-800 flex items-center justify-center text-primary dark:text-amber-300 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-amber-400 dark:group-hover:text-stone-950 transition-all duration-300 border border-stone-200/50 dark:border-stone-700">
+                <div className="w-14 h-14 rounded-2xl bg-surface dark:bg-stone-800 flex items-center justify-center text-primary dark:text-primary-light group-hover:bg-primary group-hover:text-white dark:group-hover:bg-primary-light dark:group-hover:text-stone-950 transition-all duration-300 border border-stone-200/50 dark:border-stone-700">
                   <Icon size={26} />
                 </div>
                 <span className="font-serif font-black text-dark dark:text-stone-100 text-sm tracking-tight">{label}</span>
@@ -432,7 +432,7 @@ useEffect(() => {
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
             className="text-center mb-12 space-y-2"
           >
-            <p className="text-primary dark:text-amber-300 text-xs font-black uppercase tracking-[0.3em]">Our Promise</p>
+            <p className="text-primary dark:text-primary-light text-xs font-black uppercase tracking-[0.3em]">Our Promise</p>
             <h2 className="text-3xl sm:text-4xl font-serif font-black text-dark dark:text-stone-100">Shop with Confidence</h2>
           </motion.div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -440,11 +440,11 @@ useEffect(() => {
               <motion.div key={title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="landing-trust">
                 <Link 
                   to={link}
-                  className="flex items-start gap-4 p-6 sm:p-7 rounded-3xl bg-card text-card-foreground shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-stone-200/70 dark:border-stone-800 hover:shadow-lg hover:border-primary/40 dark:hover:border-amber-400/40 transition-all duration-300 h-full group"
+                  className="flex items-start gap-4 p-6 sm:p-7 rounded-3xl bg-card text-card-foreground shadow-[0_4px_16px_rgba(61,39,26,0.04)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.25)] border border-stone-200/70 dark:border-stone-800 hover:shadow-lg hover:border-primary/40 dark:hover:border-primary-light/40 transition-all duration-300 h-full group"
                 >
-                  <div className="p-3.5 bg-surface dark:bg-stone-800 rounded-2xl text-primary dark:text-amber-300 shrink-0 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-amber-400 dark:group-hover:text-stone-950 transition-colors border border-stone-200/50 dark:border-stone-700"><Icon size={22} /></div>
+                  <div className="p-3.5 bg-surface dark:bg-stone-800 rounded-2xl text-primary dark:text-primary-light shrink-0 group-hover:bg-primary group-hover:text-white dark:group-hover:bg-primary-light dark:group-hover:text-stone-950 transition-colors border border-stone-200/50 dark:border-stone-700"><Icon size={22} /></div>
                   <div className="space-y-1 text-left">
-                    <h3 className="font-serif font-black text-dark dark:text-stone-100 text-base group-hover:text-primary dark:group-hover:text-amber-300 transition-colors">{title}</h3>
+                    <h3 className="font-serif font-black text-dark dark:text-stone-100 text-base group-hover:text-primary dark:group-hover:text-primary-light transition-colors">{title}</h3>
                     <p className="text-muted-foreground dark:text-stone-400 text-xs leading-relaxed">{desc}</p>
                   </div>
                 </Link>
@@ -461,10 +461,10 @@ useEffect(() => {
         />
         <div className="relative z-10 py-16 px-6 text-center space-y-6">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="space-y-3">
-            <p className="text-amber-400 text-xs font-black uppercase tracking-[0.3em]">Perfect Pick Nairobi</p>
+            <p className="text-primary-light text-xs font-black uppercase tracking-[0.3em]">Perfect Pick Nairobi</p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-black text-stone-100 leading-tight">
               Discover your next<br />
-              <span className="text-primary dark:text-amber-300 italic">favourite luxury piece</span>
+              <span className="text-primary dark:text-primary-light italic">favourite luxury piece</span>
             </h2>
             <p className="text-stone-400 max-w-md mx-auto text-xs sm:text-sm leading-relaxed">
               Join stylish fashion enthusiasts across Nairobi finding their authentic style.

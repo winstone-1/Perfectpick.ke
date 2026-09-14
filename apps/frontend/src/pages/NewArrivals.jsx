@@ -68,7 +68,7 @@ const NewArrivals = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 bg-primary/10 dark:bg-amber-950/60 text-primary dark:text-amber-300 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
+            className="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/20 text-primary-deep dark:text-primary-light px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest border border-primary/20"
           >
             <Sparkles size={14} /> {t('newArrivals.badge')}
           </motion.div>
@@ -77,7 +77,7 @@ const NewArrivals = () => {
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"
           >
-            {t('newArrivals.title')} <span className="text-primary dark:text-amber-300 italic" />
+            {t('newArrivals.title')} <span className="text-primary dark:text-primary-light italic" />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -100,7 +100,7 @@ const NewArrivals = () => {
               className={cn(
                 "flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
                 filter === '7days'
-                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md"
+                  ? "bg-primary text-white dark:bg-primary-light dark:text-stone-950 shadow-md"
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
@@ -111,7 +111,7 @@ const NewArrivals = () => {
               className={cn(
                 "flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
                 filter === 'month'
-                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md"
+                  ? "bg-primary text-white dark:bg-primary-light dark:text-stone-950 shadow-md"
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
@@ -122,7 +122,7 @@ const NewArrivals = () => {
               className={cn(
                 "flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
                 filter === 'all'
-                  ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md"
+                  ? "bg-primary text-white dark:bg-primary-light dark:text-stone-950 shadow-md"
                   : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
               )}
             >
@@ -177,7 +177,7 @@ const NewArrivals = () => {
             <Button
               variant="outline"
               onClick={() => setFilter('all')}
-              className="mt-4 border-primary text-primary dark:text-amber-300 hover:bg-primary/10 rounded-2xl"
+              className="mt-4 border-primary text-primary dark:text-primary-light hover:bg-primary/10 rounded-2xl"
             >
               {t('newArrivals.seeAllBtn')}
             </Button>

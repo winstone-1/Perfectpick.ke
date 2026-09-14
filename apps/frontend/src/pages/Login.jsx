@@ -172,7 +172,7 @@ const Login = () => {
           <CardFooter className="bg-surface/30 dark:bg-stone-900/40 p-6 text-center border-t border-border/40 dark:border-stone-800">
             <p className="text-xs text-muted-foreground dark:text-stone-400 w-full font-medium">
               {t('login.noAccount')}{' '}
-              <Link to="/register" className="font-bold text-primary dark:text-amber-300 hover:underline transition-all">
+              <Link to="/register" className="font-bold text-primary dark:text-primary-light hover:underline transition-all">
                 {t('login.createAccount')}
               </Link>
             </p>

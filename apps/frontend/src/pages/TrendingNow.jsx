@@ -97,7 +97,7 @@ const TrendingNow = () => {
             animate={{ opacity: 1, y: 0 }}
             className={heroVideo ? "text-4xl md:text-6xl font-serif font-black text-white" : "text-4xl md:text-6xl font-serif font-black text-dark dark:text-stone-100"}
           >
-            {t('trendingNow.title')} <span className="text-primary dark:text-amber-300 italic" />
+            {t('trendingNow.title')} <span className="text-primary dark:text-primary-light italic" />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -125,7 +125,7 @@ const TrendingNow = () => {
                 className={cn(
                   "flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap cursor-pointer",
                   activeTab === tab.id 
-                    ? "bg-primary text-white dark:bg-amber-400 dark:text-stone-950 shadow-md" 
+                    ? "bg-primary text-white dark:bg-primary-light dark:text-stone-950 shadow-md" 
                     : "text-medium dark:text-stone-300 hover:text-dark dark:hover:text-stone-100"
                 )}
               >
@@ -167,7 +167,7 @@ const TrendingNow = () => {
                     <div className="absolute top-3 left-3 pointer-events-none">
                       <div className={cn(
                         "flex items-center gap-1.5 px-3 py-1 rounded-full shadow-lg border-none text-[10px] font-black uppercase tracking-widest text-white",
-                        index === 0 ? "bg-primary dark:bg-amber-600" : "bg-stone-900/90 dark:bg-stone-800"
+                        index === 0 ? "bg-primary dark:bg-amber-600 dark:text-stone-950" : "bg-stone-900/90 dark:bg-stone-800"
                       )}>
                         <Trophy size={12} className={index === 0 ? "fill-white" : ""} />
                         {index === 0 && t('trendingNow.trending1')}
