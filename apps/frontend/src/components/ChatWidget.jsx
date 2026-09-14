@@ -124,7 +124,7 @@ const ChatWidget = () => {
       <motion.button whileHover={{scale:1.08}} whileTap={{scale:0.94}} onClick={toggle}
         aria-label={isOpen ? t('chatWidget.minimiseChat') : isMinimised ? t('chatWidget.openChat') : t('chatWidget.chatWithPia')}
         aria-expanded={isOpen}
-        className="relative w-12 h-12 rounded-full bg-primary hover:bg-primary-hover text-white dark:text-primary-ink shadow-[0_8px_25px_rgba(139,110,100,0.4)] flex items-center justify-center border border-white/20 transition-transform duration-200 cursor-pointer"
+        className="relative w-12 h-12 rounded-full bg-primary hover:bg-primary-hover text-white dark:text-primary-ink shadow-[0_8px_25px_rgba(139,110,100,0.4)] flex items-center justify-center border border-white/20 transition-transform duration-200 cursor-pointer">
         <AnimatePresence mode="wait">
           {isOpen ? (
             <motion.div key="minus" initial={{rotate:-90,opacity:0}} animate={{rotate:0,opacity:1}} exit={{rotate:90,opacity:0}}><Minus size={20} /></motion.div>
