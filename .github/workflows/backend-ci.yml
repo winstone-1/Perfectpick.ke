@@ -1,0 +1,133 @@
+# ─────────────────────────────────────────────────────────────
+# backend-ci.yml — CI/CD for the PerfectPick Node.js backend
+#
+# Runs on every push/PR that touches apps/backend/** or this file.
+# On merge to main, also builds and pushes the Docker image to GHCR.
+#
+# ⚠️  DEPLOY STEP INTENTIONALLY OMITTED
+#     The production backend runs on Railway.  Railway can auto-deploy
+#     from a GitHub branch directly; or you can trigger a Railway
+#     redeploy via the Railway API.  Neither is wired up here because
+#     we don't have visibility into your Railway service ID or API token.
+#     When you're ready, add the following to the "build-and-push" job:
+#
+#       - name: Trigger Railway deploy
+#         if: github.ref == 'refs/heads/main'
+#         run: |
+#           curl -X POST \
+#             -H "Authorization: Bearer ${{ secrets.RAILWAY_TOKEN }}" \
+#             "https://backboard.railway.app/graphql/v2" \
+#             --data '{"query":"mutation { deploymentTrigger(input:{serviceId:\"YOUR_SERVICE_ID\"}) { id } }"}'
+#
+#     Required secrets (add in repo Settings → Secrets → Actions):
+#       RAILWAY_TOKEN  — from railway.app → Account Settings → Tokens
+# ─────────────────────────────────────────────────────────────
+
+name: Backend CI
+
+on:
+  push:
+    branches: ["main", "backend/**"]
+    paths:
+      - "apps/backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "apps/backend/**"
+      - ".github/workflows/backend-ci.yml"
+
+env:
+  REGISTRY: ghcr.io
+  # github.repository = owner/repo  →  image = ghcr.io/owner/repo/backend
+  IMAGE_NAME: ${{ github.repository }}/backend
+
+jobs:
+  # ── Job 1: lint + syntax check ──────────────────────────────
+  lint:
+    name: Lint & syntax check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/backend
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: apps/backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # node --check catches syntax errors across every JS file
+      - name: Syntax check all source files
+        run: |
+          find src -name "*.js" | xargs -I{} node --check {}
+          node --check index.js
+
+      # Run lint if an eslint config exists, skip gracefully if not
+      - name: ESLint (if configured)
+        run: |
+          if [ -f ".eslintrc*" ] || [ -f "eslint.config*" ]; then
+            npx eslint src/ index.js --max-warnings=0
+          else
+            echo "No ESLint config found — skipping"
+          fi
+
+      # Run the local Paystack validation suite
+      - name: Paystack local validation
+        env:
+          PAYSTACK_SECRET_KEY: sk_test_dummy_for_ci_00000000000000000000000
+          PAYSTACK_PUBLIC_KEY: pk_test_dummy
+        run: node paystack_validate.js
+
+  # ── Job 2: build Docker image (+ push on merge to main) ─────
+  build-and-push:
+    name: Docker build & push
+    runs-on: ubuntu-latest
+    needs: lint
+    permissions:
+      contents: read
+      packages: write   # needed to push to GHCR
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GHCR
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata (tags + labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=sha-
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build (and push on main)
+        uses: docker/build-push-action@v5
+        with:
+          context: ./apps/backend
+          file: ./apps/backend/Dockerfile
+          push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # BuildKit cache speeds up subsequent CI runs
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # No build-args with secrets — all config comes from runtime env vars
