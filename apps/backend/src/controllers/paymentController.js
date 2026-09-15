@@ -69,6 +69,7 @@ export const initiateMpesaPayment = async (req, res) => {
   // Idempotency for payment initiation — same key returns same Paystack reference, prevents double STK on double-click
   const idemCheck = await handleIdempotencyCheck(req, res, 'POST /api/payments/mpesa');
   if (idemCheck.isDuplicate) {
+    console.log(`[PAY] Idempotent replay for user=${req.user?._id} key=${idemCheck.key}`);
     return res.status(idemCheck.responseStatus).json(idemCheck.responseBody);
   }
   const idempotencyKey = idemCheck.key;
@@ -94,15 +95,20 @@ export const initiateMpesaPayment = async (req, res) => {
       });
     }
 
+    // Paystack mobile money charge payload.
+    // phone format: +254XXXXXXXXX (E.164 with leading +).
+    // amount: integer in KES cents (KES × 100).
     const paystackData = {
-      amount: Math.round(amount * 100), // Paystack expects kobo/cents
+      amount: Math.round(amount * 100),
       email,
       currency: 'KES',
       mobile_money: {
-        phone: normalizedPhone,
+        phone: `+${normalizedPhone}`,   // e.g. +254710000000
         provider: 'mpesa',
       },
     };
+
+    console.log(`[PAY] Initiating STK push — orderId=${orderId} phone=+${normalizedPhone} amountKES=${amount} user=${req.user?._id}`);
 
     const response = await axios.post(
       'https://api.paystack.co/charge',
@@ -115,14 +121,18 @@ export const initiateMpesaPayment = async (req, res) => {
       }
     );
 
+    console.log(`[PAY] Paystack /charge response — status=${response.data.status} data.status=${response.data.data?.status} ref=${response.data.data?.reference}`);
+
     if (response.data.status) {
-      // Save reference to order so we can verify later
-      await Order.findByIdAndUpdate(orderId, {
+      // Persist Paystack reference on the order so polling/webhook can look it up
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, {
         paymentResult: {
           id: response.data.data.reference,
           status: response.data.data.status,
         },
-      });
+      }, { new: true });
+
+      console.log(`[PAY] Order updated — orderId=${orderId} paymentRef=${response.data.data.reference} orderFound=${!!updatedOrder}`);
 
       const body = {
         success: true,
@@ -133,6 +143,7 @@ export const initiateMpesaPayment = async (req, res) => {
       await saveIdempotencyResponse(idempotencyKey, req.user._id, 'POST /api/payments/mpesa', 200, body);
       return res.json(body);
     } else {
+      console.warn(`[PAY] Paystack charge returned status=false — message=${response.data.message}`);
       return res.status(400).json({
         success: false,
         message: response.data.message || 'Payment initiation failed',
@@ -141,7 +152,7 @@ export const initiateMpesaPayment = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Paystack Charge Error:', error.response?.data || error.message);
+    console.error('[PAY] Paystack Charge Error:', error.response?.data || error.message);
     return res.status(500).json({
       success: false,
       message: error.response?.data?.message || 'Failed to initiate STK push. Please pay manually.',
