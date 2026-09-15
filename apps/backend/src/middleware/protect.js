@@ -34,7 +34,9 @@ const protect = async (req, res, next) => {
 };
 
 const admin = (req, res, next) => {
-    // User model uses isAdmin flag; also support role='admin'/'manager' for flexibility
+    // NOTE: This 'admin' middleware is not imported by any route (routes use
+    // adminOnly from middleware/roles.js instead). Kept to avoid breaking any
+    // future direct import, but prefer roles.js for new routes.
     const isAdmin = req.user && (req.user.isAdmin === true || req.user.role === 'admin' || req.user.role === 'manager');
     if (isAdmin) {
         next();
