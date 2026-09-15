@@ -1,0 +1,53 @@
+# ─────────────────────────────────────────────────────────────
+# LOCAL DEVELOPMENT ONLY — do NOT use for production deploys.
+# Production runs on Railway (backend) + Cloudflare Pages (frontend).
+#
+# Usage:
+#   docker compose up --build
+#
+# Requires:
+#   apps/backend/.env  (copy from .env.example and fill in)
+# ─────────────────────────────────────────────────────────────
+
+services:
+
+  # ── MongoDB (local dev only) ──────────────────────────────
+  mongo:
+    image: mongo:7-jammy
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: Perfect_Pick
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend API ────────────────────────────────────────────
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    # All secrets come from the .env file — never baked into image.
+    # In production these are set as Railway environment variables.
+    env_file:
+      - ./apps/backend/.env
+    environment:
+      # Override MONGODB_URI to point at the local mongo container.
+      # The value in .env usually points to MongoDB Atlas; this override
+      # redirects to the local service for docker compose only.
+      MONGODB_URI: mongodb://mongo:27017/Perfect_Pick
+      NODE_ENV: development
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  mongo_data:

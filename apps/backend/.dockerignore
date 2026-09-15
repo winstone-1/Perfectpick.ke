@@ -1,0 +1,24 @@
+# Never bake secrets or dev artifacts into the image
+.env
+.env.*
+!.env.example
+
+# Dependencies — reinstalled inside the image
+node_modules
+
+# Version control
+.git
+.gitignore
+
+# Editor / OS noise
+.DS_Store
+*.log
+npm-debug.log*
+
+# Test / scratch files
+paystack_validate.js
+scratch_verify.js
+
+# Local development config
+docker-compose.yml
+docker-compose.*.yml
